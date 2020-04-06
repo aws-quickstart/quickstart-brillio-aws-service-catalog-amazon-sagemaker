@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for creating ECR Repository with the given name
+Parameters:
+  ProjectName:
+    Description: ProjectName For the Reasources in the VPC
+    Type: String
+  ECRRepositoryName:
+    Description: ECR Repository Name
+    Type: String
+  ECREndpoint:
+    Description: ECR Interface Endpoint
+    Type: String
+Resources:
+  ECRRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Ref ECRRepositoryName
+      RepositoryPolicyText:
+        Version: 2008-10-17
+        Statement:
+          - Sid: AllowPull
+            Effect: Deny
+            Principal: '*'
+            Action:
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:BatchGetImage'
+              - 'ecr:GetDownloadUrlForLayer'
+            Condition:
+              StringNotEquals:
+                'aws:sourceVpce': !Ref ECREndpoint
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - _
+              - !Ref ECRRepositoryName
+Outputs:
+  ECRRepository:
+    Value: !Ref ECRRepository
