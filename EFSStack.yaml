@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for EFS creation and mounting it to Resource Sunbnet
+Parameters:
+  ProjectName:
+    Description: ProjectName For the Reasources in the VPC
+    Type: String
+    Default: SageMaker
+  Subnet1Id:
+    Description: CIDR for the Subnet-1
+    Type: String
+  SecurityGroup1Id:
+    Description: Security Group-1 Id (ResourceSG)
+    Type: String
+  SecurityGroup2Id:
+    Description: Security Group-2 Id (ENISG)
+    Type: String
+Resources:
+  ElasticFileSystem:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      FileSystemTags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - _EFS
+      PerformanceMode: generalPurpose
+  EFSMountTarget:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref Subnet1Id
+      FileSystemId: !Ref ElasticFileSystem
+      SecurityGroups:
+        - !Ref SecurityGroup2Id
+  OutboundRule:
+    Type: 'AWS::EC2::SecurityGroupEgress'
+    Properties:
+      CidrIp: !Join 
+        - ''
+        - - !GetAtt 
+            - EFSMountTarget
+            - IpAddress
+          - /32
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      GroupId: !Ref SecurityGroup1Id
+Outputs:
+  EFileSystemId:
+    Value: !Ref ElasticFileSystem
+  EFSMountTargetId:
+    Value: !Ref EFSMountTarget
+  EFSMountIpAddr:
+    Value: !GetAtt 
+      - EFSMountTarget
+      - IpAddress
