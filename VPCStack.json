@@ -1,0 +1,281 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "CFT for creating the VPC, sunbnets & security groups.",
+    "Parameters": {
+        "ProjectName": {
+            "Description": "ProjectName For the Reasources in the VPC",
+            "Type": "String",
+            "Default": "SageMaker"
+        },
+        "VPCCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
+            "Default": "10.0.0.0/16",
+            "Description": "CIDR block for the VPC",
+            "Type": "String"
+        },
+        "Subnet1CidrBlock": {
+            "Description": "CIDR for the Subnet-1",
+            "Type": "String",
+            "Default": "10.0.1.0/24"
+        },
+        "Subnet2CidrBlock": {
+            "Description": "CIDR for the Subnet-2",
+            "Type": "String",
+            "Default": "10.0.2.0/24"
+        }
+    },
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VPCCIDR"
+                },
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_VPC"
+                            ]
+                        ]
+                    }
+                }]
+            }
+        },
+        "Subnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "0",
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "Subnet1CidrBlock"
+                },
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_ResourceSubnet"
+                            ]
+                        ]
+                    }
+                }]
+            }
+        },
+        "Subnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        "1",
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Ref": "Subnet2CidrBlock"
+                },
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_ENISubnet"
+                            ]
+                        ]
+                    }
+                }]
+            }
+        },
+        "RouteTableSM": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_ PrivateRouteTable"
+                            ]
+                        ]
+                    }
+                }]
+            }
+        },
+        "Subnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "RouteTableSM"
+                },
+                "SubnetId": {
+                    "Ref": "Subnet1"
+                }
+            }
+        },
+        "Subnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "RouteTableSM"
+                },
+                "SubnetId": {
+                    "Ref": "Subnet2"
+                }
+            }
+        },
+        "SecurityGroup1": {
+            "Type": "AWS::EC2::SecurityGroup",
+
+            "Properties": {
+                "GroupDescription": "securityGroup1",
+                "GroupName": "SecurityGroup1",
+                "SecurityGroupEgress": [
+                    {
+                        "CidrIp": {
+                            "Ref": "Subnet2CidrBlock"
+                        },
+                        "Description": "HTTPStraffic",
+                        "FromPort": 443,
+                        "IpProtocol": "tcp",
+                        "ToPort": 443
+                    }
+                ],
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_ResourceSG"
+                            ]
+                        ]
+                    }
+                }],
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "SecurityGroup2": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "securityGroup2",
+                "GroupName": "Security Group 2",
+                "SecurityGroupIngress": [
+				{
+                    "CidrIp": {
+                        "Ref": "Subnet1CidrBlock"
+                    },
+                    "Description": "Resource Subnet CIDR allow on port 443",
+                    "FromPort": 443,
+                    "IpProtocol": "tcp",
+                    "ToPort": 443
+                },
+				{
+                    "CidrIp": {
+                        "Ref": "Subnet1CidrBlock"
+                    },
+                    "Description": "Resource Subnet CIDR allow on port 443",
+                    "FromPort": 2049,
+                    "IpProtocol": "tcp",
+                    "ToPort": 2049
+                }],
+                "Tags": [{
+                    "Key": "Name",
+                    "Value": {
+                        "Fn::Join": [
+                            "",
+                            [{
+                                    "Ref": "ProjectName"
+                                },
+                                "_ENISG"
+                            ]
+                        ]
+                    }
+                }],
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "VPCId": {
+            "Description": "VPC Id",
+            "Value": {
+                "Ref": "VPC"
+            }
+        },
+        "Subnet1Id": {
+            "Description": "Resource Subnet Id",
+            "Value": {
+                "Ref": "Subnet1"
+            }
+        },
+        "Subnet2Id": {
+            "Description": "ENI Subnet Id",
+            "Value": {
+                "Ref": "Subnet2"
+            }
+        },
+        "RouteTableId": {
+            "Description": "Route Table Id",
+            "Value": {
+                "Ref": "RouteTableSM"
+            }
+        },
+        "SecurityGroup1Id": {
+            "Description": "Id of the security group-1",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SecurityGroup1",
+                    "GroupId"
+                ]
+            }
+        },
+        "SecurityGroup2Id": {
+            "Description": "Id of the security group-2",
+            "Value": {
+                "Fn::GetAtt": [
+                    "SecurityGroup2",
+                    "GroupId"
+                ]
+            }
+        }
+
+
+    }
+}
