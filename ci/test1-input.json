@@ -1,7 +1,7 @@
 [
     {
         "ParameterKey": "ENVName",
-        "ParameterValue": "QuickStartTest"
+        "ParameterValue": "QuickStart"
     },
 	{
         "ParameterKey": "VPCCIDR",
@@ -25,10 +25,18 @@
     },
 	{
         "ParameterKey": "ECRRepositoryName",
-        "ParameterValue": "quickstart_sagemaker_repository"
+        "ParameterValue": "quickstart-sagemaker-repository"
     },
 	{
-        "ParameterKey": "SourceBucket",
+        "ParameterKey": "QSS3BucketName",
         "ParameterValue": "$[taskcat_autobucket]"
+    },
+	{
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "quickstart-sagemaker-guardrail/"
+    },
+	{
+        "ParameterKey": "RoleName",
+        "ParameterValue": "SCAccessRole"
     }
 ]
