@@ -1,0 +1,16 @@
+---
+global:
+  owner: quickstart@amazon.com
+  qsname: quickstart-brillio-aws-service-catalog-amazon-sagemaker
+  regions:
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+  reporting: true
+tests:
+  taskcat-test1:
+    parameter_input: test1-input.json
+    regions:
+      - us-west-2
+    template_file: Master.template
