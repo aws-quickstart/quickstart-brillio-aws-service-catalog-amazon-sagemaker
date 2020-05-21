@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Template to create a SageMaker notebook '
+Description: 'Template to create a SageMaker notebook (qs-1qojf6qee)'
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:

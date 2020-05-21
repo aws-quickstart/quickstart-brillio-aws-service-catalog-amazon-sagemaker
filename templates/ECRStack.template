@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CFT for creating ECR Repository with the given name
+Description: CFT for creating ECR Repository with the given name (qs-1qojf6qam)
 Parameters:
   ENVName:
     Description: ENVName For the Reasources in the VPC

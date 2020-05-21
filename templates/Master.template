@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Master stack which creates all required nested stacks
+Description: Master stack which creates all required nested stacks (qs-1qoj9pgrl)
 Metadata:
-  'AWS::CloudFormation::Interface':
+  "AWS::CloudFormation::Interface":
     ParameterGroups:
       - Label:
           default: Environment Details
@@ -36,8 +36,6 @@ Metadata:
         default: ENI Subnet CIDR block
       ECRRepositoryName:
         default: ECR Repository Name
-      QSS3BucketName:
-        default: Source Bucket Name
       RoleName:
         default: Role Name
       IAMGroupName:
@@ -61,7 +59,7 @@ Parameters:
     Description: CIDR block for the VPC
     Type: String
   ECRRepositoryName:
-    AllowedPattern: '(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*'
+    AllowedPattern: "(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*"
     ConstraintDescription: ECR repository name must contain only lowercase letters, numbers or or following characters (/,-,_,.)
     Description: ECR Repository Name
     Type: String
@@ -81,17 +79,18 @@ Parameters:
     Type: String
     Default: 10.0.2.0/24
   QSS3BucketName:
-    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
       Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Description: S3 bucket name for the Quick Start assets.
     Type: String
     Default: code-repository-california
   QSS3KeyPrefix:
-    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: >-
       Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), and forward slash (/).
+    Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: String
     Default: quickstart-sagemaker-guardrail/
   RoleName:
@@ -104,117 +103,117 @@ Parameters:
     Description: IAM Group Name (Optional)
     Type: String
 Conditions:
-  IAMGroupCondition: !Equals 
-    - ''
+  IAMGroupCondition: !Equals
+    - ""
     - !Ref IAMGroupName
 Rules:
   SagemakerQS:
     Assertions:
       - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
         Assert: !Contains
-          -  - us-east-1
-             - us-east-2
-             - us-west-1
-             - us-west-2
-          - !Ref 'AWS::Region'
+          - - us-east-1
+            - us-east-2
+            - us-west-1
+            - us-west-2
+          - !Ref "AWS::Region"
 
 Resources:
   VPCStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/VPCStack.template
-      TimeoutInMinutes: '5'
+      TimeoutInMinutes: 5
       Parameters:
         ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
   EFSStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/EFSStack.template
-      TimeoutInMinutes: '10'
+      TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
-        Subnet1Id: !GetAtt 
+        Subnet1Id: !GetAtt
           - VPCStack
           - Outputs.Subnet1Id
   VPCEndPointsStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/VPCEndpointsStack.template
-      TimeoutInMinutes: '15'
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        VPCId: !GetAtt 
+        VPCId: !GetAtt
           - VPCStack
           - Outputs.VPCId
-        Subnet2Id: !GetAtt 
+        Subnet2Id: !GetAtt
           - VPCStack
           - Outputs.Subnet2Id
-        RouteTableId: !GetAtt 
+        RouteTableId: !GetAtt
           - VPCStack
           - Outputs.RouteTableId
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
   ECRStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ECRStack.template
-      TimeoutInMinutes: '15'
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
-        ECREndpoint: !GetAtt 
+        ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
   LifecycleConfigStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template
-      TimeoutInMinutes: '15'
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        EFSMountIpAddr: !GetAtt 
+        EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
   LambdaFunctionStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/LambdaStack.template
-      TimeoutInMinutes: '15'
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
   NotebookSCStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ServiceCatalogStack.template
-      TimeoutInMinutes: '15'
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         RoleName: !Ref RoleName
-        IAMGroupName: !If 
+        IAMGroupName: !If
           - IAMGroupCondition
           - None
           - !Ref IAMGroupName

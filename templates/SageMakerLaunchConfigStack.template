@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: NotebookInstance LifecycleConfig
+Description: NotebookInstance LifecycleConfig (qs-1qojf6qdr)
 Parameters:
   ENVName:
     Description: SageMaker Project name
