@@ -16,17 +16,17 @@ Parameters:
     Description: User group name who will access Service Catalog
     Type: String
 Conditions:
-  IAMGroupCondition: !Not 
-    - !Equals 
+  IAMGroupCondition: !Not
+    - !Equals
       - None
       - !Ref IAMGroupName
 Resources:
   SCEndUserRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       Description: Provides full access to service catalog enduser capabilities
-      RoleName: !Join 
-        - '-'
+      RoleName: !Join
+        - "-"
         - - !Ref ENVName
           - SC
           - !Ref RoleName
@@ -37,15 +37,15 @@ Resources:
               Service:
                 - sagemaker.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - "sts:AssumeRole"
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - "arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess"
   SCLaunchRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       Description: Provides full access to service catalog to launch product
-      RoleName: !Join 
-        - '-'
+      RoleName: !Join
+        - "-"
         - - !Ref ENVName
           - SCLaunch
           - !Ref RoleName
@@ -56,11 +56,11 @@ Resources:
               Service:
                 - servicecatalog.amazonaws.com
             Action:
-              - 'sts:AssumeRole'
+              - "sts:AssumeRole"
       Path: /
       Policies:
-        - PolicyName: !Join 
-            - '-'
+        - PolicyName: !Join
+            - "-"
             - - !Ref ENVName
               - SCLaunchPolicy
           PolicyDocument:
@@ -69,49 +69,49 @@ Resources:
               - Sid: LambdaInvokePermission
                 Effect: Allow
                 Action:
-                  - 'lambda:InvokeFunction'
-                Resource: '*'
+                  - "lambda:InvokeFunction"
+                Resource: "*"
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/IAMFullAccess'
-        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-        - 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
+        - "arn:aws:iam::aws:policy/IAMFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"
   SCUserGroup:
-    Type: 'AWS::IAM::Group'
+    Type: "AWS::IAM::Group"
     Condition: IAMGroupCondition
     Properties:
-      GroupName: !Join 
-        - '-'
+      GroupName: !Join
+        - "-"
         - - !Ref ENVName
           - SC
           - !Ref IAMGroupName
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - "arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess"
   SageMakerPortfolio:
-    Type: 'AWS::ServiceCatalog::Portfolio'
+    Type: "AWS::ServiceCatalog::Portfolio"
     Properties:
       AcceptLanguage: en
       Description: Sagemaker Portfolio with all Guardrails
-      DisplayName: !Join 
-        - ''
+      DisplayName: !Join
+        - ""
         - - !Ref ENVName
           - _SageMakerPortfolio
       ProviderName: Brillio
       Tags:
         - Key: Name
-          Value: !Join 
-            - ''
+          Value: !Join
+            - ""
             - - !Ref ENVName
               - _SageMakerPortfolio
         - Key: ENVName
           Value: !Ref ENVName
   SageMakerProduct:
-    Type: 'AWS::ServiceCatalog::CloudFormationProduct'
+    Type: "AWS::ServiceCatalog::CloudFormationProduct"
     Properties:
       AcceptLanguage: en
       Description: This product creates SageMaker Product with provided parameter values.
       Distributor: Amazon
-      Name: !Join 
-        - ''
+      Name: !Join
+        - ""
         - - !Ref ENVName
           - _SageMakerProduct
       Owner: Brillio
@@ -120,15 +120,14 @@ Resources:
             This product creates SageMaker Product with provided parameter
             values.
           Info:
-            LoadTemplateFromURL: !Join 
-              - ''
-              - - 'https://'
+            LoadTemplateFromURL: !Join
+              - ""
+              - - "https://"
                 - !Ref QSS3BucketName
-                - .s3-
-                - !Ref 'AWS::Region'
-                - .amazonaws.com/
+                - .s3.amazonaws.com/
                 - !Ref QSS3KeyPrefix
                 - templates/SagemakerProduct.template
+              # https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/SagemakerProduct.template
           Name: Version 1
       SupportDescription: Brillio DI Team
       SupportEmail: aws-brillio@brillio.com
@@ -136,42 +135,42 @@ Resources:
         https://www.brillio.com/what-we-do/digital-infrastructure/cloud-infrastructure/
       Tags:
         - Key: Name
-          Value: !Join 
-            - ''
+          Value: !Join
+            - ""
             - - !Ref ENVName
               - _SageMakerProduct
         - Key: ENVName
           Value: !Ref ENVName
   SageMakerProductAssociation:
-    Type: 'AWS::ServiceCatalog::PortfolioProductAssociation'
+    Type: "AWS::ServiceCatalog::PortfolioProductAssociation"
     Properties:
       PortfolioId: !Ref SageMakerPortfolio
       ProductId: !Ref SageMakerProduct
   PortfolioRoleAssociation:
-    Type: 'AWS::ServiceCatalog::PortfolioPrincipalAssociation'
+    Type: "AWS::ServiceCatalog::PortfolioPrincipalAssociation"
     Properties:
       PortfolioId: !Ref SageMakerPortfolio
-      PrincipalARN: !GetAtt 
+      PrincipalARN: !GetAtt
         - SCEndUserRole
         - Arn
       PrincipalType: IAM
   PortfolioGroupAssociation:
-    Type: 'AWS::ServiceCatalog::PortfolioPrincipalAssociation'
+    Type: "AWS::ServiceCatalog::PortfolioPrincipalAssociation"
     Condition: IAMGroupCondition
     Properties:
       PortfolioId: !Ref SageMakerPortfolio
-      PrincipalARN: !GetAtt 
+      PrincipalARN: !GetAtt
         - SCUserGroup
         - Arn
       PrincipalType: IAM
   SCLaunchRoleConstraint:
     Type: AWS::ServiceCatalog::LaunchRoleConstraint
-    Properties: 
+    Properties:
       AcceptLanguage: en
       Description: Role to create SageMaker product
       PortfolioId: !Ref SageMakerPortfolio
       ProductId: !Ref SageMakerProduct
-      RoleArn: !GetAtt 
+      RoleArn: !GetAtt
         - SCLaunchRole
         - Arn
 

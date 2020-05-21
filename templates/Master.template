@@ -213,10 +213,11 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         RoleName: !Ref RoleName
-        IAMGroupName: !If
-          - IAMGroupCondition
-          - None
-          - !Ref IAMGroupName
+        IAMGroupName: !Ref IAMGroupName
+        #IAMGroupName: !If
+        #  - IAMGroupCondition
+        #  - None
+        #  - !Ref IAMGroupName
 Outputs:
   VPCStackOutPut:
     Value: !Ref VPCStack
