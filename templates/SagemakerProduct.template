@@ -4,18 +4,17 @@ Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
-          default: SageMaker Notebook
+          default: Environment detail
+        Parameters:
+          - ENVName
+      - Label:
+          default: SageMaker Notebook configuration
         Parameters:
           - NotebookInstanceName
           - NotebookInstanceType
           - DirectInternetAccess
-          - ENVName
-          - ProjectName
           - SageMakerS3Bucket
           - KMSKeyId
-          - Tags
-          - ProjectID
-          - UserName
           - RootAccess
           - VolumeSizeInGB
       - Label:
@@ -23,6 +22,13 @@ Metadata:
         Parameters:
           - S3CodePusher
           - CodeBucketName
+      - Label:
+          default: Project and Access detail
+        Parameters:
+          - ProjectName
+          - ProjectID
+          - UserName
+          - EndUserRole
     ParameterLabels:
       DirectInternetAccess:
         default: Default Internet Access
@@ -37,7 +43,7 @@ Metadata:
       ENVName:
         default: Environment Name
       ProjectName:
-        default: Project Name
+        default: Project Suffix
       RootAccess:
         default: Root access
       VolumeSizeInGB:
@@ -45,7 +51,9 @@ Metadata:
       ProjectID:
         default: SageMaker ProjectID
       UserName:
-        default: SageMaker UserName
+        default: SageMaker User Name
+      EndUserRole:
+        default: End User Role Name
       CodeBucketName:
         default: Code Bucket Name
 Parameters:
@@ -77,7 +85,7 @@ Parameters:
     Description: SageMaker infrastructure naming convention
     Type: String
   ProjectName:
-    Description: Unique identification for your SageMaker project
+    Description: The suffix appended to all resources in the stack.  This will allow multiple copies of the same stack to be created in the same account.
     Type: String
   RootAccess:
     Description: Root access for the SageMaker Notebook user
@@ -113,7 +121,10 @@ Parameters:
     Default: Brillio007
   UserName:
     Type: String
-    Description: Enter a valid UserName.
+    Description: Enter a valid User Name.
+  EndUserRole:
+    Type: String
+    Description: Enter a valid End User Role Name.
   S3CodePusher:
     Description: Do you want to load the code from S3 to SageMaker Notebook
     Default: 'NO'
@@ -133,10 +144,15 @@ Resources:
   SageMakerExecutionRole:
     Type: 'AWS::IAM::Role'
     Properties:
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
       RoleName: !Join 
-        - ''
+        - '-'
         - - !Ref ProjectName
-          - _SageMakerExecutionRole
+          - SageMakerExecutionRole
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -148,9 +164,9 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - ''
+            - '-'
             - - !Ref ProjectName
-              - _SageMakerExecutionPolicy
+              - SageMakerExecutionPolicy
           PolicyDocument:
             Version: 2012-10-17
             Statement:
@@ -303,9 +319,9 @@ Resources:
     Condition: BucketCondition
     Properties:
       PolicyName: !Join 
-        - ''
+        - '-'
         - - !Ref ProjectName
-          - _CodeBucketPolicy
+          - CodeBucketPolicy
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -371,7 +387,7 @@ Resources:
                     - !Ref 'AWS::AccountId'
                     - ':role/'
                     - !Ref ENVName
-                    - _SagemakerBuildRoles
+                    - '-SagemakerBuildRoles'
             Action:
               - 's3:Get*'
               - 's3:Put*'
@@ -399,7 +415,7 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
-          - _SageMakerBuild
+          - '-SageMakerBuild'
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref KMSKeyId
@@ -419,10 +435,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-      RoleArn: !GetAtt 
-        - SageMakerExecutionRole
-        - Arn
-      UserName: !Ref UserName
   UserGroup:
     Type: 'AWS::IAM::Group'
     Properties:
@@ -440,6 +452,33 @@ Resources:
       UserName: !Ref UserName
       Groups:
         - !Ref UserGroup
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+  EndUserAccessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: Provides full access to service catalog enduser capabilities
+      RoleName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - SageMaker-EndUserRole
+          - !Ref EndUserRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
@@ -447,6 +486,8 @@ Resources:
         - '-'
         - - !Ref ProjectName
           - SageMakerUserRolePolicy
+      Roles:
+        - !Ref EndUserAccessRole
       Groups:
         - !Ref UserGroup
       PolicyDocument:
