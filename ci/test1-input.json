@@ -16,12 +16,8 @@
         "ParameterValue": "10.0.2.0/24"
     },
 	{
-        "ParameterKey": "AdminGroupName",
-        "ParameterValue": "AdminGroup"
-    },
-	{
-        "ParameterKey": "UserGroupName",
-        "ParameterValue": "SCUsers"
+        "ParameterKey": "RoleName",
+        "ParameterValue": "SCAccessRole"
     },
 	{
         "ParameterKey": "ECRRepositoryName",
@@ -34,9 +30,5 @@
 	{
         "ParameterKey": "QSS3KeyPrefix",
         "ParameterValue": "quickstart-sagemaker-guardrail/"
-    },
-	{
-        "ParameterKey": "RoleName",
-        "ParameterValue": "SCAccessRole"
     }
 ]
