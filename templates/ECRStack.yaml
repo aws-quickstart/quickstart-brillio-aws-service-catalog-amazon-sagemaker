@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for creating ECR Repository with the given name (qs-1qojf6qam)
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: ECR Configuration for SageMaker
+        Parameters:
+          - ECRRepositoryName
+          - ECREndpoint
+    ParameterLabels:
+      ECRRepositoryName:
+        default: ECR Repository Name
+      ECREndpoint:
+        default: ECR Interface Endpoint
+      ENVName:
+        default: Environment Name
+Parameters:
+  ENVName:
+    Description: ENVName For the Reasources in the VPC
+    Type: String
+  ECRRepositoryName:
+    Description: Enter the ECR Repository Name for SageMaker
+    Type: String
+  ECREndpoint:
+    Description: Enter the ECR Interface Endpoint for ECR access
+    Type: String
+Resources:
+  ECRRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Ref ECRRepositoryName
+      RepositoryPolicyText:
+        Version: 2008-10-17
+        Statement:
+          - Sid: AllowPull
+            Effect: Deny
+            Principal: '*'
+            Action:
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:BatchGetImage'
+              - 'ecr:GetDownloadUrlForLayer'
+            Condition:
+              StringNotEquals:
+                'aws:sourceVpce': !Ref ECREndpoint
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - _
+              - !Ref ECRRepositoryName
+        - Key: Environment
+          Value: !Ref ENVName
+Outputs:
+  ECRRepository:
+    Value: !Ref ECRRepository
