@@ -1,0 +1,190 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT creating VPC Endpoints (qs-1qojf6qf3)
+Mappings:
+  RegionMap:
+    us-east-1:
+      s3endpoint: pl-63a5400a
+    us-east-2:
+      s3endpoint: pl-7ba54012
+    us-west-1:
+      s3endpoint: pl-6ba54002
+    us-west-2:
+      s3endpoint: pl-68a54001
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCId
+          - Subnet2Id
+          - RouteTableId
+          - SecurityGroup1Id
+          - SecurityGroup2Id
+    ParameterLabels:
+      VPCId:
+        default: VPC ID
+      Subnet2Id:
+        default: ENI Subnet ID
+      RouteTableId:
+        default: Route Table ID
+      SecurityGroup1Id:
+        default: Resource Security Group Id 
+      SecurityGroup2Id:
+        default: ENI Security Group Id
+      ENVName:
+        default: Environment Name
+Parameters:
+  ENVName:
+    Description: ENVName For the Reasources in the VPC
+    Type: String
+  VPCId:
+    Description: Enter the VPC ID used for SageMaker
+    Type: String
+  Subnet2Id:
+    Description: Enter the ENI subnet ID used for SageMaker
+    Type: String
+  RouteTableId:
+    Description: Enter the Route Table ID used for SageMaker
+    Type: String
+  SecurityGroup1Id:
+    Description: Enter the Resource Security Group ID used for SageMaker
+    Type: String
+  SecurityGroup2Id:
+    Description: Enter the ENI Security Group ID used for SageMaker
+    Type: String
+Rules:
+  SagemakerQS:
+    Assertions:
+      - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
+        Assert:
+          'Fn::Contains':
+            - - us-east-1
+              - us-east-2
+              - us-west-1
+              - us-west-2
+            - !Ref 'AWS::Region'
+Resources:
+  ECREndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SecurityGroup2Id
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .ecr.api
+      SubnetIds:
+        - !Ref Subnet2Id
+      VpcEndpointType: Interface
+      VpcId: !Ref VPCId
+  CWEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SecurityGroup2Id
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .logs
+      SubnetIds:
+        - !Ref Subnet2Id
+      VpcEndpointType: Interface
+      VpcId: !Ref VPCId
+  STSEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SecurityGroup2Id
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .sts
+      SubnetIds:
+        - !Ref Subnet2Id
+      VpcEndpointType: Interface
+      VpcId: !Ref VPCId
+  SageMakerRunTimeEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SecurityGroup2Id
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .sagemaker.runtime
+      SubnetIds:
+        - !Ref Subnet2Id
+      VpcEndpointType: Interface
+      VpcId: !Ref VPCId
+  SageMakerAPIEndpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !Ref SecurityGroup2Id
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .sagemaker.api
+      SubnetIds:
+        - !Ref Subnet2Id
+      VpcEndpointType: Interface
+      VpcId: !Ref VPCId
+  S3Endpoint:
+    Type: 'AWS::EC2::VPCEndpoint'
+    Properties:
+      RouteTableIds:
+        - !Ref RouteTableId
+      ServiceName: !Join 
+        - ''
+        - - com.amazonaws.
+          - !Ref 'AWS::Region'
+          - .s3
+      VpcEndpointType: Gateway
+      VpcId: !Ref VPCId
+  S3OutboundRule:
+    Type: 'AWS::EC2::SecurityGroupEgress'
+    DependsOn: S3Endpoint
+    Properties:
+      DestinationPrefixListId: !FindInMap 
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - s3endpoint
+      Description: HTTPS traffic for S3
+      FromPort: 443
+      IpProtocol: tcp
+      ToPort: 443
+      GroupId: !Ref SecurityGroup1Id
+Outputs:
+  ECREndpoint:
+    Description: ECR Endpoint
+    Value: !Ref ECREndpoint
+  CWEndpoint:
+    Description: Cloud Watch Endpoint
+    Value: !Ref CWEndpoint
+  STSEndpoint:
+    Description: STS Endpoint
+    Value: !Ref STSEndpoint
+  SageMakerRunTimeEndpoint:
+    Description: SageMaker Run Time Endpoint
+    Value: !Ref SageMakerRunTimeEndpoint
+  SageMakerAPIEndpoint:
+    Description: SageMaker API Endpoint
+    Value: !Ref SageMakerAPIEndpoint
+  S3Endpoint:
+    Description: S3 Endpoint
+    Value: !Ref S3Endpoint
