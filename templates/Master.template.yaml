@@ -133,7 +133,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
       TimeoutInMinutes: 5
       Parameters:
         ENVName: !Ref ENVName
@@ -144,7 +144,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
@@ -161,7 +161,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -184,7 +184,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -196,7 +196,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -207,7 +207,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -217,7 +217,7 @@ Resources:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
