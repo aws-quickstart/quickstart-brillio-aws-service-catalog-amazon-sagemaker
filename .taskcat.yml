@@ -18,5 +18,8 @@ tests:
       QSS3BucketName: $[taskcat_autobucket]
       QSS3KeyPrefix: quickstart-sagemaker-guardrail/
     regions:
+      - us-east-1
+      - us-east-2
       - us-west-1
+      - us-west-2
     template: templates/Master.template.yaml
