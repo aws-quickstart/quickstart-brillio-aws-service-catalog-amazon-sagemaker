@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: NotebookInstance LifecycleConfig (qs-1qojf6qdr)
 Metadata:
-  "AWS::CloudFormation::Interface":
+  'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
           default: Environment Details
@@ -55,5 +55,6 @@ Resources:
                   sudo chown ec2-user:ec2-user /home/ec2-user/SageMaker/efs
                   --recursive
 Outputs:
-  NbInstanceLifecycleConfigId:
+  NbInstanceLifecycleConfig:
     Value: !Ref EFSLifecycleConfig
+    Description: SageMaker Lifecycle Configuration

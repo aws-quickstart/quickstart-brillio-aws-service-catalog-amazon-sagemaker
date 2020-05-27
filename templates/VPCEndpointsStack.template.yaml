@@ -61,17 +61,18 @@ Rules:
   SagemakerQS:
     Assertions:
       - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
-        Assert: !Contains
-          - - us-east-1
-            - us-east-2
-            - us-west-1
-            - us-west-2
-          - !Ref "AWS::Region"
+        Assert:
+          'Fn::Contains':
+            - - us-east-1
+              - us-east-2
+              - us-west-1
+              - us-west-2
+            - !Ref 'AWS::Region'
 Resources:
   ECREndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -86,7 +87,7 @@ Resources:
   CWEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -101,7 +102,7 @@ Resources:
   STSEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -116,7 +117,7 @@ Resources:
   SageMakerRunTimeEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -131,7 +132,7 @@ Resources:
   SageMakerAPIEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
