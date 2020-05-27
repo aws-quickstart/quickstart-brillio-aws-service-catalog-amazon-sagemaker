@@ -1,5 +1,27 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: 'CFT for creating the VPC, sunbnets & security groups. (qs-1qojf6qfa)'
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCCIDR
+          - Subnet1CidrBlock
+          - Subnet2CidrBlock
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR block
+      Subnet1CidrBlock:
+        default: Resource Subnet CIDR block
+      Subnet2CidrBlock:
+        default: ENI Subnet CIDR block
+      ENVName:
+        default: Environment Name
 Parameters:
   ENVName:
     Description: ENVName For the Reasources in the VPC
@@ -25,14 +47,14 @@ Resources:
     Type: 'AWS::EC2::VPC'
     Properties:
       CidrBlock: !Ref VPCCIDR
-      EnableDnsHostnames: 'true'
-      EnableDnsSupport: 'true'
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _VPC
+              - VPC
   Subnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -44,9 +66,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _ResourceSubnet
+              - ResourceSubnet
   Subnet2:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -58,9 +80,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _ENISubnet
+              - ENISubnet
   RouteTableSM:
     Type: 'AWS::EC2::RouteTable'
     Properties:
@@ -68,9 +90,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _ PrivateRouteTable
+              - PrivateRouteTable
   Subnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
     Properties:
@@ -84,8 +106,11 @@ Resources:
   SecurityGroup1:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: securityGroup1
-      GroupName: SecurityGroup1
+      GroupDescription: Access for resource inside Resource subnet
+      GroupName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - ResourceSG
       SecurityGroupEgress:
         - CidrIp: !Ref Subnet2CidrBlock
           Description: HTTPStraffic
@@ -95,15 +120,18 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _ResourceSG
+              - ResourceSG
       VpcId: !Ref VPC
   SecurityGroup2:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: securityGroup2
-      GroupName: Security Group 2
+      GroupDescription: Access for resource inside ENI subnet
+      GroupName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - ENISG
       SecurityGroupIngress:
         - CidrIp: !Ref Subnet1CidrBlock
           Description: Resource Subnet CIDR allow on port 443
@@ -118,9 +146,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _ENISG
+              - ENISG
       VpcId: !Ref VPC
 Outputs:
   VPCId:

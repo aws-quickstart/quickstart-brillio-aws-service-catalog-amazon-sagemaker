@@ -15,13 +15,13 @@ Metadata:
       - Label:
           default: Access to Service Catalog
         Parameters:
-          - RoleName
-          - IAMGroupName
+          - EnableIAMRole
+          - EnableIAMGroup
     ParameterLabels:
-      RoleName:
-        default: Role Name
-      IAMGroupName:
-        default: IAM Group Name
+      EnableIAMRole:
+        default: Enable IAM role access for Service catalog
+      EnableIAMGroup:
+        default: Enable IAM group access for Service catalog
       ENVName:
         default: Environment Name
       QSS3BucketName:
@@ -45,31 +45,37 @@ Parameters:
       letters, hyphens (-), and forward slash (/).
     Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: String
-  RoleName:
-    Description: Admin group Name.
+  EnableIAMRole:
+    Description: IAM Role for launching the SageMaker product (Default)
+    Default: 'YES'
     Type: String
-  IAMGroupName:
-    Description: User group name who will access Service Catalog
+    AllowedValues:
+      - 'YES'
+  EnableIAMGroup:
+    Description: IAM Group for launching the SageMaker product (Optional)
+    Default: 'NO'
     Type: String
-    Default: ""
+    AllowedValues:
+      - 'YES'
+      - 'NO'
 Conditions:
   IAMGroupCondition: !Not 
     - !Equals 
-      - ""
-      - !Ref IAMGroupName
+      - "NO"
+      - !Ref EnableIAMGroup
 Resources:
   SCEndUserRole:
     Type: 'AWS::IAM::Role'
     Properties:
       Description: Provides full access to service catalog enduser capabilities
-      RoleName: !Join 
-        - '-'
-        - - !Ref ENVName
-          - SC
-          - !Ref RoleName
       Tags:
         - Key: Environment
           Value: !Ref ENVName
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - SCEndUserRole
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -84,14 +90,14 @@ Resources:
     Type: 'AWS::IAM::Role'
     Properties:
       Description: Provides full access to service catalog to launch product
-      RoleName: !Join 
-        - '-'
-        - - !Ref ENVName
-          - SCLaunch
-          - !Ref RoleName
       Tags:
         - Key: Environment
           Value: !Ref ENVName
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - SCLaunchRole
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -122,11 +128,6 @@ Resources:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
     Properties:
-      GroupName: !Join 
-        - '-'
-        - - !Ref ENVName
-          - SC
-          - !Ref IAMGroupName
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
   SageMakerPortfolio:
@@ -135,16 +136,16 @@ Resources:
       AcceptLanguage: en
       Description: Sagemaker Portfolio with all Guardrails
       DisplayName: !Join 
-        - ''
+        - '-'
         - - !Ref ENVName
-          - _SageMakerPortfolio
+          - SageMakerPortfolio
       ProviderName: Brillio
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _SageMakerPortfolio
+              - SageMakerPortfolio
         - Key: ENVName
           Value: !Ref ENVName
   SageMakerProduct:
@@ -154,9 +155,9 @@ Resources:
       Description: This product creates SageMaker Product with provided parameter values.
       Distributor: Amazon
       Name: !Join 
-        - ''
+        - '-'
         - - !Ref ENVName
-          - _SageMakerProduct
+          - SageMakerProduct
       Owner: Brillio
       ProvisioningArtifactParameters:
         - Description: >-
@@ -164,7 +165,7 @@ Resources:
             values.
           Info:
             LoadTemplateFromURL: !Sub >-
-              https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/SagemakerProduct.yaml
+              https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
           Name: Version 1
       SupportDescription: Brillio DI Team
       SupportEmail: aws-brillio@brillio.com
@@ -173,9 +174,9 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _SageMakerProduct
+              - SageMakerProduct
         - Key: ENVName
           Value: !Ref ENVName
   SageMakerProductAssociation:
@@ -213,11 +214,18 @@ Resources:
 Outputs:
   SageMakerPortfolio:
     Value: !Ref SageMakerPortfolio
-    Description: SageMaker Portfolio
+    Description: SageMaker Portfolio ID
   SageMakerProduct:
     Value: !Ref SageMakerProduct
-    Description: SageMaker Product
+    Description: SageMaker Product ID
   SCEndUserRole:
     Value: !Ref SCEndUserRole
     Description: Provides access to enduser for launching the SageMaker product
+  SCUserGroup:
+    Value: !Ref SCUserGroup
+    Condition: IAMGroupCondition
+    Description: IAM Group for launching the SageMaker product
+  SCLaunchRole:
+    Value: !Ref SCLaunchRole
+    Description: Provides full access to service catalog to launch product
   
