@@ -19,4 +19,4 @@ tests:
       QSS3KeyPrefix: quickstart-sagemaker-guardrail/
     regions:
       - us-west-1
-    template: templates/Master.template
+    template: templates/Master.template.yaml
