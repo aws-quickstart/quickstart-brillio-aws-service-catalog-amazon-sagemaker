@@ -23,12 +23,15 @@ Metadata:
           - S3CodePusher
           - CodeBucketName
       - Label:
-          default: Project and Access detail
+          default: Access detail
+        Parameters:
+          - EnableIAMRole
+          - EnableIAMGroup
+      - Label:
+          default: Project detail
         Parameters:
           - ProjectName
           - ProjectID
-          - UserName
-          - EndUserRole
     ParameterLabels:
       DirectInternetAccess:
         default: Default Internet Access
@@ -50,10 +53,10 @@ Metadata:
         default: Volume size for the SageMaker Notebook
       ProjectID:
         default: SageMaker ProjectID
-      UserName:
-        default: SageMaker User Name
-      EndUserRole:
-        default: End User Role Name
+      EnableIAMRole:
+        default: Enable IAM role access for SageMaker Notebook
+      EnableIAMGroup:
+        default: Enable IAM group access for SageMaker Notebook
       CodeBucketName:
         default: Code Bucket Name
 Parameters:
@@ -85,7 +88,9 @@ Parameters:
     Description: SageMaker infrastructure naming convention
     Type: String
   ProjectName:
-    Description: The suffix appended to all resources in the stack.  This will allow multiple copies of the same stack to be created in the same account.
+    Description: >-
+      The suffix appended to all resources in the stack.  This will allow
+      multiple copies of the same stack to be created in the same account.
     Type: String
   RootAccess:
     Description: Root access for the SageMaker Notebook user
@@ -119,12 +124,6 @@ Parameters:
     Type: String
     Description: Enter a valid ProjectID.
     Default: Brillio007
-  UserName:
-    Type: String
-    Description: Enter a valid User Name.
-  EndUserRole:
-    Type: String
-    Description: Enter a valid End User Role Name.
   S3CodePusher:
     Description: Do you want to load the code from S3 to SageMaker Notebook
     Default: 'NO'
@@ -136,10 +135,27 @@ Parameters:
     Description: S3 Bucket name from which you want to push code.
     Default: code-repository-ohio-bucket
     Type: String
+  EnableIAMRole:
+    Description: IAM Role for accessing the SageMaker Notebook (Default)
+    Default: 'YES'
+    Type: String
+    AllowedValues:
+      - 'YES'
+  EnableIAMGroup:
+    Description: IAM Group for accessing SageMaker Notebook (Optional)
+    Default: 'NO'
+    Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
 Conditions:
   BucketCondition: !Equals 
     - 'YES'
     - !Ref S3CodePusher
+  IAMGroupCondition: !Not 
+    - !Equals 
+      - 'NO'
+      - !Ref EnableIAMGroup
 Resources:
   SageMakerExecutionRole:
     Type: 'AWS::IAM::Role'
@@ -149,10 +165,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-      RoleName: !Join 
-        - '-'
-        - - !Ref ProjectName
-          - SageMakerExecutionRole
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -370,24 +382,16 @@ Resources:
                     - !Ref 'AWS::AccountId'
                     - ':role/'
                     - !Ref SageMakerExecutionRole
-                - !Join 
-                  - ''
-                  - - 'arn:aws:iam::'
-                    - !Ref 'AWS::AccountId'
-                    - ':user/'
-                    - !Ref UserName
+                - !If 
+                  - IAMGroupCondition
+                  - !Sub >-
+                    arn:aws:iam::${AWS::AccountId}:group/${ProjectName}-SageMakerGroup
+                  - !Ref 'AWS::NoValue'
                 - !Join 
                   - ''
                   - - 'arn:aws:iam::'
                     - !Ref 'AWS::AccountId'
                     - ':root'
-                - !Join 
-                  - ''
-                  - - 'arn:aws:iam::'
-                    - !Ref 'AWS::AccountId'
-                    - ':role/'
-                    - !Ref ENVName
-                    - '-SagemakerBuildRoles'
             Action:
               - 's3:Get*'
               - 's3:Put*'
@@ -430,42 +434,26 @@ Resources:
         - !Ref CodeBucketName
         - !Ref 'AWS::NoValue'
       DirectInternetAccess: !Ref DirectInternetAccess
+      RoleArn: !GetAtt 
+        - SageMakerExecutionRole
+        - Arn
       Tags:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-  UserGroup:
+  EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
+    Condition: IAMGroupCondition
     Properties:
       GroupName: !Join 
         - '-'
         - - !Ref ProjectName
           - SageMakerGroup
-  User:
-    Type: 'AWS::IAM::User'
-    Properties:
-      Path: /
-      LoginProfile:
-        Password: Password@123
-        PasswordResetRequired: 'True'
-      UserName: !Ref UserName
-      Groups:
-        - !Ref UserGroup
-      Tags:
-        - Key: ProjectID
-          Value: !Ref ProjectID
-        - Key: ProjectName
-          Value: !Ref ProjectName
   EndUserAccessRole:
     Type: 'AWS::IAM::Role'
     Properties:
       Description: Provides full access to service catalog enduser capabilities
-      RoleName: !Join 
-        - '-'
-        - - !Ref ENVName
-          - SageMaker-EndUserRole
-          - !Ref EndUserRole
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -489,7 +477,10 @@ Resources:
       Roles:
         - !Ref EndUserAccessRole
       Groups:
-        - !Ref UserGroup
+        - !If 
+          - IAMGroupCondition
+          - !Ref EndUserIAMGroup 
+          - !Ref 'AWS::NoValue'
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -557,18 +548,23 @@ Outputs:
       - Message
   ExecutionRoleArn:
     Description: ARN of the Sagemaker Execution Role
-    Value: !GetAtt 
-      - SageMakerExecutionRole
-      - Arn
+    Value: !Ref SageMakerExecutionRole
   S3BucketName:
-    Description: Name of the S3 bucket created
+    Description: S3 bucket for SageMaker Notebook operation
     Value: !Ref SagemakerS3Bucket
   NotebookInstanceName:
     Description: Name of the Sagemaker Notebook instance created
     Value: !Ref NotebookInstanceName
+  ProjectName:
+    Description: Project ID used for SageMaker deployment
+    Value: !Ref ProjectName
   ProjectID:
-    Description: Project ID used for SageMaker demonstration
+    Description: Project ID used for SageMaker deployment
     Value: !Ref ProjectID
-  UserName:
-    Description: Name of the user
-    Value: !Ref UserName
+  EndUserAccessRole:
+    Value: !Ref EndUserAccessRole
+    Description: Provides enduser to access the SageMaker Notebook
+  EndUserIAMGroup:
+    Value: !Ref EndUserIAMGroup
+    Condition: IAMGroupCondition
+    Description: Provides enduser to access the SageMaker Notebook by IAM group

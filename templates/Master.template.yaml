@@ -1,14 +1,14 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Master stack which creates all required nested stacks
+Description: Master stack which creates all required nested stacks (qs-1qoj9pgrl)
 Metadata:
-  'AWS::CloudFormation::Interface':
+  "AWS::CloudFormation::Interface":
     ParameterGroups:
       - Label:
           default: Environment Details
         Parameters:
           - ENVName
       - Label:
-          default: VPC Network Configuration
+          default: VPC Network Configuration for SageMaker
         Parameters:
           - VPCCIDR
           - Subnet1CidrBlock
@@ -25,8 +25,8 @@ Metadata:
       - Label:
           default: Access to Service Catalog
         Parameters:
-          - RoleName
-          - IAMGroupName
+          - EnableIAMRole
+          - EnableIAMGroup
     ParameterLabels:
       VPCCIDR:
         default: VPC CIDR block
@@ -36,12 +36,10 @@ Metadata:
         default: ENI Subnet CIDR block
       ECRRepositoryName:
         default: ECR Repository Name
-      QSS3BucketName:
-        default: Source Bucket Name
-      RoleName:
-        default: Role Name
-      IAMGroupName:
-        default: IAM Group Name
+      EnableIAMRole:
+        default: Enable IAM role access for Service catalog
+      EnableIAMGroup:
+        default: Enable IAM group access for Service catalog
       ENVName:
         default: Environment Name
       QSS3BucketName:
@@ -62,7 +60,9 @@ Parameters:
     Type: String
   ECRRepositoryName:
     AllowedPattern: '(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*'
-    ConstraintDescription: ECR repository name must contain only lowercase letters, numbers or or following characters (/,-,_,.)
+    ConstraintDescription: >-
+      ECR repository name must contain only lowercase letters, numbers or or
+      following characters (/,-,_,.)
     Description: ECR Repository Name
     Type: String
     Default: sagemaker-repository
@@ -81,155 +81,183 @@ Parameters:
     Type: String
     Default: 10.0.2.0/24
   QSS3BucketName:
-    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
-      Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Description: S3 bucket name for the Quick Start assets.
     Type: String
     Default: code-repository-california
   QSS3KeyPrefix:
-    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: >-
       Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), and forward slash (/).
+    Description: >-
+      The S3 key prefix for the Quick Start assets. The Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-),
+      and forward slash (/).
     Type: String
-    Default: quickstart-sagemaker-guardrail/
-  RoleName:
-    AllowedPattern: '[\w+=,.@-]+'
-    ConstraintDescription: Role Name must contain only upper, lowercase alphanumeric characters with NO spaces or following characters _+=,.@-.
-    Description: Role Name
+    Default: deployment/
+  EnableIAMRole:
+    Description: IAM Role for launching the SageMaker product (Default)
+    Default: 'YES'
     Type: String
-    Default: SCAccessRole
-  IAMGroupName:
-    Description: IAM Group Name (Optional)
+    AllowedValues:
+      - 'YES'
+  EnableIAMGroup:
+    Description: IAM Group for launching the SageMaker product (Optional)
+    Default: 'NO'
     Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
 Conditions:
-  IAMGroupCondition: !Equals 
-    - ''
-    - !Ref IAMGroupName
+  IAMGroupCondition: !Not 
+    - !Equals 
+      - 'NO'
+      - !Ref EnableIAMGroup
 Rules:
   SagemakerQS:
     Assertions:
       - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
-        Assert: !Contains
-          -  - us-east-1
-             - us-east-2
-             - us-west-1
-             - us-west-2
-          - !Ref 'AWS::Region'
-
+        Assert:
+          'Fn::Contains':
+            - - us-east-1
+              - us-east-2
+              - us-west-1
+              - us-west-2
+            - !Ref 'AWS::Region'
 Resources:
   VPCStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/VPCStack.template
-      TimeoutInMinutes: '5'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
+      TimeoutInMinutes: 5
       Parameters:
         ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
   EFSStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/EFSStack.template
-      TimeoutInMinutes: '10'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+      TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
-        Subnet1Id: !GetAtt 
+        Subnet1Id: !GetAtt
           - VPCStack
           - Outputs.Subnet1Id
   VPCEndPointsStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/VPCEndpointsStack.template
-      TimeoutInMinutes: '15'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        VPCId: !GetAtt 
+        VPCId: !GetAtt
           - VPCStack
           - Outputs.VPCId
-        Subnet2Id: !GetAtt 
+        Subnet2Id: !GetAtt
           - VPCStack
           - Outputs.Subnet2Id
-        RouteTableId: !GetAtt 
+        RouteTableId: !GetAtt
           - VPCStack
           - Outputs.RouteTableId
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
   ECRStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ECRStack.template
-      TimeoutInMinutes: '15'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
-        ECREndpoint: !GetAtt 
+        ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
-  LifecycleConfigStack:
+  SageMakerLaunchConfigStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template
-      TimeoutInMinutes: '15'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        EFSMountIpAddr: !GetAtt 
+        EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
-  LambdaFunctionStack:
+  LambdaStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/LambdaStack.template
-      TimeoutInMinutes: '15'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-  NotebookSCStack:
+  ServiceCatalogStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ServiceCatalogStack.template
-      TimeoutInMinutes: '15'
+        https://${QSS3BucketName}.s3-${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
-        RoleName: !Ref RoleName
-        IAMGroupName: !If 
-          - IAMGroupCondition
-          - None
-          - !Ref IAMGroupName
+        EnableIAMGroup: !Ref EnableIAMGroup
 Outputs:
-  VPCStackOutPut:
-    Value: !Ref VPCStack
-  EFSStackOutPut:
-    Value: !Ref EFSStack
-  VPCEndPointsStackOutput:
-    Value: !Ref VPCEndPointsStack
-  ECRStackOutput:
-    Value: !Ref ECRStack
-  NbInstanceLifecycleConfigStackOutput:
-    Value: !Ref LifecycleConfigStack
-  LambdaFunctionStackOutput:
-    Value: !Ref LambdaFunctionStack
-  NotebookSCStackOutput:
-    Value: !Ref NotebookSCStack
+  LambdaFunction:
+    Value: !GetAtt 
+      - LambdaStack
+      - Outputs.LambdaFunction
+    Description: Lambda function ARN
+  LambdaFunctionRole:
+    Value: !GetAtt 
+      - LambdaStack
+      - Outputs.LambdaFunctionRole
+    Description: Lambda function Role
+  SageMakerPortfolio:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SageMakerPortfolio
+    Description: SageMaker Portfolio ID
+  SageMakerProduct:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SageMakerProduct
+    Description: SageMaker Product ID
+  SCEndUserRole:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SCEndUserRole
+    Description: Provides access to enduser for launching the SageMaker product
+  SCUserGroup:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SCUserGroup
+    Condition: IAMGroupCondition
+    Description: IAM Group for launching the SageMaker product
+  NotebookInstanceLifecycleConfig:
+    Value: !GetAtt 
+      - SageMakerLaunchConfigStack
+      - Outputs.NbInstanceLifecycleConfig
+    Description: SageMaker Notebook Instance Lifecycle Config

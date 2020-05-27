@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CFT creating VPC Endpoints
+Description: CFT creating VPC Endpoints (qs-1qojf6qf3)
 Mappings:
   RegionMap:
     us-east-1:
@@ -10,30 +10,69 @@ Mappings:
       s3endpoint: pl-6ba54002
     us-west-2:
       s3endpoint: pl-68a54001
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCId
+          - Subnet2Id
+          - RouteTableId
+          - SecurityGroup1Id
+          - SecurityGroup2Id
+    ParameterLabels:
+      VPCId:
+        default: VPC ID
+      Subnet2Id:
+        default: ENI Subnet ID
+      RouteTableId:
+        default: Route Table ID
+      SecurityGroup1Id:
+        default: Resource Security Group Id 
+      SecurityGroup2Id:
+        default: ENI Security Group Id
+      ENVName:
+        default: Environment Name
 Parameters:
   ENVName:
     Description: ENVName For the Reasources in the VPC
     Type: String
   VPCId:
-    Description: CIDR block for the VPC
+    Description: Enter the VPC ID used for SageMaker
     Type: String
   Subnet2Id:
-    Description: CIDR for the Subnet-2
+    Description: Enter the ENI subnet ID used for SageMaker
     Type: String
   RouteTableId:
-    Description: Route Table Id
+    Description: Enter the Route Table ID used for SageMaker
     Type: String
   SecurityGroup1Id:
-    Description: Security group-1 Id (ResourceSG)
+    Description: Enter the Resource Security Group ID used for SageMaker
     Type: String
   SecurityGroup2Id:
-    Description: Security group-2 Id (ENISG)
+    Description: Enter the ENI Security Group ID used for SageMaker
     Type: String
+Rules:
+  SagemakerQS:
+    Assertions:
+      - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
+        Assert:
+          'Fn::Contains':
+            - - us-east-1
+              - us-east-2
+              - us-west-1
+              - us-west-2
+            - !Ref 'AWS::Region'
 Resources:
   ECREndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -48,7 +87,7 @@ Resources:
   CWEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -63,7 +102,7 @@ Resources:
   STSEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -78,7 +117,7 @@ Resources:
   SageMakerRunTimeEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 
@@ -93,7 +132,7 @@ Resources:
   SageMakerAPIEndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
-      PrivateDnsEnabled: 'true'
+      PrivateDnsEnabled: true
       SecurityGroupIds:
         - !Ref SecurityGroup2Id
       ServiceName: !Join 

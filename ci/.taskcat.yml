@@ -1,0 +1,22 @@
+project:
+  name: quickstart-sagemaker-guardrail
+  owner: quickstart@amazon.com
+  package_lambda: true
+  regions:
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+tests:
+  taskcat-test1:
+    parameters:
+      ENVName: QuickStart
+      VPCCIDR: 10.0.0.0/16
+      Subnet1CidrBlock: 10.0.1.0/24
+      Subnet2CidrBlock: 10.0.2.0/24
+      ECRRepositoryName: quickstart-sagemaker-repository
+      QSS3BucketName: code-repository-california
+      QSS3KeyPrefix: quickstart-sagemaker-guardrail/
+    regions:
+      - us-west-1
+    template: templates/Master.template

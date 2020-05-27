@@ -1,18 +1,40 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CFT for EFS creation and mounting it to Resource Sunbnet
+Description: CFT for EFS creation and mounting it to Resource Sunbnet (qs-1qojf6qda)
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: ECR Configuration for SageMaker
+        Parameters:
+          - Subnet1Id
+          - SecurityGroup1Id
+          - SecurityGroup2Id
+    ParameterLabels:
+      Subnet1Id:
+        default: Resource Subnet ID
+      SecurityGroup1Id:
+        default: Resource Security Group Id
+      SecurityGroup2Id:
+        default: ENI Security Group Id
+      ENVName:
+        default: Environment Name
 Parameters:
   ENVName:
     Description: ENVName For the Reasources in the VPC
     Type: String
     Default: SageMaker
   Subnet1Id:
-    Description: CIDR for the Subnet-1
+    Description: Enter the Resource subnet ID used for SageMaker
     Type: String
   SecurityGroup1Id:
-    Description: Security Group-1 Id (ResourceSG)
+    Description: Enter the Resource Security Group ID used for SageMaker (ResourceSG)
     Type: String
   SecurityGroup2Id:
-    Description: Security Group-2 Id (ENISG)
+    Description: Enter the ENI Security Group ID used for SageMaker (ENISG)
     Type: String
 Resources:
   ElasticFileSystem:
@@ -21,9 +43,9 @@ Resources:
       FileSystemTags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
-              - _EFS
+              - EFS
       PerformanceMode: generalPurpose
   EFSMountTarget:
     Type: 'AWS::EFS::MountTarget'

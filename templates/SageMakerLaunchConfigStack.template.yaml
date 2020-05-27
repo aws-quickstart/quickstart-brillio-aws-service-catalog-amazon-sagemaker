@@ -1,5 +1,21 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: NotebookInstance LifecycleConfig
+Description: NotebookInstance LifecycleConfig (qs-1qojf6qdr)
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: Launch Configuration Details
+        Parameters:
+          - EFSMountIpAddr
+    ParameterLabels:
+      ENVName:
+        default: Environment Name
+      EFSMountIpAddr:
+        default: EFS mount target Ip address
 Parameters:
   ENVName:
     Description: SageMaker Project name
@@ -39,5 +55,6 @@ Resources:
                   sudo chown ec2-user:ec2-user /home/ec2-user/SageMaker/efs
                   --recursive
 Outputs:
-  NbInstanceLifecycleConfigId:
+  NbInstanceLifecycleConfig:
     Value: !Ref EFSLifecycleConfig
+    Description: SageMaker Lifecycle Configuration
