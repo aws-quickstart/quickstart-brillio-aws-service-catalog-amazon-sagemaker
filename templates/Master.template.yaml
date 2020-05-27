@@ -134,7 +134,7 @@ Resources:
     Properties:
       TemplateURL: !Sub >-
         https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
-      TimeoutInMinutes: 5
+      TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
