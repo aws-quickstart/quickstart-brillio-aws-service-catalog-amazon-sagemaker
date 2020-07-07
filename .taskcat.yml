@@ -8,7 +8,7 @@ project:
     - us-west-1
     - us-west-2
 tests:
-  taskcat-test1:
+  default:
     parameters:
       ENVName: QuickStart
       VPCCIDR: 10.0.0.0/16
