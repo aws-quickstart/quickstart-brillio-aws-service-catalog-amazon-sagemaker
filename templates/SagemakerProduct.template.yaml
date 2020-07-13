@@ -79,6 +79,7 @@ Parameters:
     Description: Select Instance type for the SageMaker Notebook
     Type: String
   SageMakerS3Bucket:
+    AllowedPattern: .+
     Description: >-
       Name for the SageMaker bucket that will be granted restricted access(Name
       should be unique)
@@ -106,6 +107,7 @@ Parameters:
     Type: Number
     Default: '5'
   KMSKeyId:
+    AllowedPattern: .*
     Description: >-
       AWS KMS key ID used to encrypt data at rest on the ML storage volume
       attached to notebook instance.

@@ -1,0 +1,299 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SageMaker VPC Validator Lambda Function Setup (qs-1qojf6qel)
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: Existing VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCID
+          - Subnet1CidrBlock
+          - Subnet2CidrBlock
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+    ParameterLabels:
+      ENVName:
+        default: Environment Name
+      VPCID:
+        default: VPC Name
+      Subnet1CidrBlock:
+        default: Resource Subnet CIDR block
+      Subnet2CidrBlock:
+        default: ENI Subnet CIDR block
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+Parameters:
+  ENVName:
+    Description: SageMaker Project name
+    Type: String
+  VPCID:
+    Description: Select Existing VPC for SageMaker
+    Type: 'AWS::EC2::VPC::Id'
+  Subnet1CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-1
+    Type: String
+    Default: 10.0.1.0/24
+  Subnet2CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-2
+    Type: String
+    Default: 10.0.2.0/24
+  QSS3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets.
+    Type: String
+    Default: aws-quickstart
+  QSS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Description: >-
+      The S3 key prefix for the Quick Start assets. The Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-),
+      and forward slash (/).
+    Type: String
+    Default: deployment/
+Resources:
+  LambdaFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Tags:
+        - Key: Environment
+          Value: !Ref ENVName
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - VPCValidatorRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: !Join 
+            - '-'
+            - - !Ref ENVName
+              - VPCValidatorPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: EC2FullAccess
+                Effect: Allow
+                Action:
+                  - 'ec2:*'
+                Resource: '*'
+              - Sid: LammbdaBasicExecution
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+  PythonLayer:
+    Type: 'AWS::Lambda::LayerVersion'
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python2.7
+      Content:
+        S3Bucket: !Ref QSS3BucketName
+        S3Key: !Join 
+          - ''
+          - - !Ref QSS3KeyPrefix
+            - functions/packages/Boto3/PythonModule.zip
+      Description: Python layer
+      LayerName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - Boto3Layer
+  VPCValidatorFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref QSS3BucketName
+        S3Key: !Join 
+          - ''
+          - - !Ref QSS3KeyPrefix
+            - functions/VPCVaildator.zip
+      Description: Sage Maker lambda function
+      FunctionName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - VPCVaildator
+      Handler: lambda_function.lambda_handler
+      Layers:
+        - !Ref PythonLayer
+      MemorySize: 128
+      Role: !GetAtt 
+        - LambdaFunctionRole
+        - Arn
+      Runtime: python3.6
+      Tags:
+        - Key: ENVName
+          Value: !Ref ENVName
+      Timeout: 300
+  VPCCustomResource:
+    Type: 'Custom::VPCCustomResource'
+    DependsOn: VPCValidatorFunction
+    Properties:
+      ServiceToken: !Join 
+        - ''
+        - - 'arn:aws:lambda:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':function:'
+          - !Ref ENVName
+          - '-VPCVaildator'
+      VPCID: !Ref VPCID
+  Subnet1:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet1CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - ResourceSubnet
+  Subnet2:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet2CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - ENISubnet
+  RouteTableSM:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - PrivateRouteTable
+  Subnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet1
+  Subnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet2
+  SecurityGroup1:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside Resource subnet
+      GroupName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - ResourceSG
+      SecurityGroupEgress:
+        - CidrIp: !Ref Subnet2CidrBlock
+          Description: HTTPStraffic
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - ResourceSG
+      VpcId: !Ref VPCID
+  SecurityGroup2:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside ENI subnet
+      GroupName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - ENISG
+      SecurityGroupIngress:
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 2049
+          FromPort: 2049
+          IpProtocol: tcp
+          ToPort: 2049
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - ENISG
+      VpcId: !Ref VPCID
+Outputs:
+  VPCId:
+    Description: VPC Id
+    Value: !Ref VPCID
+  Subnet1Id:
+    Description: Resource Subnet Id
+    Value: !Ref Subnet1
+  Subnet2Id:
+    Description: ENI Subnet Id
+    Value: !Ref Subnet2
+  RouteTableId:
+    Description: Route Table Id
+    Value: !Ref RouteTableSM
+  SecurityGroup1Id:
+    Description: Id of the security group-1
+    Value: !GetAtt 
+      - SecurityGroup1
+      - GroupId
+  SecurityGroup2Id:
+    Description: Id of the security group-2
+    Value: !GetAtt 
+      - SecurityGroup2
+      - GroupId

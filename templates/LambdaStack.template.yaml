@@ -112,7 +112,7 @@ Resources:
       LayerName: !Join 
         - '-'
         - - !Ref ENVName
-          - LayerName
+          - Boto3Layer
   SageMakerFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
