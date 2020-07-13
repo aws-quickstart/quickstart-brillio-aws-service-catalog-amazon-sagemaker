@@ -51,9 +51,21 @@ Resources:
                   ${EFSMountIpAddr}:/ /home/ec2-user/SageMaker/efs 
                 - |
                   # Permission chnage 
-                - >-
+                - >
                   sudo chown ec2-user:ec2-user /home/ec2-user/SageMaker/efs
-                  --recursive
+                  --recursive 
+                - |
+                  aws configure set sts_regional_endpoints regional 
+                - yes | cp -rf ~/.aws/config /home/ec2-user/.aws/config
+      OnStart:
+        - Content: !Base64 
+            'Fn::Join':
+              - ''
+              - - |
+                  #!/bin/bash  
+                - |
+                  aws configure set sts_regional_endpoints regional 
+                - yes | cp -rf ~/.aws/config /home/ec2-user/.aws/config
 Outputs:
   NbInstanceLifecycleConfig:
     Value: !Ref EFSLifecycleConfig

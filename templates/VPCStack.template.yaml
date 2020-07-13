@@ -139,7 +139,7 @@ Resources:
           IpProtocol: tcp
           ToPort: 443
         - CidrIp: !Ref Subnet1CidrBlock
-          Description: Resource Subnet CIDR allow on port 443
+          Description: Resource Subnet CIDR allow on port 2049
           FromPort: 2049
           IpProtocol: tcp
           ToPort: 2049
