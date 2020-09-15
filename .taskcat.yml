@@ -17,6 +17,13 @@ tests:
       ECRRepositoryName: quickstart-sagemaker-repository
       QSS3BucketName: $[taskcat_autobucket]
       QSS3KeyPrefix: quickstart-sagemaker-guardrail/
+      EnableIAMRole: YES
+      EnableIAMGroup: NO
+      SageMakerLaunch: YES
+      NotebookInstanceName: QuickStartNotebook
+      NotebookInstanceType: ml.t2.medium
+      RootAccess: Enabled
+      ProjectID: QuickStart007
     regions:
       - us-east-1
       - us-east-2
