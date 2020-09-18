@@ -1,0 +1,466 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Master stack which creates all required nested stacks (qs-1qoj9pgrl)
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCCIDR
+          - Subnet1CidrBlock
+          - Subnet2CidrBlock
+      - Label:
+          default: ECR Repository Details
+        Parameters:
+          - ECRRepositoryName
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+      - Label:
+          default: Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]
+        Parameters:
+          - EnableIAMGroup
+      - Label:
+          default: '[Optional] Enable SageMaker Product Launch from Master Template'
+        Parameters:
+          - SageMakerLaunch
+      - Label:
+          default: SageMaker Notebook configuration
+        Parameters:
+          - NotebookInstanceName
+          - NotebookInstanceType
+          - DirectInternetAccess
+          - SageMakerS3Bucket
+          - KMSKeyId
+          - RootAccess
+          - VolumeSizeInGB
+      - Label:
+          default: Pushing code from S3 Bucket to SageMaker
+        Parameters:
+          - S3CodePusher
+          - CodeBucketName
+      - Label:
+          default: Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
+        Parameters:
+          - IAMGroup
+      - Label:
+          default: Project detail
+        Parameters:
+          - ProjectName
+          - ProjectID
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR block
+      Subnet1CidrBlock:
+        default: Resource Subnet CIDR block
+      Subnet2CidrBlock:
+        default: ENI Subnet CIDR block
+      ECRRepositoryName:
+        default: ECR Repository Name
+      EnableIAMGroup:
+        default: Enable IAM group access for Service catalog (Optional)
+      ENVName:
+        default: Environment Name
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+      SageMakerLaunch:
+        default: Deploy SageMaker Product
+      DirectInternetAccess:
+        default: Default Internet Access
+      KMSKeyId:
+        default: KMS Key Id *
+      NotebookInstanceName:
+        default: Notebook Instance Name
+      NotebookInstanceType:
+        default: Notebook Instance Type
+      SageMakerS3Bucket:
+        default: SageMaker S3 Bucket
+      ProjectName:
+        default: Project Suffix
+      RootAccess:
+        default: Root access
+      VolumeSizeInGB:
+        default: Volume size for the SageMaker Notebook
+      ProjectID:
+        default: SageMaker ProjectID
+      IAMGroup:
+        default: Enable IAM group access for SageMaker Notebook
+      CodeBucketName:
+        default: Code Bucket Name
+Parameters:
+  ENVName:
+    Description: Infrastructure naming convention for SageMakerGuardrail solution
+    Type: String
+    Default: QuickStart
+  VPCCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+  ECRRepositoryName:
+    AllowedPattern: '(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*'
+    ConstraintDescription: >-
+      ECR repository name must contain only lowercase letters, numbers or or
+      following characters (/,-,_,.)
+    Description: ECR Repository Name
+    Type: String
+    Default: quickstart-repository
+  Subnet1CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-1
+    Type: String
+    Default: 10.0.1.0/24
+  Subnet2CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-2
+    Type: String
+    Default: 10.0.2.0/24
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets.
+    Type: String
+    Default: quickstart-repository-bucket
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Description: >-
+      The S3 key prefix for the Quick Start assets. The Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-),
+      and forward slash (/).
+    Type: String
+    Default: deployment/
+  EnableIAMGroup:
+    Description: IAM Group for launching the SageMaker product (Optional)
+    Default: 'NO'
+    Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+  SageMakerLaunch:
+    Description: Do you want to launch SageMaker product from master template ?
+    Default: 'YES'
+    Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+  NotebookInstanceName:
+    AllowedPattern: '[A-Za-z0-9-]{1,63}'
+    ConstraintDescription: >-
+      Maximum of 63 alphanumeric characters. Can include hyphens (-), but not
+      spaces. Must be unique within your account in an AWS Region.
+    Description: SageMaker Notebook instance name
+    MaxLength: '63'
+    MinLength: '1'
+    Type: String
+  NotebookInstanceType:
+    AllowedValues:
+      - ml.t2.medium
+      - ml.m4.xlarge
+      - ml.p2.xlarge
+    ConstraintDescription: Must select a valid notebook instance type.
+    Default: ml.t2.medium
+    Description: Select Instance type for the SageMaker Notebook
+    Type: String
+  SageMakerS3Bucket:
+    AllowedPattern: .+
+    Description: >-
+      Name for the SageMaker bucket that will be granted restricted access(Name
+      should be unique)
+    Type: String
+    Default: quickstart-sagemaker-bucket
+  ProjectName:
+    Description: >-
+      The suffix appended to all resources in the stack.  This will allow
+      multiple copies of the same stack to be created in the same account.
+    Type: String
+  RootAccess:
+    Description: Root access for the SageMaker Notebook user
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Enabled
+    Type: String
+  VolumeSizeInGB:
+    Description: >-
+      The size, in GB, of the ML storage volume to attach to the notebook
+      instance. The default value is 5 GB.
+    Type: Number
+    Default: '5'
+  KMSKeyId:
+    AllowedPattern: .*
+    Description: >-
+      AWS KMS key ID used to encrypt data at rest on the ML storage volume
+      attached to notebook instance.
+    Type: String
+  DirectInternetAccess:
+    Description: >-
+      If you set this to Disabled this notebook instance will be able to access
+      resources only in your VPC. As per the Project requirement, we have
+      Disabled it.
+    Type: String
+    Default: Disabled
+    AllowedValues:
+      - Disabled
+    ConstraintDescription: Must select a valid notebook instance type.
+  ProjectID:
+    Type: String
+    Description: Enter a valid ProjectID.
+    Default: QuickStart007
+  S3CodePusher:
+    Description: Do you want to load the code from S3 to SageMaker Notebook
+    Default: 'NO'
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+    Type: String
+  CodeBucketName:
+    Description: S3 Bucket name from which you want to push code.
+    Default: quickstart-code-bucket
+    Type: String
+  IAMGroup:
+    Description: IAM Group for accessing SageMaker Notebook (Optional)
+    Default: 'NO'
+    Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+Conditions:
+  IAMGroupCondition: !Not 
+    - !Equals 
+      - 'NO'
+      - !Ref EnableIAMGroup
+  SageMakerCondition: !Equals 
+    - 'YES'
+    - !Ref SageMakerLaunch
+  SageMakerIAMGroup: !Not 
+    - !Equals 
+      - 'NO'
+      - !Ref IAMGroup
+Rules:
+  SagemakerQS:
+    Assertions:
+      - AssertDescription: Your AWS Region does *NOT* yet support this Quickstart.
+        Assert:
+          'Fn::Contains':
+            - - us-east-1
+              - us-east-2
+              - us-west-1
+              - us-west-2
+            - !Ref 'AWS::Region'
+Resources:
+  VPCStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        VPCCIDR: !Ref VPCCIDR
+        Subnet1CidrBlock: !Ref Subnet1CidrBlock
+        Subnet2CidrBlock: !Ref Subnet2CidrBlock
+  EFSStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+      TimeoutInMinutes: 10
+      Parameters:
+        ENVName: !Ref ENVName
+        SecurityGroup1Id: !GetAtt
+          - VPCStack
+          - Outputs.SecurityGroup1Id
+        SecurityGroup2Id: !GetAtt
+          - VPCStack
+          - Outputs.SecurityGroup2Id
+        Subnet1Id: !GetAtt
+          - VPCStack
+          - Outputs.Subnet1Id
+  VPCEndPointsStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        VPCId: !GetAtt
+          - VPCStack
+          - Outputs.VPCId
+        Subnet2Id: !GetAtt
+          - VPCStack
+          - Outputs.Subnet2Id
+        RouteTableId: !GetAtt
+          - VPCStack
+          - Outputs.RouteTableId
+        SecurityGroup1Id: !GetAtt
+          - VPCStack
+          - Outputs.SecurityGroup1Id
+        SecurityGroup2Id: !GetAtt
+          - VPCStack
+          - Outputs.SecurityGroup2Id
+  ECRStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        ECRRepositoryName: !Ref ECRRepositoryName
+        ECREndpoint: !GetAtt
+          - VPCEndPointsStack
+          - Outputs.ECREndpoint
+  SageMakerLaunchConfigStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        EFSMountIpAddr: !GetAtt
+          - EFSStack
+          - Outputs.EFSMountIpAddr
+  LambdaStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+  ServiceCatalogStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        EnableIAMGroup: !Ref EnableIAMGroup
+  SageMakerStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn: [VPCStack,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
+    Condition: SageMakerCondition
+    Properties:
+      TemplateURL: !Sub >-
+        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+      TimeoutInMinutes: 15
+      Parameters:
+        ENVName: !Ref ENVName
+        NotebookInstanceName: !Ref NotebookInstanceName
+        NotebookInstanceType: !Ref NotebookInstanceType
+        DirectInternetAccess: !Ref DirectInternetAccess
+        SageMakerS3Bucket: !Ref SageMakerS3Bucket
+        KMSKeyId: !Ref KMSKeyId
+        RootAccess: !Ref RootAccess
+        VolumeSizeInGB: !Ref VolumeSizeInGB
+        S3CodePusher: !Ref S3CodePusher
+        CodeBucketName: !Ref CodeBucketName
+        EnableIAMGroup: !Ref IAMGroup
+        ProjectName: !Ref ProjectName
+        ProjectID: !Ref ProjectID
+Outputs:
+  LambdaFunction:
+    Value: !GetAtt 
+      - LambdaStack
+      - Outputs.LambdaFunction
+    Description: Lambda function ARN
+  LambdaFunctionRole:
+    Value: !GetAtt 
+      - LambdaStack
+      - Outputs.LambdaFunctionRole
+    Description: Lambda function Role
+  SageMakerPortfolio:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SageMakerPortfolio
+    Description: SageMaker Portfolio ID
+  SageMakerProduct:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SageMakerProduct
+    Description: SageMaker Product ID
+  SCEndUserRole:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SCEndUserRole
+    Description: Provides access to enduser for launching the SageMaker product
+  SCUserGroup:
+    Value: !GetAtt 
+      - ServiceCatalogStack
+      - Outputs.SCUserGroup
+    Condition: IAMGroupCondition
+    Description: IAM Group for launching the SageMaker product
+  NotebookInstanceLifecycleConfig:
+    Value: !GetAtt 
+      - SageMakerLaunchConfigStack
+      - Outputs.NbInstanceLifecycleConfig
+    Description: SageMaker Notebook Instance Lifecycle Config
+  Message:
+    Description: Execution Status
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.Message
+    Condition: SageMakerCondition
+  ExecutionRoleArn:
+    Description: ARN of the Sagemaker Execution Role
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.ExecutionRoleArn
+    Condition: SageMakerCondition
+  S3BucketName:
+    Description: S3 bucket for SageMaker Notebook operation
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.S3BucketName
+    Condition: SageMakerCondition
+  NotebookInstanceName:
+    Description: Name of the Sagemaker Notebook instance created
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.NotebookInstanceName
+    Condition: SageMakerCondition
+  ProjectName:
+    Description: Project ID used for SageMaker deployment
+    Value: !Ref ProjectName
+    Condition: SageMakerCondition
+  ProjectID:
+    Description: Project ID used for SageMaker deployment
+    Value: !Ref ProjectID
+    Condition: SageMakerCondition
+  EndUserAccessRole:
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.EndUserAccessRole
+    Description: Provides enduser to access the SageMaker Notebook
+    Condition: SageMakerCondition
+  EndUserIAMGroup:
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.EndUserIAMGroup
+    Condition: SageMakerIAMGroup
+    Description: Provides enduser to access the SageMaker Notebook by IAM group

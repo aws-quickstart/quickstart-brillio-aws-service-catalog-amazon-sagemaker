@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: 'Template to create a SageMaker notebook '
+Description: Template to create a SageMaker notebook (qs-1r50ggqbg)
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -23,9 +23,8 @@ Metadata:
           - S3CodePusher
           - CodeBucketName
       - Label:
-          default: Access detail
+          default: Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
         Parameters:
-          - EnableIAMRole
           - EnableIAMGroup
       - Label:
           default: Project detail
@@ -53,8 +52,6 @@ Metadata:
         default: Volume size for the SageMaker Notebook
       ProjectID:
         default: SageMaker ProjectID
-      EnableIAMRole:
-        default: Enable IAM role access for SageMaker Notebook
       EnableIAMGroup:
         default: Enable IAM group access for SageMaker Notebook
       CodeBucketName:
@@ -84,7 +81,7 @@ Parameters:
       Name for the SageMaker bucket that will be granted restricted access(Name
       should be unique)
     Type: String
-    Default: sagemaker-new
+    Default: quickstart-sagemaker-bucket
   ENVName:
     Description: SageMaker infrastructure naming convention
     Type: String
@@ -125,7 +122,7 @@ Parameters:
   ProjectID:
     Type: String
     Description: Enter a valid ProjectID.
-    Default: Brillio007
+    Default: QuickStart007
   S3CodePusher:
     Description: Do you want to load the code from S3 to SageMaker Notebook
     Default: 'NO'
@@ -135,14 +132,8 @@ Parameters:
     Type: String
   CodeBucketName:
     Description: S3 Bucket name from which you want to push code.
-    Default: code-repository-ohio-bucket
+    Default: quickstart-code-bucket
     Type: String
-  EnableIAMRole:
-    Description: IAM Role for accessing the SageMaker Notebook (Default)
-    Default: 'YES'
-    Type: String
-    AllowedValues:
-      - 'YES'
   EnableIAMGroup:
     Description: IAM Group for accessing SageMaker Notebook (Optional)
     Default: 'NO'
