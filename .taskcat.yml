@@ -25,7 +25,6 @@ tests:
       RootAccess: Enabled
       ProjectID: QuickStart007
       ProjectName: SM170920
-      KMSKeyId: 723e986b-ce67-40d5-bf7c-2de12577ad9a
     regions:
       - us-east-1
     template: templates/Main.template.yaml
