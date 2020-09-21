@@ -14,10 +14,6 @@ Metadata:
   "AWS::CloudFormation::Interface":
     ParameterGroups:
       - Label:
-          default: Environment Details
-        Parameters:
-          - ENVName
-      - Label:
           default: VPC Network Configuration for SageMaker
         Parameters:
           - VPCId
@@ -36,12 +32,7 @@ Metadata:
         default: Resource Security Group Id 
       SecurityGroup2Id:
         default: ENI Security Group Id
-      ENVName:
-        default: Environment Name
 Parameters:
-  ENVName:
-    Description: ENVName For the Reasources in the VPC
-    Type: String
   VPCId:
     Description: Enter the VPC ID used for SageMaker
     Type: String
