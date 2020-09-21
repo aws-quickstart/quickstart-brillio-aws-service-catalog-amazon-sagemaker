@@ -19,6 +19,7 @@ tests:
       QSS3KeyPrefix: quickstart-sagemaker-guardrail/
       EnableIAMGroup: 'NO'
       SageMakerLaunch: 'YES'
+      SageMakerS3Bucket: $[taskcat_autobucket]
       NotebookInstanceName: QuickStartNotebook
       NotebookInstanceType: ml.t2.medium
       VolumeSizeInGB: 5
