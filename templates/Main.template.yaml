@@ -211,6 +211,7 @@ Parameters:
       AWS KMS key ID used to encrypt data at rest on the ML storage volume
       attached to notebook instance.
     Type: String
+    Default: ''
   DirectInternetAccess:
     Description: >-
       If you set this to Disabled this notebook instance will be able to access
