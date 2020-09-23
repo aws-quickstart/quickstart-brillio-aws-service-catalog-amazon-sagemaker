@@ -181,12 +181,10 @@ Parameters:
     Description: Select Instance type for the SageMaker Notebook
     Type: String
   SageMakerS3Bucket:
-    AllowedPattern: .+
     Description: >-
       Name for the SageMaker bucket that will be granted restricted access(Name
       should be unique)
     Type: String
-    Default: quickstart-sagemaker-bucket
   ProjectName:
     Description: >-
       The suffix appended to all resources in the stack.  This will allow
@@ -256,6 +254,9 @@ Conditions:
     - !Equals 
       - 'NO'
       - !Ref IAMGroup
+  SageMakerBucketCondition: !Equals 
+    - ''
+    - !Ref SageMakerS3Bucket
 Rules:
   SagemakerQS:
     Assertions:
@@ -375,7 +376,12 @@ Resources:
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
-        SageMakerS3Bucket: !Ref SageMakerS3Bucket
+        SageMakerS3Bucket: !If 
+          - SageMakerBucketCondition
+          - !Sub >-
+            sagemaker-aritifact-${AWS::Region}-bucket
+          - !Sub >-
+            ${SageMakerS3Bucket}-${AWS::Region}-bucket
         KMSKeyId: !Ref KMSKeyId
         RootAccess: !Ref RootAccess
         VolumeSizeInGB: !Ref VolumeSizeInGB

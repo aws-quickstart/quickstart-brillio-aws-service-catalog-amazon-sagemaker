@@ -76,12 +76,10 @@ Parameters:
     Description: Select Instance type for the SageMaker Notebook
     Type: String
   SageMakerS3Bucket:
-    AllowedPattern: .+
     Description: >-
       Name for the SageMaker bucket that will be granted restricted access(Name
       should be unique)
     Type: String
-    Default: quickstart-sagemaker-bucket
   ENVName:
     Description: SageMaker infrastructure naming convention
     Type: String
@@ -149,6 +147,9 @@ Conditions:
     - !Equals 
       - 'NO'
       - !Ref EnableIAMGroup
+  SageMakerBucketCondition: !Equals 
+    - ''
+    - !Ref SageMakerS3Bucket
 Resources:
   SageMakerExecutionRole:
     Type: 'AWS::IAM::Role'
@@ -348,7 +349,12 @@ Resources:
   SagemakerS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Ref SageMakerS3Bucket
+      BucketName: !If 
+        - SageMakerBucketCondition
+          - !Sub >-
+            sagemaker-aritifact-${AWS::Region}-bucket
+          - !Sub >-
+            ${SageMakerS3Bucket}-${AWS::Region}-bucket
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
