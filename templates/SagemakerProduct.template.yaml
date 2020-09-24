@@ -351,10 +351,16 @@ Resources:
     Properties:
       BucketName: !If 
         - SageMakerBucketCondition
-          - !Sub >-
-            sagemaker-aritifact-${AWS::Region}-bucket
-          - !Sub >-
-            ${SageMakerS3Bucket}-${AWS::Region}-bucket
+        - !Join 
+          - '-'
+          - - sagemaker-aritifact
+            - !Ref 'AWS::Region'
+            - bucket
+        - !Join 
+          - '-'
+          - - Ref: SageMakerS3Bucket
+            - Ref: AWS::Region
+            - bucket
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
