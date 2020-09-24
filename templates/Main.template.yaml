@@ -377,10 +377,12 @@ Resources:
         DirectInternetAccess: !Ref DirectInternetAccess
         SageMakerS3Bucket: !If 
           - SageMakerBucketCondition
-          - !Sub >-
-            sagemaker-aritifact-${AWS::Region}-bucket
-          - !Sub >-
-            ${SageMakerS3Bucket}-${AWS::Region}-bucket
+          - !Join 
+            - '-'
+            - - sagemaker-aritifact
+              - !Ref 'AWS::Region'
+              - bucket
+          - !Ref SageMakerS3Bucket
         KMSKeyId: !Ref KMSKeyId
         RootAccess: !Ref RootAccess
         VolumeSizeInGB: !Ref VolumeSizeInGB
