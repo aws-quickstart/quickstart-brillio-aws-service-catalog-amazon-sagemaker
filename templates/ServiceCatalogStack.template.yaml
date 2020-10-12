@@ -12,6 +12,7 @@ Metadata:
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
+          - QSS3BucketRegion
       - Label:
           default: Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]
         Parameters:
@@ -23,6 +24,8 @@ Metadata:
         default: Environment Name
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
 Parameters:
@@ -42,6 +45,10 @@ Parameters:
       letters, hyphens (-), and forward slash (/).
     Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-2'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
   EnableIAMGroup:
     Description: IAM Group for launching the SageMaker product (Optional)
     Default: 'NO'
@@ -50,6 +57,9 @@ Parameters:
       - 'YES'
       - 'NO'
 Conditions:
+  UsingDefaultBucket: !Equals
+    - !Ref QSS3BucketName
+    - 'aws-quickstart'
   IAMGroupCondition: !Not 
     - !Equals 
       - "NO"
@@ -155,8 +165,16 @@ Resources:
             This product creates SageMaker Product with provided parameter
             values.
           Info:
-            LoadTemplateFromURL: !Sub >-
-              https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+            LoadTemplateFromURL: !Sub
+              - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+              - S3Bucket: !If
+                  - UsingDefaultBucket
+                  - !Sub 'aws-quickstart-${AWS::Region}'
+                  - !Ref 'QSS3BucketName'
+                S3Region: !If
+                  - UsingDefaultBucket
+                  - !Ref 'AWS::Region'
+                  - !Ref 'QSS3BucketRegion'
           Name: Version 1
       SupportDescription: Brillio DI Team
       SupportEmail: aws-brillio@brillio.com
