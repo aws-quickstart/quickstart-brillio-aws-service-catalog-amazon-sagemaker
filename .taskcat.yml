@@ -4,6 +4,8 @@ project:
   package_lambda: true
   regions:
     - us-east-1
+    - us-west-2
+    - us-east-2
 tests:
   default:
     parameters:
@@ -14,7 +16,7 @@ tests:
       ECRRepositoryName: quickstart-sagemaker-repository
       QSS3BucketName: $[taskcat_autobucket]
       QSS3KeyPrefix: quickstart-sagemaker-guardrail/
-      QSS3BucketRegion: us-east-1
+      QSS3BucketRegion: $[taskcat_current_region]
       EnableIAMGroup: 'NO'
       SageMakerLaunch: 'YES'
       SageMakerS3Bucket: $[taskcat_autobucket]

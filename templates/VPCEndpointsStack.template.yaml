@@ -14,10 +14,6 @@ Mappings:
       s3endpoint: pl-78a54011
     ap-northeast-1:
       s3endpoint: pl-61a54008
-    ap-south-1:
-      s3endpoint: pl-78a54011
-    ap-northeast-1:
-      s3endpoint: pl-61a54008
     ap-northeast-2:
       s3endpoint: pl-78a54011
     ap-southeast-1:
