@@ -22,10 +22,10 @@ Metadata:
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
+          - QSS3BucketRegion
       - Label:
-          default: Access to Service Catalog for DataScientist to launch SageMaker Product
+          default: Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]
         Parameters:
-          - EnableIAMRole
           - EnableIAMGroup
       - Label:
           default: '[Optional] Enable SageMaker Product Launch from Master Template'
@@ -37,8 +37,6 @@ Metadata:
           - NotebookInstanceName
           - NotebookInstanceType
           - DirectInternetAccess
-          - SageMakerS3Bucket
-          - KMSKeyId
           - RootAccess
           - VolumeSizeInGB
       - Label:
@@ -47,9 +45,8 @@ Metadata:
           - S3CodePusher
           - CodeBucketName
       - Label:
-          default: Access detail
+          default: Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
         Parameters:
-          - IAMRole
           - IAMGroup
       - Label:
           default: Project detail
@@ -65,28 +62,24 @@ Metadata:
         default: ENI Subnet CIDR block
       ECRRepositoryName:
         default: ECR Repository Name
-      EnableIAMRole:
-        default: Enable IAM role access for Service catalog
       EnableIAMGroup:
-        default: Enable IAM group access for Service catalog
+        default: Enable IAM group access for Service catalog (Optional)
       ENVName:
         default: Environment Name
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       SageMakerLaunch:
         default: Deploy SageMaker Product
       DirectInternetAccess:
         default: Default Internet Access
-      KMSKeyId:
-        default: KMS Key Id *
       NotebookInstanceName:
         default: Notebook Instance Name
       NotebookInstanceType:
         default: Notebook Instance Type
-      SageMakerS3Bucket:
-        default: SageMaker S3 Bucket
       ProjectName:
         default: Project Suffix
       RootAccess:
@@ -95,8 +88,6 @@ Metadata:
         default: Volume size for the SageMaker Notebook
       ProjectID:
         default: SageMaker ProjectID
-      IAMRole:
-        default: Enable IAM role access for SageMaker Notebook
       IAMGroup:
         default: Enable IAM group access for SageMaker Notebook
       CodeBucketName:
@@ -116,7 +107,7 @@ Parameters:
       following characters (/,-,_,.)
     Description: ECR Repository Name
     Type: String
-    Default: sagemaker-repository
+    Default: quickstart-repository
   Subnet1CidrBlock:
     AllowedPattern: >-
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -132,15 +123,15 @@ Parameters:
     Type: String
     Default: 10.0.2.0/24
   QSS3BucketName:
-    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
       Quick Start bucket name can include numbers, lowercase letters, uppercase
       letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Description: S3 bucket name for the Quick Start assets.
     Type: String
-    Default: code-repository-oregon
+    Default: aws-quickstart
   QSS3KeyPrefix:
-    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: >-
       Quick Start key prefix can include numbers, lowercase letters, uppercase
       letters, hyphens (-), and forward slash (/).
@@ -150,12 +141,10 @@ Parameters:
       and forward slash (/).
     Type: String
     Default: deployment/
-  EnableIAMRole:
-    Description: IAM Role for launching the SageMaker product (Default)
-    Default: 'YES'
+  QSS3BucketRegion:
+    Default: 'us-east-2'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
     Type: String
-    AllowedValues:
-      - 'YES'
   EnableIAMGroup:
     Description: IAM Group for launching the SageMaker product (Optional)
     Default: 'NO'
@@ -188,13 +177,6 @@ Parameters:
     Default: ml.t2.medium
     Description: Select Instance type for the SageMaker Notebook
     Type: String
-  SageMakerS3Bucket:
-    AllowedPattern: .+
-    Description: >-
-      Name for the SageMaker bucket that will be granted restricted access(Name
-      should be unique)
-    Type: String
-    Default: sagemaker-new
   ProjectName:
     Description: >-
       The suffix appended to all resources in the stack.  This will allow
@@ -213,12 +195,6 @@ Parameters:
       instance. The default value is 5 GB.
     Type: Number
     Default: '5'
-  KMSKeyId:
-    AllowedPattern: .*
-    Description: >-
-      AWS KMS key ID used to encrypt data at rest on the ML storage volume
-      attached to notebook instance.
-    Type: String
   DirectInternetAccess:
     Description: >-
       If you set this to Disabled this notebook instance will be able to access
@@ -232,7 +208,7 @@ Parameters:
   ProjectID:
     Type: String
     Description: Enter a valid ProjectID.
-    Default: Brillio007
+    Default: QuickStart007
   S3CodePusher:
     Description: Do you want to load the code from S3 to SageMaker Notebook
     Default: 'NO'
@@ -242,14 +218,8 @@ Parameters:
     Type: String
   CodeBucketName:
     Description: S3 Bucket name from which you want to push code.
-    Default: code-repository-ohio-bucket
+    Default: quickstart-code-bucket
     Type: String
-  IAMRole:
-    Description: IAM Role for accessing the SageMaker Notebook (Default)
-    Default: 'YES'
-    Type: String
-    AllowedValues:
-      - 'YES'
   IAMGroup:
     Description: IAM Group for accessing SageMaker Notebook (Optional)
     Default: 'NO'
@@ -258,6 +228,9 @@ Parameters:
       - 'YES'
       - 'NO'
 Conditions:
+  UsingDefaultBucket: !Equals
+    - !Ref QSS3BucketName
+    - 'aws-quickstart'
   IAMGroupCondition: !Not 
     - !Equals 
       - 'NO'
@@ -279,128 +252,217 @@ Rules:
               - us-east-2
               - us-west-1
               - us-west-2
+              - ap-south-1
+              - ap-northeast-1
+              - ap-northeast-2
+              - ap-southeast-1
+              - ap-southeast-2
+              - ca-central-1
+              - eu-central-1
+              - ca-central-1
+              - eu-west-1
+              - eu-west-2
+              - eu-west-3
+              - eu-north-1
+              - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
   VPCVaildator:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCVaildator.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCVaildator.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 5
       Parameters:
         ENVName: !Ref ENVName
         VPCID: !Ref VPCID
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QSS3BucketName'
+        QSS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QSS3BucketRegion'
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
   EFSStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCVaildator
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCVaildator
           - Outputs.SecurityGroup2Id
-        Subnet1Id: !GetAtt 
+        Subnet1Id: !GetAtt
           - VPCVaildator
           - Outputs.Subnet1Id
   VPCEndPointsStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
-        VPCId: !GetAtt 
+        VPCId: !GetAtt
           - VPCVaildator
           - Outputs.VPCId
-        Subnet2Id: !GetAtt 
+        Subnet2Id: !GetAtt
           - VPCVaildator
           - Outputs.Subnet2Id
-        RouteTableId: !GetAtt 
+        RouteTableId: !GetAtt
           - VPCVaildator
           - Outputs.RouteTableId
-        SecurityGroup1Id: !GetAtt 
+        SecurityGroup1Id: !GetAtt
           - VPCVaildator
           - Outputs.SecurityGroup1Id
-        SecurityGroup2Id: !GetAtt 
+        SecurityGroup2Id: !GetAtt
           - VPCVaildator
           - Outputs.SecurityGroup2Id
   ECRStack:
-    Type: 'AWS::CloudFormation::Stack'
+    Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
-        ECREndpoint: !GetAtt 
+        ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
   SageMakerLaunchConfigStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        EFSMountIpAddr: !GetAtt 
+        EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
   LambdaStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !GetAtt
+          - VPCVaildator
+          - Outputs.LambdaBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
   ServiceCatalogStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QSS3BucketName'
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QSS3BucketRegion'
         EnableIAMGroup: !Ref EnableIAMGroup
   SageMakerStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [VPCVaildator,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
     Condition: SageMakerCondition
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
-        SageMakerS3Bucket: !Ref SageMakerS3Bucket
-        KMSKeyId: !Ref KMSKeyId
         RootAccess: !Ref RootAccess
         VolumeSizeInGB: !Ref VolumeSizeInGB
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
-        EnableIAMRole: !Ref IAMRole
         EnableIAMGroup: !Ref IAMGroup
         ProjectName: !Ref ProjectName
-        ProjectID: !Ref ProjectID        
+        ProjectID: !Ref ProjectID
 Outputs:
   LambdaFunction:
     Value: !GetAtt 
@@ -443,6 +505,12 @@ Outputs:
     Value: !GetAtt 
       - SageMakerStack
       - Outputs.Message
+    Condition: SageMakerCondition
+  SagemakerKMSKey:
+    Description: KMS Key for encrypting Sagemaker resource
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.SagemakerKMSKey
     Condition: SageMakerCondition
   ExecutionRoleArn:
     Description: ARN of the Sagemaker Execution Role

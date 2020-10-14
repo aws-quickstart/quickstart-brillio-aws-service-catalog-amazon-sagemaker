@@ -22,6 +22,7 @@ Metadata:
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
+          - QSS3BucketRegion
       - Label:
           default: Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]
         Parameters:
@@ -36,8 +37,6 @@ Metadata:
           - NotebookInstanceName
           - NotebookInstanceType
           - DirectInternetAccess
-          - SageMakerS3Bucket
-          - KMSKeyId
           - RootAccess
           - VolumeSizeInGB
       - Label:
@@ -71,18 +70,16 @@ Metadata:
         default: Quick Start S3 Bucket Name
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       SageMakerLaunch:
         default: Deploy SageMaker Product
       DirectInternetAccess:
         default: Default Internet Access
-      KMSKeyId:
-        default: KMS Key Id *
       NotebookInstanceName:
         default: Notebook Instance Name
       NotebookInstanceType:
         default: Notebook Instance Type
-      SageMakerS3Bucket:
-        default: SageMaker S3 Bucket
       ProjectName:
         default: Project Suffix
       RootAccess:
@@ -136,7 +133,7 @@ Parameters:
       letters, and hyphens (-). It cannot start or end with a hyphen (-).
     Description: S3 bucket name for the Quick Start assets.
     Type: String
-    Default: quickstart-repository-bucket
+    Default: aws-quickstart
   QSS3KeyPrefix:
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: >-
@@ -148,6 +145,10 @@ Parameters:
       and forward slash (/).
     Type: String
     Default: deployment/
+  QSS3BucketRegion:
+    Default: 'us-east-2'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
   EnableIAMGroup:
     Description: IAM Group for launching the SageMaker product (Optional)
     Default: 'NO'
@@ -179,11 +180,6 @@ Parameters:
     ConstraintDescription: Must select a valid notebook instance type.
     Default: ml.t2.medium
     Description: Select Instance type for the SageMaker Notebook
-    Type: String
-  SageMakerS3Bucket:
-    Description: >-
-      Name for the SageMaker bucket that will be granted restricted access(Name
-      should be unique)
     Type: String
   ProjectName:
     Description: >-
@@ -236,6 +232,9 @@ Parameters:
       - 'YES'
       - 'NO'
 Conditions:
+  UsingDefaultBucket: !Equals
+    - !Ref QSS3BucketName
+    - 'aws-quickstart'
   IAMGroupCondition: !Not 
     - !Equals 
       - 'NO'
@@ -247,9 +246,6 @@ Conditions:
     - !Equals 
       - 'NO'
       - !Ref IAMGroup
-  SageMakerBucketCondition: !Equals 
-    - ''
-    - !Ref SageMakerS3Bucket
 Rules:
   SagemakerQS:
     Assertions:
@@ -278,19 +274,44 @@ Resources:
   VPCStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
+        QSS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QSS3BucketName'
+        QSS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QSS3BucketRegion'
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
   EFSStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/EFSStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
@@ -306,8 +327,16 @@ Resources:
   VPCEndPointsStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/VPCEndpointsStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         VPCId: !GetAtt
@@ -328,8 +357,16 @@ Resources:
   ECRStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ECRStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -340,8 +377,16 @@ Resources:
   SageMakerLaunchConfigStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SageMakerLaunchConfigStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
@@ -351,46 +396,70 @@ Resources:
   LambdaStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/LambdaStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !GetAtt
+          - VPCStack
+          - Outputs.LambdaBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
   ServiceCatalogStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ServiceCatalogStack.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        QSS3BucketName: !Ref QSS3BucketName
+        QSS3BucketName: !If
+          - UsingDefaultBucket
+          - !Sub 'aws-quickstart-${AWS::Region}'
+          - !Ref 'QSS3BucketName'
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        QSS3BucketRegion: !If
+          - UsingDefaultBucket
+          - !Ref 'AWS::Region'
+          - !Ref 'QSS3BucketRegion'
         EnableIAMGroup: !Ref EnableIAMGroup
   SageMakerStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [VPCStack,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
     Condition: SageMakerCondition
     Properties:
-      TemplateURL: !Sub >-
-        https://${QSS3BucketName}.s3.${AWS::Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
+        - S3Bucket: !If
+            - UsingDefaultBucket
+            - !Sub 'aws-quickstart-${AWS::Region}'
+            - !Ref 'QSS3BucketName'
+          S3Region: !If
+            - UsingDefaultBucket
+            - !Ref 'AWS::Region'
+            - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
-        SageMakerS3Bucket: !If 
-          - SageMakerBucketCondition
-          - !Join 
-            - '-'
-            - - sagemaker-aritifact
-              - !Ref 'AWS::Region'
-              - bucket
-          - !Ref SageMakerS3Bucket
-        KMSKeyId: !Ref KMSKeyId
         RootAccess: !Ref RootAccess
         VolumeSizeInGB: !Ref VolumeSizeInGB
         S3CodePusher: !Ref S3CodePusher
@@ -440,6 +509,12 @@ Outputs:
     Value: !GetAtt 
       - SageMakerStack
       - Outputs.Message
+    Condition: SageMakerCondition
+  SagemakerKMSKey:
+    Description: KMS Key for encrypting Sagemaker resource
+    Value: !GetAtt 
+      - SageMakerStack
+      - Outputs.SagemakerKMSKey
     Condition: SageMakerCondition
   ExecutionRoleArn:
     Description: ARN of the Sagemaker Execution Role
