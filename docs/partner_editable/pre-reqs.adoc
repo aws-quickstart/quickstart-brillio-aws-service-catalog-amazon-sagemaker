@@ -2,12 +2,11 @@
 
 ==== Prepare your AWS account
 
-_Describe any setup required in the AWS account prior to template launch_
+. If you don’t already have an AWS account, create one https://aws.amazon.com by following the on-screen instructions.
+. Use the Region selector in the navigation bar to choose the AWS Region where you want to deploy SageMaker with guardrails.
 
-==== Prepare your {partner-company-name} account
+NOTE: Amazon SageMaker is not supported in all AWS Regions. For a current list of supported Regions for SageMaker, see the Supported Regions in the link:#_technical_requirements[Technical requirements] section.
 
-_Describe any setup required in the partner portal/account prior to template launch_
-
-==== Prepare for the deployment
-
-_Describe any preparation required to complete the product build, such as obtaining licenses or placing files in S3_
+[start=3]
+. If necessary, https://console.aws.amazon.com/support/home?#/case/create?issueType=service-limit-increase&limitType=service-code-[request a service quota increase^] for SageMaker instances that you use. You might do this if you already have an existing deployment that uses this instance type or you exceed the default quota for this deployment. 
+. Create a custom Key Management Service (KMS) key for encrypting data on the storage volume that’s attached to your notebook instance.

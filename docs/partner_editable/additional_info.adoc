@@ -1,21 +1,70 @@
 // Add steps as necessary for accessing the software, post-configuration, and testing. Don’t include full usage instructions for your software, but add links to your product documentation for that information.
 //Should any sections not be applicable, remove them
 
-== Test the deployment
+==== [OPTIONAL] Deploy {partner-product-short-name} as a Service Catalog Product.
+
+. Once the base infrastructure is set up by cloudformation master template, Data Scientist/other user need to assume the IAM role (SCEndUserrole) or group got from CloudFormation output in previous step for launching service catalog product.
+. Launch the SageMaker portfolio product.
+
+NOTE: Specify the same environment name which is provided in Master template.
+
+===== Parameter for SageMaker portfolio product:
+
+.Environment Details
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Environment Name
+(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMakerGuardrail solution
+|===
+.SageMaker Notebook configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Notebook Instance Name
+(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker Notebook instance name|Notebook Instance Type
+(`NotebookInstanceType`)|`ml.t2.medium`|Select Instance type for the SageMaker Notebook|Default Internet Access
+(`DirectInternetAccess`)|`Disabled`|If you set this to Disabled this notebook instance will be able to access resources only in your VPC. As per the Project requirement, we have Disabled it.|Root access
+(`RootAccess`)|`Enabled`|Root access for the SageMaker Notebook user|Volume size for the SageMaker Notebook
+(`VolumeSizeInGB`)|`5`|The size, in GB, of the ML storage volume to attach to the notebook instance. The default value is 5 GB.
+|===
+.Pushing code from S3 Bucket to SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|**NO_LABEL**
+(`S3CodePusher`)|`NO`|Do you want to load the code from S3 to SageMaker Notebook|Code Bucket Name
+(`CodeBucketName`)|`quickstart-code-bucket`|S3 Bucket name from which you want to push code.
+|===
+.Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Enable IAM group access for SageMaker Notebook
+(`IAMGroup`)|`NO`|IAM Group for accessing SageMaker Notebook (Optional)
+|===
+.Project detail
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Project Suffix
+(`ProjectName`)|`**__Requires input__**`|The suffix appended to all resources in the stack.  This will allow multiple copies of the same stack to be created in the same account.|SageMaker ProjectID
+(`ProjectID`)|`QuickStart007`|Enter a valid ProjectID.
+|===
+
+==== Test the deployment
 // If steps are required to test the deployment, add them here. If not, remove the heading
-
-== Post-deployment steps
-// If post-deployment steps are required, add them here. If not, remove the heading
-
-== Best practices for using {partner-product-short-name} on AWS
-// Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
-
-_Add any best practices for using the software._
+To test your deployment, see https://docs.aws.amazon.com/sagemaker/latest/dg/gs-console.html[Get Started with Amazon SageMaker Notebook Instances and SDKs^].
 
 == Security
 // Provide post-deployment best practices for using the technology on AWS, including considerations such as migrating data, backups, ensuring high performance, high availability, etc. Link to software documentation for detailed information.
+=== Access control
+AWS IAM roles help to ensure that the compute resources (Lambda functions, SageMaker training clusters, and inference endpoints) can only access necessary Amazon S3 data and AWS resources.
 
-_Add any security-related information._
+=== Encryption 
+All objects (data, models, and Lambda code) stored in Amazon S3 are AES-256 encrypted at rest using server-side encryption.
+
+=== Private network
+Using AWS VPC endpoints, API calls from SageMaker to other AWS Services like S3(Gateway), CloudWatch  will remain private and downloading packages over the internet is restricted. The network traffic remain within the AWS network and not accessible over the internet.
+
+=== Isolation
+Amazon SageMaker resources are saggregated based on the tags and are isolated from one another. The resources are grouped based on the principal and resource tags which are unique for every new deployments. Thus all resources are isolated from one another with the help of tags.
+
 
 == Other useful information
 //Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
