@@ -1,1 +1,1 @@
-No additional licenses are required because this Quick Start uses native AWS services.
+This Quick Start uses native AWS services. No additional licenses are required.

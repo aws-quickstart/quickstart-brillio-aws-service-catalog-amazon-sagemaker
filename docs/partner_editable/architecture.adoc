@@ -7,31 +7,30 @@ AWS Cloud.
 :xrefstyle: short
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} on AWS
-image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
+image::../images/brillio-architecture-diagram.png[Architecture,width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-* SageMaker Quick Start template is used for provisioning the SageMaker environment
-* SageMakerBuild Lambda function for validation of VPC DNS and provisioning of SageMaker resource.
-* Service Catalog product for triggering SageMakerBuild function and passing parameter for resource creation.
-* Service Catalog enduser role to access and launch SageMaker service catalog product.
+* SageMakerBuild Lambda function for validation of VPC Domain Name System (DNS) and provisioning of SageMaker resource.
+* AWS Service Catalog for triggering SageMakerBuild function and passing parameters for creating resources.
+* Service Catalog end-user role to access and launch Service Catalog.
 * In the private resource subnet:
 ** Amazon SageMaker for running ML models and workflow.
-** Amazon EFS for sharing common modules to all SageMaker notebook.
-* In the private Elastic Network Interface subnet we have interface endpoint by which SageMaker will communicate with the following AWS service
-** CloudWatch – For real-time monitoring of the SageMaker environment 
-** SageMaker runtime - Client applications use this API to get inferences from the models hosted at the specified endpoint.
-** SageMaker API - Client applications use this API to get inferences from the models hosted at the specified endpoint.
-** Amazon Elastic Container Registry (ECR) with ECR Policy – To store latest ML model images for future deployments
-** AWS Security Token Service (AWS STS) – To provide access to an IAM role to perform operations on other AWS services by assuming the role.
-* SageMaker execution role for providing access to SageMaker notebook.
-* S3 gateway endpoint to access S3 bucket for storing and retrieving ML data and bucket policy for restricting the bucket access.
-* Two security groups (ResourceSG & ENISG) and a Route Table according to the AWS best practices, this provides the end user with their own virtual network on AWS.
-* An EFS gets created and mounted to the Resource subnet to share the data with SageMaker Notebook.
-* In ENI Subnet, Interface VPC endpoints are created for the AWS services like STS, ECR, SageMaker, CloudWatch. It also provides a Gateway VPC Endpoint to provide S3 with access to the Notebook instance.
-* Service catalog end user role to access and launch SageMaker Service Catalog.
-* Service Catalog launch constraint role to full permission to provision resources.
-SageMaker execution role to provide limited access to SageMaker notebook as per tag and tight/appropriate policy to execute operation from notebook
+** Amazon Elastic File System (Amazon EFS) for sharing common modules to SageMaker notebooks.
+* In the private Elastic Network Interface (ENI) subnet, an interface endpoint through which SageMaker communicates with the following AWS services:
+** Amazon CloudWatch for real-time monitoring of the SageMaker environment. 
+** SageMaker runtime for client applications to get inferences from models hosted at the specified endpoint.
+** SageMaker API for client applications to get inferences from models hosted at the specified endpoint.
+** Amazon Elastic Container Registry (Amazon ECR) with ECR Policy for storing the latest ML model images for future deployments.
+** AWS Security Token Service (AWS STS) for providing access to an Identity and Access Management (IAM) role to perform operations on other AWS services by assuming the role.
+* SageMaker execution role for providing access to the SageMaker notebook.
+* Amazon Simple Storage Service (Amazon S3) gateway endpoint to access the S3 bucket for storing and retrieving ML data and bucket policy for restricting bucket access.
+* Two security groups (ResourceSG & ENISG) and a route table to provide end users with their own virtual network on AWS.
+* Amazon EFS, mounted to the resource subnet to share data with the SageMaker notebook.
+* Interface VPC endpoints in the ENI subnet for AWS services, including AWS STS, Amazon ECR, SageMaker, and CloudWatch. It also provides a gateway VPC endpoint to provide S3 with access to the notebook instance.
+* Service Catalog launch constraint role to provide full permission to provision resources.
+* SageMaker execution role to provide limited access to the SageMaker notebook as per tag and tight/appropriate policy to execute operation from the SageMaker notebook.
+* A dedicated S3 bucket used as a data store for training models and SageMaker model artifacts.
 
 
 // Add bullet points for any additional components that are included in the deployment. Make sure that the additional components are also represented in the architecture diagram. End each bullet with a period.
