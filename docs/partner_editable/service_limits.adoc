@@ -4,11 +4,11 @@
 
 // Space needed to maintain table headers
 |VPCs | 1
-|VPC Endpoints | 5
+|VPC endpoints | 5
 |Security groups | 2
 |AWS Identity and Access Management (IAM) roles | 4
-|S3 Buckets | 1
-|SageMaker Notebook | 1
+|S3 buckets | 1
+|SageMaker notebook | 1
 |ECR | 1
 |EFS | 1
 |===
