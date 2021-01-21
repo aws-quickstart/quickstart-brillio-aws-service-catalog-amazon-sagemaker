@@ -7,3 +7,13 @@ This Quick Start reference deployment guide provides step-by-step instructions f
 
 This deployment imposes security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
 
+The QuickStart will help in provisioning SageMaker with security guardrails which has the following features:
+
+* Private network: Using AWS VPC endpoints, Private API calls from SageMaker to other AWS Services like S3(Gateway), CloudWatch and downloading packages over the internet is restricted.
+* Restricting SageMaker access to specific ECR.
+* Enforcing mandatory tagging at the user and resource creation level for effective implementation of resource policies and compliance.
+* S3 bucket policy restricting access to the specific VPC Endpoint.
+* Encryption: Amazon SageMaker ensures that ML model artifacts and other system artifacts are encrypted in transit and at rest. Requests to the Amazon SageMaker API and console are made over a secure (SSL) connection.
+* Disabling root access to the notebook instance at the time of launch.
+* Identity and Access Management: Each end user may only open, start and stop their own SageMaker Notebook. Restricted IAM roles and policies for SageMaker Execution and Notebook access based on resource tags and Project ID.
+
