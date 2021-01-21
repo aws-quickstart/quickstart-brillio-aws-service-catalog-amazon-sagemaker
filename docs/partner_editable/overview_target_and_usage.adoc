@@ -5,15 +5,15 @@
 This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled.
 [.normal]
 
-This deployment imposes security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
+This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
 
-The QuickStart will help in provisioning SageMaker with security guardrails which has the following features:
+ageMaker with security guardrails provides the following features:
 
-* Private network: Using AWS VPC endpoints, Private API calls from SageMaker to other AWS Services like S3(Gateway), CloudWatch and downloading packages over the internet is restricted.
-* Restricting SageMaker access to specific ECR.
-* Enforcing mandatory tagging at the user and resource creation level for effective implementation of resource policies and compliance.
-* S3 bucket policy restricting access to the specific VPC Endpoint.
-* Encryption: Amazon SageMaker ensures that ML model artifacts and other system artifacts are encrypted in transit and at rest. Requests to the Amazon SageMaker API and console are made over a secure (SSL) connection.
-* Disabling root access to the notebook instance at the time of launch.
-* Identity and Access Management: Each end user may only open, start and stop their own SageMaker Notebook. Restricted IAM roles and policies for SageMaker Execution and Notebook access based on resource tags and Project ID.
+* A private network for performing secure API calls to other AWS services and restricting internet access for downloading packages. 
+* Restricted SageMaker access to Amazon Elastic Container Registry (Amazon ECR).
+* Mandatory tagging for implementing resource policies and compliance when creating users and resources.
+* S3 bucket policies that restrict access to specific VPC endpoints.
+* Encryption of ML model artifacts and other system artifacts that are either in transit or at rest. Requests to the SageMaker API and console are made over a Secure Sockets Layer (SSL) connection.
+* Disabled root access to the SageMaker notebook instance at the time of launch.
+* Restricted IAM roles and policies for SageMaker execution and notebook access based on resource tags and project ID. Users can only open, start, and stop their own SageMaker notebooks. 
 
