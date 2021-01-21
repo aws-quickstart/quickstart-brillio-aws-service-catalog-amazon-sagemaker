@@ -95,6 +95,8 @@ Metadata:
         default: Enable IAM group access for SageMaker Notebook
       CodeBucketName:
         default: Code Bucket Name
+      S3CodePusher:
+        default: Code to push to S3 
 Parameters:
   ENVName:
     Description: Infrastructure naming convention for SageMakerGuardrail solution
