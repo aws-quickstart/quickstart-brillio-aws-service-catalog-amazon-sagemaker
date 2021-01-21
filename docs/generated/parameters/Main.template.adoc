@@ -52,7 +52,7 @@
 .Pushing code from S3 Bucket to SageMaker
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
-|Parameter label (name) |Default value|Description|**NO_LABEL**
+|Parameter label (name) |Default value|Description|Code to push to S3
 (`S3CodePusher`)|`NO`|Do you want to load the code from S3 to SageMaker Notebook|Code Bucket Name
 (`CodeBucketName`)|`quickstart-code-bucket`|S3 Bucket name from which you want to push code.
 |===

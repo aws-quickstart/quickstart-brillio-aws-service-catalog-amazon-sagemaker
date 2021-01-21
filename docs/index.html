@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.12">
-<title>Amazon SageMaker with Guardrails on the AWS Cloud</title>
+<meta name="generator" content="Asciidoctor 2.0.10">
+<title>Amazon SageMaker with guardrails on the AWS Cloud</title>
 <style>
 
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -790,7 +790,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="toctitle"></div>
 <ul class="sectlevel1">
 <li><a href="#_overview">Overview</a></li>
-<li><a href="#_amazon_sagemaker_with_guardrails_on_aws">Amazon SageMaker with Guardrails on AWS</a></li>
+<li><a href="#_amazon_sagemaker_with_guardrails_on_aws">Amazon SageMaker with guardrails on AWS</a></li>
 <li><a href="#_cost">Cost</a></li>
 <li><a href="#_software_licenses">Software licenses</a></li>
 <li><a href="#_architecture">Architecture</a></li>
@@ -807,15 +807,6 @@ p.footer-text a{color:#d7d8d8}
 <li><a href="#_launch_the_quick_start">Launch the Quick Start</a></li>
 </ul>
 </li>
-<li><a href="#_security">Security</a>
-<ul class="sectlevel2">
-<li><a href="#_access_control">Access control</a></li>
-<li><a href="#_encryption">Encryption</a></li>
-<li><a href="#_private_network">Private network</a></li>
-<li><a href="#_isolation">Isolation</a></li>
-</ul>
-</li>
-<li><a href="#_other_useful_information">Other useful information</a></li>
 <li><a href="#_faq">FAQ</a></li>
 <li><a href="#_parameter_reference">Parameter reference</a>
 <ul class="sectlevel2">
@@ -833,19 +824,32 @@ p.footer-text a{color:#d7d8d8}
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<h2 id="_amazon_sagemaker_with_guardrails_on_the_aws_cloud" class="discrete text-center">Amazon SageMaker with Guardrails on the AWS Cloud</h2>
+<h2 id="_amazon_sagemaker_with_guardrails_on_the_aws_cloud" class="discrete text-center">Amazon SageMaker with guardrails on the AWS Cloud</h2>
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
 <img src="https://aws-quickstart.s3.amazonaws.com/quickstart-brillio-aws-service-catalog-amazon-sagemaker/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="QS" width="80" height="80">
 </div>
 </div>
-<div class="paragraph text-center">
-<p><strong>November 2020</strong><br>
-<em>Deepak Behera and Girish Chandra Tejaswi S, Brillio.</em><br>
-<em>Tony Bulding, AWS Quick Start team</em></p>
+<h3 id="_draft_document_unofficial_guidance" class="discrete text-center">DRAFT DOCUMENT / UNOFFICIAL GUIDANCE</h3>
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/__settings</em>.adoc</code></strong>_</p>
 </div>
-<div class="admonitionblock tip text-left">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph text-center">
+<p><strong>January 2021</strong><br>
+<em>Deepak Behera and Girish Chandra Tejaswi S., Brillio</em><br>
+<em>Tony Bulding, AWS Quick Start team</em></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
@@ -859,7 +863,7 @@ report bugs, or submit feature ideas for this Quick Start.
 </table>
 </div>
 <div class="paragraph text-left">
-<p>This Quick Start was created by Brillio. in collaboration with Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that use AWS CloudFormation templates to deploy key technologies on AWS, following AWS best practices.</p>
+<p>This Quick Start was created by Brillio in collaboration with Amazon Web Services (AWS). <a href="http://aws.amazon.com/quickstart/" target="_blank" rel="noopener">Quick Starts</a> are automated reference deployments that use AWS CloudFormation templates to deploy key technologies on AWS, following AWS best practices.</p>
 </div>
 </div>
 </div>
@@ -867,11 +871,51 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of Amazon SageMaker with guardrails enabled.</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/overview_target_and_usage.adoc</code></strong></em></p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled.</p>
 </div>
 <div class="paragraph normal">
-<p>This deployment imposes security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (KMS), and other native services on AWS.</p>
+<p>This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS.</p>
 </div>
+<div class="paragraph">
+<p>ageMaker with security guardrails provides the following features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A private network for performing secure API calls to other AWS services and restricting internet access for downloading packages.</p>
+</li>
+<li>
+<p>Restricted SageMaker access to Amazon Elastic Container Registry (Amazon ECR).</p>
+</li>
+<li>
+<p>Mandatory tagging for implementing resource policies and compliance when creating users and resources.</p>
+</li>
+<li>
+<p>S3 bucket policies that restrict access to specific VPC endpoints.</p>
+</li>
+<li>
+<p>Encryption of ML model artifacts and other system artifacts that are either in transit or at rest. Requests to the SageMaker API and console are made over a Secure Sockets Layer (SSL) connection.</p>
+</li>
+<li>
+<p>Disabled root access to the SageMaker notebook instance at the time of launch.</p>
+</li>
+<li>
+<p>Restricted IAM roles and policies for SageMaker execution and notebook access based on resource tags and project ID. Users can only open, start, and stop their own SageMaker notebooks.</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -887,34 +931,29 @@ Amazon may share user-deployment information with the AWS Partner that collabora
 </div>
 </div>
 <div class="sect1">
-<h2 id="_amazon_sagemaker_with_guardrails_on_aws">Amazon SageMaker with Guardrails on AWS</h2>
+<h2 id="_amazon_sagemaker_with_guardrails_on_aws">Amazon SageMaker with guardrails on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>It’s an automated approach for various ML workflows. Whenever a SageMaker notebook is created, a dedicated Amazon Simple Storage Service (Amazon S3) bucket must be created, which is used as a data store for training models and SageMaker model artifacts.
-Using the console to manually provision SageMaker notebooks provides end users with limited security options to run SageMaker in an isolated environment.</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/product_description.adoc</code></strong></em></p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Amazon SageMaker provides an automated approach for various ML workflows. Users can manually provision SageMaker notebooks directly through the SageMaker console and create the associated S3 buckets to use as a data store for training models and SageMaker model artifacts.</p>
 </div>
 <div class="paragraph">
-<p>The major challenges in such a scenario are the following:</p>
+<p>Although SageMaker&#8217;s self-service provisioning capabilities are convenient for project teams, this model can result in limited security options when running SageMaker in an isolated environment. Security risks exist from downloading packages over the internet, managing training models from public endpoints, and accessing model-building data from an S3 bucket. Also, in its native form, SageMaker provides no options for storing shared resources using Amazon Elastic File System (Amazon EFS). Setting up EFS for storage is a manual process.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Accessing data from an S3 bucket for model building poses security risks.</p>
-</li>
-<li>
-<p>Training from public endpoints poses security risks.</p>
-</li>
-<li>
-<p>Downloading packages over the internet poses security risks.</p>
-</li>
-<li>
-<p>In its native form, SageMaker provides no options to store shared resources using Amazon Elastic File System (Amazon EFS). This must be set up manually.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph normal">
-<p>To overcome these difficulties and improve the ease with which a SageMaker notebook can be accessed, we designed and implemented security guardrails, which incorporates security mechanisms and add-on features that are missing from SageMaker. It deploys within an AWS-managed virtual private cloud (VPC) and elastic network interfaces. To provide more secure access to AWS services, Brillio’s SageMaker product creates VPC endpoint interfaces and S3 bucket gateways within the customer’s VPC.</p>
-</div>
+<div class="paragraph">
+<p>You can address these security concerns and improve the experience accessing a SageMaker notebook by using Brillio&#8217;s implementation of SageMaker. It provides guardrails for incorporating security mechanisms and add-on features that are not provided with SageMaker. These guardrails deploy within an AWS-managed virtual private cloud (VPC) and elastic network interfaces. Also, when using Brillio&#8217;s SageMaker product, you can provide more secure access to AWS services with VPC endpoint interfaces and S3 bucket gateways within the customer’s own VPC.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -949,21 +988,42 @@ After you deploy the Quick Start, <a href="https://docs.aws.amazon.com/awsaccoun
 <h2 id="_software_licenses">Software licenses</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>No additional licenses are required because this Quick Start uses native AWS services.</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/licenses.adoc</code></strong></em></p>
 </div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>This Quick Start uses native AWS services. No additional licenses are required.</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_architecture">Architecture</h2>
 <div class="sectionbody">
 <div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/architecture.adoc</code></strong></em></p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>Deploying this Quick Start for a new virtual private cloud (VPC) with
 default parameters builds the following Guardrails environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock normal">
 <div class="content">
-<img src="images/architecture_diagram.png" alt="Architecture" width="100%" height="100%">
+<img src="images/brillio-architecture-diagram.png" alt="Architecture" width="100%" height="100%">
 </div>
 <div class="title">Figure 1. Quick Start architecture for Guardrails on AWS</div>
 </div>
@@ -973,16 +1033,26 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>SageMaker Quick Start template is used for provisioning the SageMaker environment</p>
+<p>AWS Lambda SageMakerBuild function for validating VPC Domain Name System (DNS) and provisioning SageMaker resources.</p>
 </li>
 <li>
-<p>SageMakerBuild Lambda function for validation of VPC DNS and provisioning of SageMaker resource.</p>
+<p>AWS Service Catalog for triggering the SageMakerBuild function and passing parameters for creating resources.</p>
 </li>
 <li>
-<p>Service Catalog product for triggering SageMakerBuild function and passing parameter for resource creation.</p>
+<p>AWS Identity and Access Management (IAM) roles, including:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>User role for accessing and launching the Service Catalog.</p>
 </li>
 <li>
-<p>Service Catalog enduser role to access and launch SageMaker service catalog product.</p>
+<p>Service Catalog launch constraint role for providing full permission to provision resources.</p>
+</li>
+<li>
+<p>SageMaker execution role for providing limited access to the SageMaker notebook as determined by policies.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>In the private resource subnet:</p>
@@ -992,85 +1062,41 @@ AWS Cloud.</p>
 <p>Amazon SageMaker for running ML models and workflow.</p>
 </li>
 <li>
-<p>Amazon EFS for sharing common modules to all SageMaker notebook.</p>
+<p>Amazon Elastic File System (Amazon EFS) for sharing common modules to SageMaker notebooks.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>In the private Elastic Network Interface subnet we have interface endpoint by which SageMaker will communicate with the following AWS service</p>
+<p>In the private Elastic Network Interface (ENI) subnet, interface endpoints through which SageMaker communicates with the following AWS services:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>CloudWatch – For real-time monitoring of the SageMaker environment</p>
+<p>Amazon CloudWatch for real-time monitoring of the SageMaker environment.</p>
 </li>
 <li>
-<p>SageMaker runtime - Client applications use this API to get inferences from the models hosted at the specified endpoint.</p>
+<p>Amazon Elastic Container Registry (Amazon ECR) with ECR Policy for storing the latest ML model images for future deployments.</p>
 </li>
 <li>
-<p>SageMaker API - Client applications use this API to get inferences from the models hosted at the specified endpoint.</p>
-</li>
-<li>
-<p>Amazon Elastic Container Registry (ECR) with ECR Policy – To store latest ML model images for future deployments</p>
-</li>
-<li>
-<p>AWS Security Token Service (AWS STS) – To provide access to an IAM role to perform operations on other AWS services by assuming the role.</p>
+<p>AWS Security Token Service (AWS STS) for providing access to an IAM role to perform operations on other AWS services by assuming the role.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>SageMaker execution role for providing access to SageMaker notebook.</p>
+<p>Amazon Simple Storage Service (Amazon S3) gateway endpoint to access the S3 bucket for storing and retrieving ML data and bucket policy for restricting bucket access.</p>
 </li>
 <li>
-<p>S3 gateway endpoint to access S3 bucket for storing and retrieving ML data and bucket policy for restricting the bucket access.</p>
+<p>A dedicated S3 bucket used as a data store for training models and SageMaker model artifacts.</p>
 </li>
 <li>
-<p>Two security groups (ResourceSG &amp; ENISG) and a Route Table according to the AWS best practices, this provides the end user with their own virtual network on AWS.</p>
-</li>
-<li>
-<p>An EFS gets created and mounted to the Resource subnet to share the data with SageMaker Notebook.</p>
-</li>
-<li>
-<p>In ENI Subnet, Interface VPC endpoints are created for the AWS services like STS, ECR, SageMaker, CloudWatch. It also provides a Gateway VPC Endpoint to provide S3 with access to the Notebook instance.</p>
-</li>
-<li>
-<p>Service catalog end user role to access and launch SageMaker Service Catalog.</p>
-</li>
-<li>
-<p>Service Catalog launch constraint role to full permission to provision resources.
-SageMaker execution role to provide limited access to SageMaker notebook as per tag and tight/appropriate policy to execute operation from notebook</p>
+<p>AWS PrivateLink, Amazon CloudWatch, AWS IAM, AWS Key Management Service (AWS KMS), and other native services on AWS to provide enhanced security.</p>
 </li>
 </ul>
-</div>
-<div class="paragraph">
-<p>The QuickStart will help in provisioning SageMaker with security guardrails which has the following features:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Private network: Using AWS VPC endpoints, Private API calls from SageMaker to other AWS Services like S3(Gateway), CloudWatch and downloading packages over the internet is restricted.</p>
-</li>
-<li>
-<p>Restricting SageMaker access to specific ECR.</p>
-</li>
-<li>
-<p>Enforcing mandatory tagging at the user and resource creation level for effective implementation of resource policies and compliance.</p>
-</li>
-<li>
-<p>S3 bucket policy restricting access to the specific VPC Endpoint.</p>
-</li>
-<li>
-<p>Encryption: Amazon SageMaker ensures that ML model artifacts and other system artifacts are encrypted in transit and at rest. Requests to the Amazon SageMaker API and console are made over a secure (SSL) connection.</p>
-</li>
-<li>
-<p>Disabling root access to the notebook instance at the time of launch.</p>
-</li>
-<li>
-<p>Identity and Access Management: Each end user may only open, start and stop their own SageMaker Notebook. Restricted IAM roles and policies for SageMaker Execution and Notebook access based on resource tags and Project ID.</p>
-</li>
-</ul>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -1082,7 +1108,16 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <p>This deployment requires a moderate level of familiarity with AWS services. If you’re new to AWS, visit <a href="https://aws.amazon.com/getting-started/" target="_blank" rel="noopener">Getting Started with AWS</a> and <a href="https://aws.amazon.com/training/" target="_blank" rel="noopener">Training and Certification</a>. These sites provide materials for learning how to design, deploy, and operate your infrastructure and applications on the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>Before you deploy this Quick Start, we recommend that you become familiar with the following AWS services.</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/specialized_knowledge.adoc</code></strong></em></p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The following information is available to help you become familiar with the AWS services that are used in this Quick Start:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1093,7 +1128,7 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <p><a href="https://aws.amazon.com/privatelink/" target="_blank" rel="noopener">AWS PrivateLink</a></p>
 </li>
 <li>
-<p><a href="https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html" target="_blank" rel="noopener">AWS Security Token Service</a></p>
+<p><a href="https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html" target="_blank" rel="noopener">AWS Security Token Service API Reference</a></p>
 </li>
 <li>
 <p><a href="https://aws.amazon.com/lambda/" target="_blank" rel="noopener">AWS Lambda</a></p>
@@ -1105,10 +1140,10 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <p><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints.html" target="_blank" rel="noopener">VPC endpoints</a></p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/efs/" target="_blank" rel="noopener">AWS EFS</a></p>
+<p><a href="https://aws.amazon.com/efs/" target="_blank" rel="noopener">AWS Elastic File System</a></p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/ecr/" target="_blank" rel="noopener">AWS ECR</a></p>
+<p><a href="https://aws.amazon.com/ecr/" target="_blank" rel="noopener">AWS Elastic Container Registry</a></p>
 </li>
 <li>
 <p><a href="https://aws.amazon.com/servicecatalog" target="_blank" rel="noopener">AWS Service Catalog</a></p>
@@ -1123,7 +1158,10 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <p><a href="https://aws.amazon.com/cloudwatch/" target="_blank" rel="noopener">Amazon CloudWatch</a></p>
 </li>
 </ul>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_aws_account">AWS account</h3>
@@ -1144,6 +1182,10 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <div class="paragraph">
 <p>If necessary, request <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">service quota increases</a> for the following resources. You might need to request increases if your existing deployment currently uses these resources and if this Quick Start deployment could result in exceeding the default quotas. The <a href="https://console.aws.amazon.com/servicequotas/home?region=us-east-2#!/" target="_blank" rel="noopener">Service Quotas console</a> displays your usage and quotas for some aspects of some services. For more information, see <a href="https://docs.aws.amazon.com/servicequotas/latest/userguide/intro.html" target="_blank" rel="noopener">What is Service Quotas?</a> and <a href="https://docs.aws.amazon.com/general/latest/gr/aws_service_limits.html" target="_blank" rel="noopener">AWS service quotas</a>.</p>
 </div>
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/service_limits.adoc</code></strong></em></p>
+</div>
+<div class="preview_mode">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -1161,7 +1203,7 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VPC Endpoints</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VPC endpoints</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">5</p></td>
 </tr>
 <tr>
@@ -1173,11 +1215,11 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 <td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 Buckets</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 buckets</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker Notebook</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker notebook</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
 </tr>
 <tr>
@@ -1191,8 +1233,13 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 </tbody>
 </table>
 </div>
+</div>
 <div class="sect3">
 <h4 id="_supported_regions">Supported Regions</h4>
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/regions.adoc</code></strong></em></p>
+</div>
+<div id="preview_mode">
 <div class="paragraph">
 <p>This Quick Start supports the following Regions:</p>
 </div>
@@ -1297,6 +1344,7 @@ SageMaker execution role to provide limited access to SageMaker notebook as per 
 </tr>
 </tbody>
 </table>
+</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1315,8 +1363,16 @@ Certain Regions are available on an opt-in basis. See <a href="https://docs.aws.
 <div class="paragraph">
 <p>Before launching the Quick Start, you must sign in to the AWS Management Console with IAM permissions for the resources that the templates deploy. The <em>AdministratorAccess</em> managed policy within IAM provides sufficient permissions, although your organization may choose to use a custom policy with more restrictions. For more information, see <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html" target="_blank" rel="noopener">AWS managed policies for job functions</a>.</p>
 </div>
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/pre-reqs.adoc</code></strong></em></p>
 </div>
-<div class="sect3">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="sect3">
 <h4 id="_prepare_your_aws_account">Prepare your AWS account</h4>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1350,25 +1406,41 @@ Amazon SageMaker is not supported in all AWS Regions. For a current list of supp
 </li>
 </ol>
 </div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_deployment_options">Deployment options</h4>
 <div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/deployment_options.adoc</code></strong></em></p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start provides two deployment options:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Deploy Guardrails into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, VPC endpoint, security groups, EFS, ECR, and other infrastructure components. It then deploys SageMaker into this new VPC.</p>
+<p><strong>Deploy Amazon SageMaker with guardrails into a new VPC</strong>. This option builds a new AWS environment consisting of the VPC, subnets, VPC endpoint, security groups, EFS, ECR, and other infrastructure components. It then deploys SageMaker into this new VPC.</p>
 </li>
 <li>
-<p><strong>Deploy Guardrails into an existing VPC</strong>. This option provisions SageMaker in your existing AWS infrastructure.</p>
+<p><strong>Deploy Amazon SageMaker with guardrails into an existing VPC</strong>. This option provisions SageMaker in your existing AWS infrastructure.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
 <p>The Quick Start provides separate templates for these options. It also lets you configure environment details, VPC and SageMaker settings, as discussed later in this guide.</p>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -1376,6 +1448,10 @@ Amazon SageMaker is not supported in all AWS Regions. For a current list of supp
 <div class="sect1">
 <h2 id="_deployment_steps">Deployment steps</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/deploy_steps.adoc</code></strong></em></p>
+</div>
+<div class="preview_mode">
 <div class="sect2">
 <h3 id="_sign_in_to_your_aws_account">Sign in to your AWS account</h3>
 <div class="olist arabic">
@@ -1417,12 +1493,12 @@ You are responsible for the cost of the AWS services used while running this Qui
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Guardrails into a new VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/Dg76J" target="_blank" rel="noopener">Deploy Amazon SageMaker with guardrails into a new VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/qnrXg" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_launch_permalink" target="_blank" rel="noopener">Deploy Guardrails into an existing VPC on AWS</a></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="http://qs_template_permalink" target="_blank" rel="noopener">View template</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/RjGV8" target="_blank" rel="noopener">Deploy Amazon SageMaker with guardrails into an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><a href="https://fwd.aws/4wnvp" target="_blank" rel="noopener">View template</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -1454,22 +1530,13 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <p>On the <strong>Create stack</strong> page, keep the default setting for the template URL, and then choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. For details on each parameter, see the below link for parametert section.</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#_launch_into_a_new_vpc">Parameters for deploying SageMaker with guardrails into a new VPC</a></p>
-</li>
-<li>
-<p><a href="#_launch_into_an_existing_vpc">Parameters for deploying SageMaker with guardrails into an existing VPC</a></p>
+<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary. See the <a href="#_parameter_reference">Parameter reference</a> for more information.</p>
 <div class="paragraph">
 <p>When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
 </div>
 </li>
-</ul>
-</div>
-</li>
 </ol>
+</div>
 </div>
 <div class="olist arabic">
 <ol class="arabic" start="5">
@@ -1486,7 +1553,7 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Guardrails deployment is ready.</p>
 </li>
 <li>
-<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">Figure 2</a>, to view the created resources.</p>
+<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">Guardrails outputs after successful deployment</a>, to view the created resources.</p>
 </li>
 </ol>
 </div>
@@ -1494,25 +1561,16 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <div class="content">
 <a class="image" href="images/cfn_outputs.png"><img src="images/cfn_outputs.png" alt="cfn_outputs" width="100%" height="100%"></a>
 </div>
-<div class="title">Figure 2. Guardrails outputs after successful deployment-Part1</div>
+<div class="title">Figure 2. Guardrails outputs after successful deployment</div>
 </div>
-<div id="cfn_outputs2" class="imageblock">
-<div class="content">
-<a class="image" href="images/cfn_outputs2.png"><img src="images/cfn_outputs2.png" alt="cfn_outputs" width="100%" height="100%"></a>
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/additional_info.adoc</code></strong></em></p>
 </div>
-<div class="title">Figure 3. Guardrails outputs after successful deployment-Part2</div>
-</div>
+<div class="preview_mode">
 <div class="sect3">
-<h4 id="_optional_deploy_guardrails_as_a_service_catalog_product">[OPTIONAL] Deploy Guardrails as a Service Catalog Product.</h4>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Once the base infrastructure is set up by cloudformation master template, Data Scientist/other user need to assume the IAM role (SCEndUserrole) or group got from CloudFormation output in previous step for launching service catalog product.</p>
-</li>
-<li>
-<p>Launch the SageMaker portfolio product.</p>
-</li>
-</ol>
+<h4 id="_optionally_deploy_amazon_sagemaker_with_guardrails_as_a_service_catalog_product">Optionally deploy Amazon SageMaker with guardrails as a Service Catalog product</h4>
+<div class="paragraph">
+<p>After the base infrastructure is set up by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when the launching Service Catalog product and then launch the SageMaker portfolio product.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1521,209 +1579,16 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Specify the same environment name which is provided in Master template.
+Be sure to specify the same environment name that is provided in the CloudFormation template.
 </td>
 </tr>
 </table>
 </div>
-<div class="sect4">
-<h5 id="_parameter_for_sagemaker_portfolio_product">Parameter for SageMaker portfolio product:</h5>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Environment Details</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Environment Name
-(<code>ENVName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QuickStart</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Infrastructure naming convention for SageMakerGuardrail solution</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. SageMaker Notebook configuration</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notebook Instance Name
-(<code>NotebookInstanceName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker Notebook instance name</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Notebook Instance Type
-(<code>NotebookInstanceType</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ml.t2.medium</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Select Instance type for the SageMaker Notebook</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Default Internet Access
-(<code>DirectInternetAccess</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Disabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">If you set this to Disabled this notebook instance will be able to access resources only in your VPC. As per the Project requirement, we have Disabled it.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Root access
-(<code>RootAccess</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Enabled</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Root access for the SageMaker Notebook user</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Volume size for the SageMaker Notebook
-(<code>VolumeSizeInGB</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>5</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The size, in GB, of the ML storage volume to attach to the notebook instance. The default value is 5 GB.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Pushing code from S3 Bucket to SageMaker</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>NO_LABEL</strong>
-(<code>S3CodePusher</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NO</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to load the code from S3 to SageMaker Notebook</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Code Bucket Name
-(<code>CodeBucketName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-code-bucket</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 Bucket name from which you want to push code.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enable IAM group access for SageMaker Notebook
-(<code>IAMGroup</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>NO</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IAM Group for accessing SageMaker Notebook (Optional)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Project detail</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Project Suffix
-(<code>ProjectName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The suffix appended to all resources in the stack.  This will allow multiple copies of the same stack to be created in the same account.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker ProjectID
-(<code>ProjectID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QuickStart007</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enter a valid ProjectID.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_test_the_deployment">Test the deployment</h4>
 <div class="paragraph">
-<p>To test your deployment, see <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/gs-console.html" target="_blank" rel="noopener">Get Started with Amazon SageMaker Notebook Instances and SDKs</a>.</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/faq_troubleshooting.adoc</code></strong></em></p>
 </div>
+<div class="preview_mode">
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_security">Security</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_access_control">Access control</h3>
-<div class="paragraph">
-<p>AWS IAM roles help to ensure that the compute resources (Lambda functions, SageMaker training clusters, and inference endpoints) can only access necessary Amazon S3 data and AWS resources.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_encryption">Encryption</h3>
-<div class="paragraph">
-<p>All objects (data, models, and Lambda code) stored in Amazon S3 are AES-256 encrypted at rest using server-side encryption.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_private_network">Private network</h3>
-<div class="paragraph">
-<p>Using AWS VPC endpoints, API calls from SageMaker to other AWS Services like S3(Gateway), CloudWatch  will remain private and downloading packages over the internet is restricted. The network traffic remain within the AWS network and not accessible over the internet.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_isolation">Isolation</h3>
-<div class="paragraph">
-<p>Amazon SageMaker resources are saggregated based on the tags and are isolated from one another. The resources are grouped based on the principal and resource tags which are unique for every new deployments. Thus all resources are isolated from one another with the help of tags.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_other_useful_information">Other useful information</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p><em>Add any other details that will help the customer use the software on AWS.</em></p>
 </div>
 </div>
 </div>
@@ -1759,6 +1624,7 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="_parameter_reference">Parameter reference</h2>
 <div class="sectionbody">
@@ -1778,7 +1644,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <div class="sect2">
 <h3 id="_launch_into_a_new_vpc">Launch into a new VPC</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Environment Details</caption>
+<caption class="title">Table 1. Environment Details</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1801,7 +1667,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. VPC Network Configuration for SageMaker</caption>
+<caption class="title">Table 2. VPC Network Configuration for SageMaker</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1836,7 +1702,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. ECR Repository Details</caption>
+<caption class="title">Table 3. ECR Repository Details</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1859,7 +1725,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. AWS Quick Start Configuration</caption>
+<caption class="title">Table 4. AWS Quick Start Configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1894,7 +1760,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]</caption>
+<caption class="title">Table 5. Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1917,7 +1783,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. [Optional] Enable SageMaker Product Launch from Master Template</caption>
+<caption class="title">Table 6. [Optional] Enable SageMaker Product Launch from Master Template</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1940,7 +1806,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. SageMaker Notebook configuration</caption>
+<caption class="title">Table 7. SageMaker Notebook configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1987,7 +1853,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 13. Pushing code from S3 Bucket to SageMaker</caption>
+<caption class="title">Table 8. Pushing code from S3 Bucket to SageMaker</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2002,7 +1868,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>NO_LABEL</strong>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code to push to S3
 (<code>S3CodePusher</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>NO</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to load the code from S3 to SageMaker Notebook</p></td>
@@ -2016,7 +1882,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 14. Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]</caption>
+<caption class="title">Table 9. Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2039,7 +1905,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 15. Project detail</caption>
+<caption class="title">Table 10. Project detail</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2071,7 +1937,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <div class="sect2">
 <h3 id="_launch_into_an_existing_vpc">Launch into an existing VPC</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 16. Environment Details</caption>
+<caption class="title">Table 11. Environment Details</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2094,7 +1960,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 17. Existing VPC Network Configuration for SageMaker</caption>
+<caption class="title">Table 12. Existing VPC Network Configuration for SageMaker</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2129,7 +1995,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 18. ECR Repository Details</caption>
+<caption class="title">Table 13. ECR Repository Details</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2152,7 +2018,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 19. AWS Quick Start Configuration</caption>
+<caption class="title">Table 14. AWS Quick Start Configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2187,7 +2053,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 20. Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]</caption>
+<caption class="title">Table 15. Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2210,7 +2076,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 21. [Optional] Enable SageMaker Product Launch from Master Template</caption>
+<caption class="title">Table 16. [Optional] Enable SageMaker Product Launch from Master Template</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2233,7 +2099,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 22. SageMaker Notebook configuration</caption>
+<caption class="title">Table 17. SageMaker Notebook configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2280,7 +2146,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. Pushing code from S3 Bucket to SageMaker</caption>
+<caption class="title">Table 18. Pushing code from S3 Bucket to SageMaker</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2295,7 +2161,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>NO_LABEL</strong>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code to push to S3
 (<code>S3CodePusher</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>NO</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to load the code from S3 to SageMaker Notebook</p></td>
@@ -2309,7 +2175,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]</caption>
+<caption class="title">Table 19. Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2332,7 +2198,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 25. Project detail</caption>
+<caption class="title">Table 20. Project detail</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -2404,8 +2270,8 @@ and to share your customizations with others.</p>
 </div>
 <p class="footer-text">
 <!-- We can use document attributes: -->
-<!-- Generated with Asciidoctor v2.0.12. -->
-<a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> | &copy; 2020, Amazon Web Services, Inc. or its affiliates and Brillio.. All rights reserved.
+<!-- Generated with Asciidoctor v2.0.10. -->
+<a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> | &copy; 2020, Amazon Web Services, Inc. or its affiliates and Brillio. All rights reserved.
 </p>
 </body>
 </html>
