@@ -6,7 +6,7 @@ AWS Cloud.
 // Replace this example diagram with your own. Send us your source PowerPoint file. Be sure to follow our guidelines here : http://(we should include these points on our contributors giude)
 :xrefstyle: short
 [#architecture1]
-.Quick Start architecture for {partner-product-short-name} on AWS
+.Quick Start architecture for {partner-product-name} on AWS
 image::../images/brillio-architecture-diagram.png[Architecture,width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
