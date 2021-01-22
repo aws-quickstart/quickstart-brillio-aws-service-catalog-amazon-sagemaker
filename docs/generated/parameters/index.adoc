@@ -1,0 +1,6 @@
+
+=== Launch into a new VPC
+include::Main.template.adoc[]
+
+=== Launch into an existing VPC
+include::ExistingVPC.template.adoc[]

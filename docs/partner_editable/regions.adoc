@@ -1,6 +1,28 @@
 This Quick Start supports the following Regions:
 
-* us-east-1, US East (N. Virginia) (EXAMPLE)
-* us-east-2, US East (Ohio) (EXAMPLE)
+[cols=3*,options="header"]
+|===
+|Code
+|Name
+| Opt-in Status
+
+|us-east-1	|US East (N. Virginia)(Ohio)	|Not required
+|us-east-2	|US East (Ohio)	|Not required
+|us-west-1	|US West (N. California)	|Not required
+|us-west-2	|US West (Oregon)	|Not required
+|ap-south-1	|Asia Pacific (Mumbai)	|Not required
+|ap-northeast-1	|Asia Pacific (Tokyo)	|Not required
+|ap-northeast-2	|Asia Pacific (Seoul)	|Not required	
+|ap-southeast-1	|Asia Pacific (Singapore)	|Not required	
+|ap-southeast-2	|Asia Pacific (Sydney)	|Not required		
+|ca-central-1	|Canada (Central)	|Not required	
+|eu-central-1	|Europe (Frankfurt)	|Not required	
+|eu-west-1	|Europe (Ireland)	|Not required	
+|eu-west-2	|Europe (London)	|Not required	
+|eu-west-3	|Europe (Paris)	|Not required
+|eu-south-1	|Europe (Milan)	|Required		
+|eu-north-1	|Europe (Stockholm)	|Not required	
+|sa-east-1	|South America (São Paulo)	|Not required	
+|===
 
 //Full list: https://docs.aws.amazon.com/general/latest/gr/rande.html

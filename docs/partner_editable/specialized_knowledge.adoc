@@ -1,6 +1,19 @@
 // Replace the content in <>
 // Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
 
-This Quick Start assumes familiarity with <knowledge expectations>.
+The following information is available to help you become familiar with the AWS services that are used in this Quick Start:
+
+* https://aws.amazon.com/sagemaker/[Amazon SageMaker^]
+* https://aws.amazon.com/privatelink/[AWS PrivateLink^]
+* https://docs.aws.amazon.com/STS/latest/APIReference/welcome.html[AWS Security Token Service API Reference^]
+* https://aws.amazon.com/lambda/[AWS Lambda^]
+* https://aws.amazon.com/s3/[Amazon S3^]
+* https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints.html[VPC endpoints^]
+* https://aws.amazon.com/efs/[AWS Elastic File System^]
+* https://aws.amazon.com/ecr/[AWS Elastic Container Registry^]
+* https://aws.amazon.com/servicecatalog[AWS Service Catalog^]
+* https://aws.amazon.com/iam/[AWS Identity and Access Management^]
+* https://aws.amazon.com/cloudformation/[AWS CloudFormation^]
+* https://aws.amazon.com/cloudwatch/[Amazon CloudWatch^]
 
 

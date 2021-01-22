@@ -1,0 +1,71 @@
+
+.Environment Details
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Environment Name
+(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMakerGuardrail solution
+|===
+.VPC Network Configuration for SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|VPC CIDR block
+(`VPCCIDR`)|`10.0.0.0/16`|CIDR block for the VPC|Resource Subnet CIDR block
+(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for the Subnet-1|ENI Subnet CIDR block
+(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for the Subnet-2
+|===
+.ECR Repository Details
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|ECR Repository Name
+(`ECRRepositoryName`)|`quickstart-repository`|ECR Repository Name
+|===
+.AWS Quick Start Configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Quick Start S3 Bucket Name
+(`QSS3BucketName`)|`aws-quickstart`|S3 bucket name for the Quick Start assets.|Quick Start S3 Key Prefix
+(`QSS3KeyPrefix`)|`deployment/`|The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).|Quick Start S3 bucket region
+(`QSS3BucketRegion`)|`us-east-2`|The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+|===
+.Access to Service Catalog for DataScientist to launch SageMaker Product [By default IAM role will be enabled for launching SageMaker product]
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Enable IAM group access for Service catalog (Optional)
+(`EnableIAMGroup`)|`NO`|IAM Group for launching the SageMaker product (Optional)
+|===
+.[Optional] Enable SageMaker Product Launch from Master Template
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Deploy SageMaker Product
+(`SageMakerLaunch`)|`YES`|Do you want to launch SageMaker product from master template ?
+|===
+.SageMaker Notebook configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Notebook Instance Name
+(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker Notebook instance name|Notebook Instance Type
+(`NotebookInstanceType`)|`ml.t2.medium`|Select Instance type for the SageMaker Notebook|Default Internet Access
+(`DirectInternetAccess`)|`Disabled`|If you set this to Disabled this notebook instance will be able to access resources only in your VPC. As per the Project requirement, we have Disabled it.|Root access
+(`RootAccess`)|`Enabled`|Root access for the SageMaker Notebook user|Volume size for the SageMaker Notebook
+(`VolumeSizeInGB`)|`5`|The size, in GB, of the ML storage volume to attach to the notebook instance. The default value is 5 GB.
+|===
+.Pushing code from S3 Bucket to SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Code to push to S3
+(`S3CodePusher`)|`NO`|Do you want to load the code from S3 to SageMaker Notebook|Code Bucket Name
+(`CodeBucketName`)|`quickstart-code-bucket`|S3 Bucket name from which you want to push code.
+|===
+.Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Enable IAM group access for SageMaker Notebook
+(`IAMGroup`)|`NO`|IAM Group for accessing SageMaker Notebook (Optional)
+|===
+.Project detail
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Project Suffix
+(`ProjectName`)|`**__Requires input__**`|The suffix appended to all resources in the stack.  This will allow multiple copies of the same stack to be created in the same account.|SageMaker ProjectID
+(`ProjectID`)|`QuickStart007`|Enter a valid ProjectID.
+|===

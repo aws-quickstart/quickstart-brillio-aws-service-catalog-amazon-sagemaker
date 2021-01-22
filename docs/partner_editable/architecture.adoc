@@ -2,26 +2,32 @@ Deploying this Quick Start for a new virtual private cloud (VPC) with
 default parameters builds the following {partner-product-short-name} environment in the
 AWS Cloud.
 
+[.normal]
 // Replace this example diagram with your own. Send us your source PowerPoint file. Be sure to follow our guidelines here : http://(we should include these points on our contributors giude)
 :xrefstyle: short
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} on AWS
-image::../images/architecture_diagram.png[Architecture,width=100%,height=100%]
+image::../images/brillio-architecture-diagram.png[Architecture,width=100%,height=100%]
 
 As shown in <<architecture1>>, the Quick Start sets up the following:
 
-* A highly available architecture that spans two Availability Zones.*
-* A VPC configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
-* In the public subnets:
-** Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to EC2 instances in public and private subnets.*
-* In the private subnets:
-** <item>.
-** <item>.
-// Add bullet points for any additional components that are included in the deployment. Make sure that the additional components are also represented in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+* AWS Lambda SageMakerBuild function for validating VPC Domain Name System (DNS) and provisioning SageMaker resources.
+* AWS Service Catalog for triggering the SageMakerBuild function and passing parameters for creating resources.
+* AWS Identity and Access Management (IAM) roles, including: 
+** User role for accessing and launching the Service Catalog.
+** Service Catalog launch constraint role for providing full permission to provision resources. 
+** SageMaker execution role for providing limited access to the SageMaker notebook as determined by policies.
+* In the private resource subnet:
+** Amazon SageMaker for running ML models and workflow.
+** Amazon Elastic File System (Amazon EFS) for sharing common modules to SageMaker notebooks.
+* In the private Elastic Network Interface (ENI) subnet, interface endpoints through which SageMaker communicates with the following AWS services:
+** Amazon CloudWatch for real-time monitoring of the SageMaker environment. 
+** Amazon Elastic Container Registry (Amazon ECR) with ECR Policy for storing the latest ML model images for future deployments.
+** AWS Security Token Service (AWS STS) for providing access to an IAM role to perform operations on other AWS services by assuming the role.
+* Amazon Simple Storage Service (Amazon S3) gateway endpoint to access the S3 bucket for storing and retrieving ML data and bucket policy for restricting bucket access.
+* A dedicated S3 bucket used as a data store for training models and SageMaker model artifacts.
+* AWS PrivateLink, Amazon CloudWatch, AWS IAM, AWS Key Management Service (AWS KMS), and other native services on AWS to provide enhanced security.
 
-[.small]#*The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+
+// Add bullet points for any additional components that are included in the deployment. Make sure that the additional components are also represented in the architecture diagram. End each bullet with a period.
+

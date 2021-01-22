@@ -2,6 +2,18 @@
 // Identify your target audience and explain how/why they would use this Quick Start.
 //Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
 
-This guide provides instructions for deploying the {partner-product-short-name} Quick Start reference architecture on the AWS Cloud.
+This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled.
+[.normal]
 
-This Quick Start is for users who <target audience and usage scenario>
+This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
+
+ageMaker with security guardrails provides the following features:
+
+* A private network for performing secure API calls to other AWS services and restricting internet access for downloading packages. 
+* Restricted SageMaker access to Amazon Elastic Container Registry (Amazon ECR).
+* Mandatory tagging for implementing resource policies and compliance when creating users and resources.
+* S3 bucket policies that restrict access to specific VPC endpoints.
+* Encryption of ML model artifacts and other system artifacts that are either in transit or at rest. Requests to the SageMaker API and console are made over a Secure Sockets Layer (SSL) connection.
+* Disabled root access to the SageMaker notebook instance at the time of launch.
+* Restricted IAM roles and policies for SageMaker execution and notebook access based on resource tags and project ID. Users can only open, start, and stop their own SageMaker notebooks. 
+
