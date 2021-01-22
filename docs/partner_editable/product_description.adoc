@@ -1,5 +1,8 @@
 // Replace the content in <>
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
+Amazon SageMaker provides an automated approach for various ML workflows. Users can manually provision SageMaker notebooks directly through the SageMaker console and create the associated S3 buckets to use as a data store for training models and SageMaker model artifacts. 
 
-<Describe how the software works on AWS.>
+Although SageMaker's self-service provisioning capabilities are convenient for project teams, this model can result in limited security options when running SageMaker in an isolated environment. Security risks exist from downloading packages over the internet, managing training models from public endpoints, and accessing model-building data from an S3 bucket. Also, in its native form, SageMaker provides no options for storing shared resources using Amazon Elastic File System (Amazon EFS). Setting up EFS for storage is a manual process. 
+
+You can address these security concerns and improve the experience accessing a SageMaker notebook by using Brillio's implementation of SageMaker. It provides guardrails for incorporating security mechanisms and add-on features that are not provided with SageMaker. These guardrails deploy within an AWS-managed virtual private cloud (VPC) and elastic network interfaces. Also, when using Brillio's SageMaker product, you can provide more secure access to AWS services with VPC endpoint interfaces and S3 bucket gateways within the customer’s own VPC.
