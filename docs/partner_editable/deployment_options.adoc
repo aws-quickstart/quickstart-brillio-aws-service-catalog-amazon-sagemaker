@@ -5,4 +5,4 @@ This Quick Start provides two deployment options:
 * *Deploy {partner-product-name} into a new VPC*. This option builds a new AWS environment consisting of the VPC, subnets, VPC endpoint, security groups, EFS, ECR, and other infrastructure components. It then deploys SageMaker into this new VPC.
 * *Deploy {partner-product-name} into an existing VPC*. This option provisions SageMaker in your existing AWS infrastructure.
 
-The Quick Start provides separate templates for these options. It also lets you configure environment details, VPC and SageMaker settings, as discussed later in this guide.
+The Quick Start provides separate templates for these options. It also lets you configure environment details, VPC, and SageMaker settings, as discussed later in this guide.

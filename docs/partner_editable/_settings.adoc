@@ -3,7 +3,7 @@
 :quickstart-project-name: quickstart-brillio-aws-service-catalog-amazon-sagemaker
 :partner-product-name: Amazon SageMaker with guardrails
 // For the following attribute, if you have no short name, enter the same name as partner-product-name.
-:partner-product-short-name: Guardrails
+:partner-product-short-name: SageMaker with guardrails
 // If there's no partner, comment partner-company-name and partner-contributors.
 :partner-company-name: Brillio
 :doc-month: January

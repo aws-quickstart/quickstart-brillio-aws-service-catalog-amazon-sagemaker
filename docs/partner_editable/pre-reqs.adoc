@@ -2,7 +2,7 @@
 
 ==== Prepare your AWS account
 
-. If you don’t already have an AWS account, create one https://aws.amazon.com by following the on-screen instructions.
+. If you don’t already have an AWS account, create one at https://aws.amazon.com by following the on-screen instructions.
 . Use the Region selector in the navigation bar to choose the AWS Region where you want to deploy SageMaker with guardrails.
 
 NOTE: Amazon SageMaker is not supported in all AWS Regions. For a current list of supported Regions for SageMaker, see the Supported Regions in the link:#_technical_requirements[Technical requirements] section.

@@ -2,7 +2,7 @@
 //Should any sections not be applicable, remove them
 
 ==== Optionally deploy {partner-product-name} as a Service Catalog product
-After the base infrastructure is set up by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when the launching Service Catalog product and then launch the SageMaker portfolio product.
+After the base infrastructure is configured by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when launching the Service Catalog and then launch SageMaker.
 
 NOTE: Be sure to specify the same environment name that is provided in the CloudFormation template.
 
