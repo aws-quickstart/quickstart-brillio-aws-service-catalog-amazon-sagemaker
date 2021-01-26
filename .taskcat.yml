@@ -15,7 +15,7 @@ tests:
       Subnet2CidrBlock: 10.0.2.0/24
       ECRRepositoryName: quickstart-sagemaker-repository
       QSS3BucketName: $[taskcat_autobucket]
-      QSS3KeyPrefix: quickstart-sagemaker-guardrail/
+      QSS3KeyPrefix: quickstart-brillio-aws-service-catalog-amazon-sagemaker/
       QSS3BucketRegion: $[taskcat_current_region]
       EnableIAMGroup: 'NO'
       SageMakerLaunch: 'YES'
