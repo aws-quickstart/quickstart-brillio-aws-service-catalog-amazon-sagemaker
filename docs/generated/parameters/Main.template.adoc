@@ -3,21 +3,21 @@
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Environment name
-(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMaker with guardrails
+(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMaker with guardrails.
 |===
 .VPC network configuration for SageMaker
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|VPC CIDR block
-(`VPCCIDR`)|`10.0.0.0/16`|CIDR block for the VPC|Resource subnet CIDR block
-(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for subnet 1|ENI subnet CIDR block
-(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for subnet 2
+(`VPCCIDR`)|`10.0.0.0/16`|CIDR block for the VPC.|Resource subnet CIDR block
+(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for subnet 1.|ENI subnet CIDR block
+(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for subnet 2.
 |===
 .ECR repository details
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|ECR repository name
-(`ECRRepositoryName`)|`quickstart-repository`|ECR repository name
+(`ECRRepositoryName`)|`quickstart-repository`|ECR repository name.
 |===
 .AWS Quick Start configuration
 [width="100%",cols="16%,11%,73%",options="header",]
@@ -37,14 +37,14 @@
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Deploy SageMaker
-(`SageMakerLaunch`)|`YES`|Do you want to launch SageMaker from main template?
+(`SageMakerLaunch`)|`YES`|Do you want to launch SageMaker from the main template?
 |===
 .SageMaker notebook configuration
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Notebook instance name
-(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker notebook instance name|Notebook instance type
-(`NotebookInstanceType`)|`ml.t2.medium`|Select instance type for the SageMaker notebook.|Default internet access
+(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker notebook instance name.|Notebook instance type
+(`NotebookInstanceType`)|`ml.t2.medium`|Select the instance type for the SageMaker notebook.|Default internet access
 (`DirectInternetAccess`)|`Disabled`|When value is Disabled (the default setting), this notebook instance can only access resources in your VPC. |Root access
 (`RootAccess`)|`Enabled`|Root access for the SageMaker notebook user.|Volume size for the SageMaker notebook
 (`VolumeSizeInGB`)|`5`|The size (in GB) of the ML storage volume to attach to the notebook instance. The default value is 5 GB.

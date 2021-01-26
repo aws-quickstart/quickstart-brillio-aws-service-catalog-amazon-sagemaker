@@ -858,13 +858,13 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled.</p>
+<p>This Quick Start deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled for added security.</p>
 </div>
 <div class="paragraph">
 <p>This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS.</p>
 </div>
 <div class="paragraph">
-<p>Amazon SageMaker with guardrails provides the following features:</p>
+<p>SageMaker with guardrails provides the following features:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -959,7 +959,7 @@ After you deploy the Quick Start, <a href="https://docs.aws.amazon.com/awsaccoun
 <div class="sectionbody">
 <div class="paragraph">
 <p>Deploying this Quick Start for a new virtual private cloud (VPC) with
-default parameters builds the following Guardrails environment in the
+default parameters builds the following SageMaker with guardrails environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock normal">
@@ -974,7 +974,7 @@ AWS Cloud.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>AWS Lambda SageMakerBuild function for validating VPC Domain Name System (DNS) and provisioning SageMaker resources.</p>
+<p>AWS Lambda function (SageMakerBuild) for validating the VPC Domain Name System (DNS) and provisioning SageMaker resources.</p>
 </li>
 <li>
 <p>AWS Service Catalog for triggering the SageMakerBuild function and passing parameters for creating resources.</p>
@@ -987,7 +987,7 @@ AWS Cloud.</p>
 <p>User role for accessing and launching the Service Catalog.</p>
 </li>
 <li>
-<p>Service Catalog launch constraint role for providing full permission to provision resources.</p>
+<p>Service Catalog launch constraint role for providing permission to provision resources.</p>
 </li>
 <li>
 <p>SageMaker execution role for providing limited access to the SageMaker notebook as determined by policies.</p>
@@ -1019,7 +1019,7 @@ AWS Cloud.</p>
 <p>Amazon Elastic Container Registry (Amazon ECR) with ECR Policy for storing the latest ML model images for future deployments.</p>
 </li>
 <li>
-<p>AWS Security Token Service (AWS STS) for providing access to an IAM role to perform operations on other AWS services by assuming the role.</p>
+<p>AWS Security Token Service (AWS STS) for providing access to an IAM role to perform operations on other AWS services.</p>
 </li>
 </ul>
 </div>
@@ -1297,7 +1297,7 @@ Certain Regions are available on an opt-in basis. For more information, see <a h
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>If you don’t already have an AWS account, create one <a href="https://aws.amazon.com" class="bare">https://aws.amazon.com</a> by following the on-screen instructions.</p>
+<p>If you don’t already have an AWS account, create one at <a href="https://aws.amazon.com" class="bare">https://aws.amazon.com</a> by following the on-screen instructions.</p>
 </li>
 <li>
 <p>Use the Region selector in the navigation bar to choose the AWS Region where you want to deploy SageMaker with guardrails.</p>
@@ -1343,7 +1343,7 @@ Amazon SageMaker is not supported in all AWS Regions. For a current list of supp
 </ul>
 </div>
 <div class="paragraph">
-<p>The Quick Start provides separate templates for these options. It also lets you configure environment details, VPC and SageMaker settings, as discussed later in this guide.</p>
+<p>The Quick Start provides separate templates for these options. It also lets you configure environment details, VPC, and SageMaker settings, as discussed later in this guide.</p>
 </div>
 </div>
 </div>
@@ -1420,7 +1420,7 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where the network infrastructure for Guardrails is built. The template is launched in the us-east-1 Region by default.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This Region is where the network infrastructure for SageMaker with guardrails is built. The template is launched in the us-east-1 Region by default.</p>
 </li>
 </ol>
 </div>
@@ -1449,7 +1449,7 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <p>Choose <strong>Create stack</strong> to deploy the stack.</p>
 </li>
 <li>
-<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Guardrails deployment is ready.</p>
+<p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the SageMaker with guardrails deployment is ready.</p>
 </li>
 <li>
 <p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">Figure 2</a>, to view the created resources.</p>
@@ -1460,12 +1460,12 @@ If you deploy this Quick Start in an existing VPC, ensure that your VPC is priva
 <div class="content">
 <a class="image" href="images/cfn_outputs.png"><img src="images/cfn_outputs.png" alt="cfn_outputs" width="100%" height="100%"></a>
 </div>
-<div class="title">Figure 2. Guardrails outputs after successful deployment</div>
+<div class="title">Figure 2. SageMaker with guardrails outputs after successful deployment</div>
 </div>
 <div class="sect3">
 <h4 id="_optionally_deploy_amazon_sagemaker_with_guardrails_as_a_service_catalog_product">Optionally deploy Amazon SageMaker with guardrails as a Service Catalog product</h4>
 <div class="paragraph">
-<p>After the base infrastructure is set up by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when the launching Service Catalog product and then launch the SageMaker portfolio product.</p>
+<p>After the base infrastructure is configured by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when launching the Service Catalog and then launch SageMaker.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1552,7 +1552,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Environment name
 (<code>ENVName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>QuickStart</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Infrastructure naming convention for SageMaker with guardrails</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Infrastructure naming convention for SageMaker with guardrails.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1575,19 +1575,19 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPC CIDR block
 (<code>VPCCIDR</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.0.0.0/16</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR block for the VPC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR block for the VPC.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Resource subnet CIDR block
 (<code>Subnet1CidrBlock</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.0.1.0/24</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 1.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ENI subnet CIDR block
 (<code>Subnet2CidrBlock</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.0.2.0/24</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 2.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1610,7 +1610,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name
 (<code>ECRRepositoryName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-repository</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1691,7 +1691,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Deploy SageMaker
 (<code>SageMakerLaunch</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>YES</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to launch SageMaker from main template?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to launch SageMaker from the main template?</p></td>
 </tr>
 </tbody>
 </table>
@@ -1714,13 +1714,13 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notebook instance name
 (<code>NotebookInstanceName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker notebook instance name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker notebook instance name.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notebook instance type
 (<code>NotebookInstanceType</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>ml.t2.medium</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Select instance type for the SageMaker notebook.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Select the instance type for the SageMaker notebook.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Default internet access
@@ -1845,7 +1845,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Environment name
 (<code>ENVName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>QuickStart</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Infrastructure naming convention for SageMaker with guardrails</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Infrastructure naming convention for SageMaker with guardrails.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1868,19 +1868,19 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">VPC name
 (<code>VPCID</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Select existing VPC for SageMaker</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Select existing VPC for SageMaker.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Resource subnet CIDR block
 (<code>Subnet1CidrBlock</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.0.1.0/24</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 1.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">ENI subnet CIDR block
 (<code>Subnet2CidrBlock</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>10.0.2.0/24</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR for subnet 2.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1903,7 +1903,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name
 (<code>ECRRepositoryName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-repository</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ECR repository name.</p></td>
 </tr>
 </tbody>
 </table>
@@ -2007,7 +2007,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notebook instance name
 (<code>NotebookInstanceName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker notebook instance name</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SageMaker notebook instance name.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Notebook instance type

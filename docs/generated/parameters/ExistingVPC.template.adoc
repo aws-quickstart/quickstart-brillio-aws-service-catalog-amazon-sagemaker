@@ -3,21 +3,21 @@
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Environment name
-(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMaker with guardrails
+(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMaker with guardrails.
 |===
 .Existing VPC network configuration for SageMaker
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|VPC name
-(`VPCID`)|`**__Requires input__**`|Select existing VPC for SageMaker|Resource subnet CIDR block
-(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for subnet 1|ENI subnet CIDR block
-(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for subnet 2
+(`VPCID`)|`**__Requires input__**`|Select existing VPC for SageMaker.|Resource subnet CIDR block
+(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for subnet 1.|ENI subnet CIDR block
+(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for subnet 2.
 |===
 .ECR repository details
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|ECR repository name
-(`ECRRepositoryName`)|`quickstart-repository`|ECR repository name
+(`ECRRepositoryName`)|`quickstart-repository`|ECR repository name.
 |===
 .AWS Quick Start configuration
 [width="100%",cols="16%,11%,73%",options="header",]
@@ -43,7 +43,7 @@
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
 |Parameter label (name) |Default value|Description|Notebook instance name
-(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker notebook instance name|Notebook instance type
+(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker notebook instance name.|Notebook instance type
 (`NotebookInstanceType`)|`ml.t2.medium`|Select instance type for the SageMaker notebook.|Default internet access
 (`DirectInternetAccess`)|`Disabled`|When value is Disabled (default), this notebook instance can only access resources in your VPC. |Root access
 (`RootAccess`)|`Enabled`|Root access for the SageMaker notebook user.|Volume size for the SageMaker notebook

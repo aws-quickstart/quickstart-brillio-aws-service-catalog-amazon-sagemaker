@@ -2,11 +2,11 @@
 // Identify your target audience and explain how/why they would use this Quick Start.
 //Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
 
-This Quick Start reference deployment guide provides step-by-step instructions for deploying Amazon SageMaker with guardrails on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled.
+This Quick Start deployment guide provides step-by-step instructions for deploying {partner-product-name} on the AWS Cloud. This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled for added security.
 
 This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
 
-{partner-product-name} provides the following features:
+{partner-product-short-name} provides the following features:
 
 * A private network for performing secure API calls to other AWS services and restricting internet access for downloading packages. 
 * Restricted SageMaker access to Amazon Elastic Container Registry (Amazon ECR).
