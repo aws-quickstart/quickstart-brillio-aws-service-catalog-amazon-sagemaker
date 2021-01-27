@@ -96,7 +96,7 @@ Metadata:
       CodeBucketName:
         default: Code bucket name
       S3CodePusher:
-        default: Code to push to S3 
+        default: Code to push from S3 
 Parameters:
   ENVName:
     Description: Infrastructure naming convention for SageMaker with guardrails.
