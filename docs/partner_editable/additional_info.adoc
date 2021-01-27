@@ -7,7 +7,7 @@ After the base infrastructure is configured by the CloudFormation template, data
 NOTE: Be sure to specify the same environment name that is provided in the CloudFormation template.
 
 === Test the deployment
-To test your deployment, see https://docs.aws.amazon.com/sagemaker/latest/dg/gs-console.html[Get Started with Amazon SageMaker Notebook Instances and SDKs]. 
+To test your deployment, see https://docs.aws.amazon.com/sagemaker/latest/dg/gs-console.html[Get Started with Amazon SageMaker Notebook Instances and SDKs^]. 
 //Provide any other information of interest to users, especially focusing on areas where AWS or cloud usage differs from on-premises usage.
 
 //Add any other details that will help the customer use the software on AWS.
