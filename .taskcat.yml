@@ -1,0 +1,33 @@
+project:
+  name: quickstart-brillio-aws-service-catalog-amazon-sagemaker
+  owner: quickstart@amazon.com
+  package_lambda: true
+  regions:
+    - us-east-1
+    - us-west-2
+    - us-east-2
+tests:
+  default:
+    parameters:
+      ENVName: QuickStart
+      VPCCIDR: 10.0.0.0/16
+      Subnet1CidrBlock: 10.0.1.0/24
+      Subnet2CidrBlock: 10.0.2.0/24
+      ECRRepositoryName: quickstart-sagemaker-repository
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3KeyPrefix: quickstart-brillio-aws-service-catalog-amazon-sagemaker/
+      QSS3BucketRegion: $[taskcat_current_region]
+      EnableIAMGroup: 'NO'
+      SageMakerLaunch: 'YES'
+      SageMakerS3Bucket: $[taskcat_autobucket]
+      NotebookInstanceName: QuickStartNotebook
+      NotebookInstanceType: ml.t2.medium
+      VolumeSizeInGB: 5
+      RootAccess: Enabled
+      ProjectID: QuickStart007
+      ProjectName: SM170920
+    regions:
+      - us-east-1
+      - us-west-2
+      - us-east-2
+    template: templates/Main.template.yaml
