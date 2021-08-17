@@ -312,8 +312,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
-          - !Sub ${RandomString}
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -399,7 +401,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -419,7 +424,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -438,7 +446,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
@@ -458,7 +469,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
