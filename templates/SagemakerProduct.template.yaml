@@ -554,7 +554,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+        - '-'
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
