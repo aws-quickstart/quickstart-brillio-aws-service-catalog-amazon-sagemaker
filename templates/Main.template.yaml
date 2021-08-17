@@ -98,6 +98,9 @@ Metadata:
       S3CodePusher:
         default: Code to push from S3 
 Parameters:
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   ENVName:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
@@ -289,6 +292,11 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   VPCStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -305,6 +313,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
+          - !Sub ${RandomString}
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -333,6 +342,7 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
+          - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
