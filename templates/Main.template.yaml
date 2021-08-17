@@ -102,6 +102,9 @@ Parameters:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
     Default: QuickStart
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   VPCCIDR:
     AllowedPattern: >-
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -289,6 +292,11 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   VPCStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -333,6 +341,7 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Ref ENVName
+          - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
@@ -388,6 +397,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
+          - !Sub ${RandomString}
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -447,6 +457,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
+          - !Sub ${RandomString}
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
