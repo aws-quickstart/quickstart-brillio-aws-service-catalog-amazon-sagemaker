@@ -517,10 +517,16 @@ Resources:
           - !Ref ENVName
           - !Sub ${RandomString}
           - '-SageMakerBuild'
-      NotebookInstanceName: !Ref NotebookInstanceName
+      NotebookInstanceName: !Join 
+        - '-'
+        - - !Ref NotebookInstanceName
+          - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
-      ENVName: !Ref ENVName
+      ENVName: !Join 
+        - '-'
+        - - !Ref ProjectName
+        - !Sub ${RandomString}
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
