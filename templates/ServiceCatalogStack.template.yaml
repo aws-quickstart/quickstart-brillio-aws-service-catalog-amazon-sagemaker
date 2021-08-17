@@ -79,7 +79,10 @@ Resources:
       Description: Provides full access to service catalog enduser capabilities
       Tags:
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
@@ -102,7 +105,10 @@ Resources:
       Description: Provides full access to service catalog to launch product
       Tags:
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
@@ -161,7 +167,10 @@ Resources:
               - !Sub ${RandomString}
               - SageMakerPortfolio
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
   SageMakerProduct:
     Type: 'AWS::ServiceCatalog::CloudFormationProduct'
     Properties:
