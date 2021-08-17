@@ -149,7 +149,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-           - !Sub ${RandomString}
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
@@ -229,7 +228,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-           - !Sub ${RandomString}
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -431,7 +429,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-           - !Sub ${RandomString}
   S3Policy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -532,7 +529,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-           - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
@@ -559,7 +555,6 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
-           - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:

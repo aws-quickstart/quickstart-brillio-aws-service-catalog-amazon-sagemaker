@@ -90,7 +90,6 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
-            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
@@ -152,7 +151,6 @@ Resources:
       Tags:
         - Key: ENVName
           Value: !Ref ENVName
-            - !Sub ${RandomString}
       Timeout: 300
       Code:
         ZipFile: |

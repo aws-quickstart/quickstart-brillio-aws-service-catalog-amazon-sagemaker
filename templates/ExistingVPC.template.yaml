@@ -559,7 +559,6 @@ Outputs:
   ProjectName:
     Description: Project name used for SageMaker deployment.
     Value: !Ref ProjectName
-      - !Sub ${RandomString}
     Condition: SageMakerCondition
   ProjectID:
     Description: Project ID used for SageMaker deployment.

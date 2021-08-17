@@ -80,7 +80,6 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
-            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
@@ -104,7 +103,6 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
-            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
@@ -164,7 +162,6 @@ Resources:
               - SageMakerPortfolio
         - Key: ENVName
           Value: !Ref ENVName
-            - !Sub ${RandomString}
   SageMakerProduct:
     Type: 'AWS::ServiceCatalog::CloudFormationProduct'
     Properties:
@@ -206,7 +203,6 @@ Resources:
               - SageMakerProduct
         - Key: ENVName
           Value: !Ref ENVName
-            - !Sub ${RandomString}
   SageMakerProductAssociation:
     Type: 'AWS::ServiceCatalog::PortfolioProductAssociation'
     Properties:
