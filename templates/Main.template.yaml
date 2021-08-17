@@ -98,9 +98,6 @@ Metadata:
       S3CodePusher:
         default: Code to push from S3 
 Parameters:
-  RandomStringArn:
-    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
-    Type: String
   ENVName:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
@@ -292,11 +289,14 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
-  RandomString:
-    Type: Custom::RandomString
+  RandomStringStack:
     Properties:
-      ServiceToken: !Ref RandomStringArn
-      Number: 8
+      TemplateURL:
+        !Sub
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/random-string.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+    Type: AWS::CloudFormation::Stack
   VPCStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -312,10 +312,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -343,10 +341,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
@@ -371,6 +367,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         VPCId: !GetAtt
           - VPCStack
           - Outputs.VPCId
@@ -401,10 +398,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -424,10 +419,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -446,10 +439,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
@@ -469,10 +460,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString}
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        ENVName: !Ref ENVName
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
@@ -500,6 +489,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
