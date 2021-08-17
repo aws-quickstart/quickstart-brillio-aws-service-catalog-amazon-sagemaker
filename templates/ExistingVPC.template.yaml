@@ -102,6 +102,9 @@ Parameters:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
     Default: QuickStart
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   VPCID:
     Description: Select existing VPC for SageMaker.
     Type: 'AWS::EC2::VPC::Id'
@@ -285,6 +288,11 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   VPCVaildator:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -551,6 +559,7 @@ Outputs:
   ProjectName:
     Description: Project name used for SageMaker deployment.
     Value: !Ref ProjectName
+      - !Sub ${RandomString}
     Condition: SageMakerCondition
   ProjectID:
     Description: Project ID used for SageMaker deployment.

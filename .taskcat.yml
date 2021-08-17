@@ -4,8 +4,6 @@ project:
   package_lambda: true
   regions:
     - us-east-1
-    - us-west-2
-    - us-east-2
 tests:
   default:
     parameters:
@@ -25,9 +23,7 @@ tests:
       VolumeSizeInGB: 5
       RootAccess: Enabled
       ProjectID: QuickStart007
-      ProjectName: SM170920
+      ProjectName: QuickStart
     regions:
       - us-east-1
-      - us-west-2
-      - us-east-2
     template: templates/Main.template.yaml

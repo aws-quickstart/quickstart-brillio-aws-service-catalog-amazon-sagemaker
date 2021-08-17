@@ -20,16 +20,25 @@ Parameters:
   ENVName:
     Description: SageMaker Project name
     Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   EFSMountIpAddr:
     Description: EFS mount target Ip address
     Type: String
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   EFSLifecycleConfig:
     Type: 'AWS::SageMaker::NotebookInstanceLifecycleConfig'
     Properties:
       NotebookInstanceLifecycleConfigName: !Join 
         - ''
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - '-EFS-LC'
       OnCreate:
         - Content: !Base64 

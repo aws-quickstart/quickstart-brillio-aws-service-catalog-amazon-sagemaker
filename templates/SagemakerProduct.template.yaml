@@ -53,6 +53,9 @@ Metadata:
       S3CodePusher:
         default: Code to push to S3 
 Parameters:
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   NotebookInstanceName:
     AllowedPattern: '[A-Za-z0-9-]{1,63}'
     ConstraintDescription: >-
@@ -133,6 +136,11 @@ Conditions:
       - 'NO'
       - !Ref EnableIAMGroup
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   SagemakerKMSKey:
     Type: 'AWS::KMS::Key'
     Properties:
@@ -141,6 +149,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
+           - !Sub ${RandomString}
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
@@ -207,6 +216,7 @@ Resources:
         - - alias/
           - 'SageMaker-CMK-'
           - !Ref ProjectName
+          - !Sub ${RandomString}
           - '-'
           - !Ref ProjectID
       TargetKeyId:
@@ -219,6 +229,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
+           - !Sub ${RandomString}
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -232,6 +243,7 @@ Resources:
         - PolicyName: !Join 
             - '-'
             - - !Ref ProjectName
+              - !Sub ${RandomString}
               - SageMakerExecutionPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -387,6 +399,7 @@ Resources:
       PolicyName: !Join 
         - '-'
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - CodeBucketPolicy
       PolicyDocument:
         Version: 2012-10-17
@@ -418,6 +431,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
+           - !Sub ${RandomString}
   S3Policy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -495,6 +509,7 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
+          - !Sub ${RandomString}
           - '-SageMakerBuild'
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
@@ -517,6 +532,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
+           - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
@@ -524,6 +540,7 @@ Resources:
       GroupName: !Join 
         - '-'
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerGroup
   EndUserAccessRole:
     Type: 'AWS::IAM::Role'
@@ -542,12 +559,14 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Ref ProjectName
+           - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
         - '-'
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerUserRolePolicy
       Roles:
         - !Ref EndUserAccessRole

@@ -32,6 +32,9 @@ Parameters:
   ENVName:
     Description: SageMaker Project name
     Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
@@ -65,6 +68,11 @@ Conditions:
       - "NO"
       - !Ref EnableIAMGroup
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   SCEndUserRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -72,10 +80,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
+            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCEndUserRole
       AssumeRolePolicyDocument:
         Statement:
@@ -94,10 +104,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
+            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCLaunchRole
       AssumeRolePolicyDocument:
         Statement:
@@ -112,6 +124,7 @@ Resources:
         - PolicyName: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCLaunchPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -139,6 +152,7 @@ Resources:
       DisplayName: !Join 
         - '-'
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - SageMakerPortfolio
       ProviderName: Brillio
       Tags:
@@ -146,9 +160,11 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SageMakerPortfolio
         - Key: ENVName
           Value: !Ref ENVName
+            - !Sub ${RandomString}
   SageMakerProduct:
     Type: 'AWS::ServiceCatalog::CloudFormationProduct'
     Properties:
@@ -158,6 +174,7 @@ Resources:
       Name: !Join 
         - '-'
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - SageMakerProduct
       Owner: Brillio
       ProvisioningArtifactParameters:
@@ -185,9 +202,11 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SageMakerProduct
         - Key: ENVName
           Value: !Ref ENVName
+            - !Sub ${RandomString}
   SageMakerProductAssociation:
     Type: 'AWS::ServiceCatalog::PortfolioProductAssociation'
     Properties:

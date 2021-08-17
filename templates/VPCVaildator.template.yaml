@@ -38,6 +38,9 @@ Parameters:
   ENVName:
     Description: SageMaker Project name
     Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   VPCID:
     Description: Select Existing VPC for SageMaker
     Type: 'AWS::EC2::VPC::Id'
@@ -76,16 +79,23 @@ Conditions:
   LambdaRegionCheck:
     !Not [!Equals [!Ref QSS3BucketRegion, !Ref 'AWS::Region']]
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   LambdaFunctionRole:
     Type: 'AWS::IAM::Role'
     Properties:
       Tags:
         - Key: Environment
           Value: !Ref ENVName
+            - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - VPCValidatorRole
       AssumeRolePolicyDocument:
         Statement:
@@ -100,6 +110,7 @@ Resources:
         - PolicyName: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - VPCValidatorPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -130,16 +141,18 @@ Resources:
       FunctionName: !Join 
         - '-'
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - VPCVaildator
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt 
         - LambdaFunctionRole
         - Arn
-      Runtime: python3.6
+      Runtime: python3.8
       Tags:
         - Key: ENVName
           Value: !Ref ENVName
+            - !Sub ${RandomString}
       Timeout: 300
       Code:
         ZipFile: |
@@ -236,6 +249,7 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
+          - !Sub ${RandomString}
           - '-VPCVaildator'
       VPCID: !Ref VPCID
   Subnet1:
@@ -252,6 +266,7 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - ResourceSubnet
   Subnet2:
     Type: 'AWS::EC2::Subnet'
@@ -267,6 +282,7 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - ENISubnet
   RouteTableSM:
     Type: 'AWS::EC2::RouteTable'
@@ -278,6 +294,7 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - PrivateRouteTable
   Subnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
@@ -296,6 +313,7 @@ Resources:
       GroupName: !Join 
         - '-'
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - ResourceSG
       SecurityGroupEgress:
         - CidrIp: !Ref Subnet2CidrBlock
@@ -308,6 +326,7 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - ResourceSG
       VpcId: !Ref VPCID
   SecurityGroup2:
@@ -317,6 +336,7 @@ Resources:
       GroupName: !Join 
         - '-'
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - ENISG
       SecurityGroupIngress:
         - CidrIp: !Ref Subnet1CidrBlock
@@ -334,6 +354,7 @@ Resources:
           Value: !Join 
             - '-'
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - ENISG
       VpcId: !Ref VPCID
   LambdaZipsBucket:
@@ -386,7 +407,7 @@ Resources:
     Properties:
       Description: Copies objects from a source S3 bucket to a destination
       Handler: index.handler
-      Runtime: python3.6
+      Runtime: python3.8
       Role: !GetAtt 'CopyZipsRole.Arn'
       Timeout: 240
       Code:
