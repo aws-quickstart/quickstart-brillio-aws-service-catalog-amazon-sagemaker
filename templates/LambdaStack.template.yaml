@@ -52,7 +52,10 @@ Resources:
     Properties:
       Tags:
         - Key: Environment
-          Value: !Ref ENVName  
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString} 
         - Key: Name
           Value: !Join 
             - '-'
@@ -149,7 +152,10 @@ Resources:
       Runtime: python3.6
       Tags:
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
       Timeout: 840
 Outputs:
   PythonLayer:

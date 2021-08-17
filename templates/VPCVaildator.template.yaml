@@ -89,7 +89,10 @@ Resources:
     Properties:
       Tags:
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
             - '-'
