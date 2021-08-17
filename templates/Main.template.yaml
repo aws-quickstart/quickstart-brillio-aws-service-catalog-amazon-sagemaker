@@ -341,8 +341,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
-        ENVName: !Ref ENVName
-          - !Sub ${RandomString}
+        ENVName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
