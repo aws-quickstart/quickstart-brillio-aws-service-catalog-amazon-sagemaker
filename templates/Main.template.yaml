@@ -313,10 +313,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -345,10 +342,7 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
@@ -405,10 +399,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -429,10 +420,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -452,10 +440,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
@@ -476,10 +461,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName:  !Join 
-          - '-'
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
