@@ -515,22 +515,12 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
-          - !Sub ${RandomString}
           - '-SageMakerBuild'
-      NotebookInstanceName: !Join 
-        - ''
-        - - !Ref NotebookInstanceName
-          - !Sub ${RandomString}
+      NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
-      ENVName: !Join 
-        - ''
-        - - !Ref ENVName
-          - !Sub ${RandomString}
-      ProjectName: !Join 
-        - ''
-        - - !Ref ProjectName
-          - !Sub ${RandomString}
+      ENVName: !Ref ENVName
+      ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -546,10 +536,7 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Join 
-            - ''
-            - - !Ref ProjectName
-              - !Sub ${RandomString}
+          Value: !Ref ProjectName
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
