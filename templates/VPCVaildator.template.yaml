@@ -90,12 +90,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - VPCValidatorRole
@@ -110,7 +110,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - VPCValidatorPolicy
@@ -141,7 +141,7 @@ Resources:
     Properties:
       Description: Sage Maker lambda function
       FunctionName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
           - VPCVaildator
@@ -153,7 +153,10 @@ Resources:
       Runtime: python3.8
       Tags:
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
       Timeout: 300
       Code:
         ZipFile: |
@@ -265,7 +268,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - ResourceSubnet
@@ -281,7 +284,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - ENISubnet
@@ -293,7 +296,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - PrivateRouteTable
@@ -312,7 +315,7 @@ Resources:
     Properties:
       GroupDescription: Access for resource inside Resource subnet
       GroupName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
           - ResourceSG
@@ -325,7 +328,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - ResourceSG
@@ -335,7 +338,7 @@ Resources:
     Properties:
       GroupDescription: Access for resource inside ENI subnet
       GroupName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
           - ENISG
@@ -353,7 +356,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - ENISG

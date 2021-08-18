@@ -53,12 +53,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString} 
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SagemakerBuildRoles
@@ -75,7 +75,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}  
               - SagemakerBuildPolicy
@@ -123,7 +123,7 @@ Resources:
             - functions/packages/Boto3/PythonModule.zip
       Description: Python layer
       LayerName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}  
           - Boto3Layer
@@ -138,7 +138,7 @@ Resources:
             - functions/SageMakerBuild.zip
       Description: Sage Maker lambda function
       FunctionName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}  
           - SageMakerBuild
@@ -153,7 +153,7 @@ Resources:
       Tags:
         - Key: ENVName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
       Timeout: 840
