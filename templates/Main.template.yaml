@@ -312,7 +312,6 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
@@ -326,6 +325,7 @@ Resources:
           - !Ref 'AWS::Region'
           - !Ref 'QSS3BucketRegion'
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   EFSStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -367,7 +367,6 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         VPCId: !GetAtt
           - VPCStack
           - Outputs.VPCId
@@ -383,6 +382,7 @@ Resources:
         SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   ECRStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -398,12 +398,12 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   SageMakerLaunchConfigStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -419,11 +419,11 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   LambdaStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -439,12 +439,12 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   ServiceCatalogStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -460,7 +460,6 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         QSS3BucketName: !If
           - UsingDefaultBucket
@@ -472,6 +471,7 @@ Resources:
           - !Ref 'AWS::Region'
           - !Ref 'QSS3BucketRegion'
         EnableIAMGroup: !Ref EnableIAMGroup
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   SageMakerStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [VPCStack,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
@@ -489,7 +489,6 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
@@ -501,6 +500,7 @@ Resources:
         EnableIAMGroup: !Ref IAMGroup
         ProjectName: !Ref ProjectName
         ProjectID: !Ref ProjectID
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
 Outputs:
   LambdaFunction:
     Value: !GetAtt 
