@@ -518,9 +518,9 @@ Resources:
           - !Sub ${RandomString}
           - '-SageMakerBuild'
       NotebookInstanceName: !Join 
-          - '-'
-          - - !Ref NotebookInstanceName
-            - !Sub ${RandomString}
+        - '-'
+        - - !Ref NotebookInstanceName
+          - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
       ENVName: !Join 
