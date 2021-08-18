@@ -435,8 +435,8 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
-            - - !Ref ProjectName
+            - ''
+            - - !Ref ENVName
               - !Sub ${RandomString}
   S3Policy:
     Type: 'AWS::S3::BucketPolicy'
@@ -518,17 +518,17 @@ Resources:
           - !Sub ${RandomString}
           - '-SageMakerBuild'
       NotebookInstanceName: !Join 
-        - '-'
+        - ''
         - - !Ref NotebookInstanceName
           - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
       ENVName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
       ProjectName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
@@ -547,7 +547,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
   EndUserIAMGroup:
