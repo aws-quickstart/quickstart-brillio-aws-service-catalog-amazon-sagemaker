@@ -508,7 +508,10 @@ Resources:
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !Ref ProjectName
+        ProjectName: !Join 
+          - '-'
+          - - !Ref ProjectName
+            - !Sub ${RandomString}
         ProjectID: !Ref ProjectID
 Outputs:
   LambdaFunction:
