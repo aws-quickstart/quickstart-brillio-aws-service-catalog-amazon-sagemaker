@@ -312,7 +312,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -342,7 +345,10 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
@@ -398,7 +404,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -419,7 +428,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -439,7 +451,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
@@ -460,7 +475,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
@@ -489,8 +507,14 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
-        NotebookInstanceName: !Ref NotebookInstanceName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
+        NotebookInstanceName: !Join 
+          - ''
+          - - !Ref NotebookInstanceName
+            - !Sub ${RandomString}
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
         RootAccess: !Ref RootAccess
@@ -498,7 +522,10 @@ Resources:
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !Ref ProjectName
+        ProjectName: !Join 
+          - ''
+          - - !Ref ProjectName
+            - !Sub ${RandomString}
         ProjectID: !Ref ProjectID
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
 Outputs:

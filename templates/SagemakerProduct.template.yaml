@@ -527,7 +527,10 @@ Resources:
         - '-'
         - - !Ref ENVName
           - !Sub ${RandomString}
-      ProjectName: !Ref ProjectName
+      ProjectName: !Join 
+          - ''
+          - - !Ref ProjectName
+            - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -543,7 +546,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+          - ''
+          - - !Ref ProjectName
+            - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
