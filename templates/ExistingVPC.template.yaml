@@ -497,7 +497,10 @@ Resources:
           - '-'
           - - !Ref ENVName
             - !Sub ${RandomString}
-        NotebookInstanceName: !Ref NotebookInstanceName
+        NotebookInstanceName: !Join 
+          - '-'
+          - - !Ref NotebookInstanceName
+            - !Sub ${RandomString}
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
         RootAccess: !Ref RootAccess
