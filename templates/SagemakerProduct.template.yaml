@@ -515,7 +515,6 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
-          - !Sub ${RandomString}
           - '-SageMakerBuild'
       NotebookInstanceName: !Join 
         - '-'
