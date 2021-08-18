@@ -102,9 +102,6 @@ Parameters:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
     Default: QuickStart
-  RandomStringArn:
-    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
-    Type: String
   VPCCIDR:
     AllowedPattern: >-
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
@@ -292,11 +289,6 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
-  RandomString:
-    Type: Custom::RandomString
-    Properties:
-      ServiceToken: !Ref RandomStringArn
-      Number: 8
   RandomStringStack:
     Properties:
       TemplateURL:
@@ -320,10 +312,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         VPCCIDR: !Ref VPCCIDR
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -353,10 +342,7 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         SecurityGroup1Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup1Id
@@ -412,10 +398,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
@@ -436,10 +419,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -459,10 +439,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         QSS3BucketName: !GetAtt
           - VPCStack
           - Outputs.LambdaBucket
@@ -483,10 +460,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
@@ -515,14 +489,8 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
-        NotebookInstanceName: !Join 
-          - ''
-          - - !Ref NotebookInstanceName
-            - !Sub ${RandomString}
+        ENVName: !Ref ENVName
+        NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
         RootAccess: !Ref RootAccess
@@ -530,10 +498,7 @@ Resources:
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !Join 
-          - ''
-          - - !Ref ProjectName
-            - !Sub ${RandomString}
+        ProjectName: !Ref ProjectName
         ProjectID: !Ref ProjectID
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
 Outputs:
