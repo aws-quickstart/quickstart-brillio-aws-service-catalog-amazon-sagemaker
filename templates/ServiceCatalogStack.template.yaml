@@ -211,7 +211,10 @@ Resources:
               - !Sub ${RandomString}
               - SageMakerProduct
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - '-'
+            - - !Ref ENVName
+              - !Sub ${RandomString}
   SageMakerProductAssociation:
     Type: 'AWS::ServiceCatalog::PortfolioProductAssociation'
     Properties:
