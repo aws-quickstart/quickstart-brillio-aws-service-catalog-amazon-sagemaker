@@ -515,12 +515,22 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
+          - !Sub ${RandomString}
           - '-SageMakerBuild'
-      NotebookInstanceName: !Ref NotebookInstanceName
+      NotebookInstanceName: !Join 
+        - '-'
+        - - !Ref NotebookInstanceName
+          - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
-      ENVName: !Ref ENVName
-      ProjectName: !Ref ProjectName
+      ENVName: !Join 
+        - '-'
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+      ProjectName: !Join 
+        - '-'
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
