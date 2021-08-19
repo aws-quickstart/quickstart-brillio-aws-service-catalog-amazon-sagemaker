@@ -51,7 +51,7 @@ Resources:
       FileSystemTags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - EFS
@@ -67,7 +67,7 @@ Resources:
     Type: 'AWS::EC2::SecurityGroupEgress'
     Properties:
       CidrIp: !Join 
-        - ''
+        - '-'
         - - !GetAtt 
             - EFSMountTarget
             - IpAddress
