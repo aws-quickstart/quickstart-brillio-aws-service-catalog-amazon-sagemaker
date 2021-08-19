@@ -517,7 +517,10 @@ Resources:
       ENVName: !Join 
         - ''
         - - !Ref ENVName
-      ProjectName: !Ref ProjectName
+      ProjectName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -536,6 +539,7 @@ Resources:
           Value: !Join 
           - ''
           - - !Ref ProjectName
+            - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
@@ -543,6 +547,7 @@ Resources:
       GroupName: !Join 
         - ''
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerGroup
   EndUserAccessRole:
     Type: 'AWS::IAM::Role'
@@ -563,12 +568,14 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ProjectName
+              - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
         - ''
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerUserRolePolicy
       Roles:
         - !Ref EndUserAccessRole
