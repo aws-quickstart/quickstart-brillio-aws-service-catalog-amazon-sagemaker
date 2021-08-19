@@ -503,48 +503,11 @@ Resources:
                   - !GetAtt SageMakerExecutionRole.Arn
                   - !GetAtt EndUserAccessRole.Arn
                   - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
-  SageMakerStack:
-    Type: 'AWS::CloudFormation::Stack'
-    DependsOn: [VPCVaildator,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
-    Condition: SageMakerCondition
-    Properties:
-      TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
-        - S3Bucket: !If
-            - UsingDefaultBucket
-            - !Sub 'aws-quickstart-${AWS::Region}'
-            - !Ref 'QSS3BucketName'
-          S3Region: !If
-            - UsingDefaultBucket
-            - !Ref 'AWS::Region'
-            - !Ref 'QSS3BucketRegion'
-      TimeoutInMinutes: 15
-      Parameters:
-        ENVName: !Join 
-          - ''
-          - - !Ref ENVName
-            - !Sub ${RandomString}
-        NotebookInstanceName: !Join 
-          - ''
-          - - !Ref NotebookInstanceName
-            - !Sub ${RandomString}
-        NotebookInstanceType: !Ref NotebookInstanceType
-        DirectInternetAccess: !Ref DirectInternetAccess
-        RootAccess: !Ref RootAccess
-        VolumeSizeInGB: !Ref VolumeSizeInGB
-        S3CodePusher: !Ref S3CodePusher
-        CodeBucketName: !Ref CodeBucketName
-        EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !Join 
-          - ''
-          - - !Ref ProjectName
-            - !Sub ${RandomString}
-        ProjectID: !Ref ProjectID
   SageMakerCustomResource:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !GetAtt SageMakerStack.Outputs.LambdaFunction
+      ServiceToken: !!Ref LambdaFunction
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName
@@ -674,7 +637,7 @@ Resources:
             Effect: Allow
             Sid: PassRoleForExecutionRoles
 Outputs:
-  LambdaFunction:
+   LambdaFunction:
     Value: !GetAtt 
       - LambdaStack
       - Outputs.LambdaFunction
