@@ -490,7 +490,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !Ref ENVName
+        ENVName: !GetAtt 'SageMakerStack.Outputs.LambdaFunction'
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
