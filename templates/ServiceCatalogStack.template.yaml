@@ -80,12 +80,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SCEndUserRole
@@ -106,12 +106,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SCLaunchRole
@@ -126,7 +126,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SCLaunchPolicy
@@ -154,7 +154,7 @@ Resources:
       AcceptLanguage: en
       Description: Sagemaker Portfolio with all Guardrails
       DisplayName: !Join 
-        - ''
+        - '-'
         - - !Ref ENVName
           - !Sub ${RandomString}
           - SageMakerPortfolio
@@ -162,13 +162,13 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SageMakerPortfolio
         - Key: ENVName
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
   SageMakerProduct:
@@ -178,7 +178,7 @@ Resources:
       Description: This product creates SageMaker Product with provided parameter values.
       Distributor: Amazon
       Name: !Join 
-        - ''
+        - '-'
         - - !Ref ENVName
           - !Sub ${RandomString}
           - SageMakerProduct
@@ -206,13 +206,13 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SageMakerProduct
         - Key: ENVName
           Value: !Join 
-            - ''
+            - '-'
             - - !Ref ENVName
               - !Sub ${RandomString}
   SageMakerProductAssociation:
