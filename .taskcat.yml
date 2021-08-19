@@ -23,7 +23,7 @@ tests:
       VolumeSizeInGB: 5
       RootAccess: Enabled
       ProjectID: QuickStart007
-      ProjectName: SM170920-$[taskcat_genpass_8]
+      ProjectName: QuickStart-$[taskcat_genpass_5]
     regions:
       - us-east-1
     template: templates/Main.template.yaml
