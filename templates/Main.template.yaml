@@ -489,8 +489,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
-        ENVName: !GetAtt 'SageMakerStack.Outputs.LambdaFunction'
+        ENVName: !Ref ENVName
         NotebookInstanceName: !Ref NotebookInstanceName
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
@@ -501,6 +500,7 @@ Resources:
         EnableIAMGroup: !Ref IAMGroup
         ProjectName: !Ref ProjectName
         ProjectID: !Ref ProjectID
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
 Outputs:
   LambdaFunction:
     Value: !GetAtt 
