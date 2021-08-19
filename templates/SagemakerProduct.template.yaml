@@ -516,7 +516,7 @@ Resources:
           - ':function:'
           - !Ref ENVName
           - !Sub ${RandomString}
-          - 'SageMakerBuild'
+          - '-SageMakerBuild'
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName

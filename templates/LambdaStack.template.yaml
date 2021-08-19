@@ -141,7 +141,7 @@ Resources:
         - ''
         - - !Ref ENVName
           - !Sub ${RandomString}  
-          - SageMakerBuild
+          - '-SageMakerBuild'
       Handler: lambda_function.lambda_handler
       Layers:
         - !Ref PythonLayer
