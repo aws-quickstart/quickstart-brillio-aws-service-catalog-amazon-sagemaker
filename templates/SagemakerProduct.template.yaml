@@ -149,7 +149,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
       KeyPolicy:
@@ -214,7 +214,7 @@ Resources:
     Type: AWS::KMS::Alias
     Properties:
       AliasName: !Join 
-        - '-'
+        - ''
         - - alias/
           - 'SageMaker-CMK-'
           - !Ref ProjectName
@@ -231,7 +231,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
       AssumeRolePolicyDocument:
@@ -245,7 +245,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
               - SageMakerExecutionPolicy
@@ -401,7 +401,7 @@ Resources:
     Condition: BucketCondition
     Properties:
       PolicyName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - !Sub ${RandomString}
           - CodeBucketPolicy
@@ -435,7 +435,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
   S3Policy:
@@ -515,21 +515,20 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
-          - '-'
           - !Sub ${RandomString}
           - '-SageMakerBuild'
       NotebookInstanceName: !Join 
-        - '-'
+        - ''
         - - !Ref NotebookInstanceName
           - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
       ENVName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
       ProjectName: !Join 
-          - '-'
+          - ''
           - - !Ref ProjectName
             - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
@@ -548,7 +547,7 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-          - '-'
+          - ''
           - - !Ref ProjectName
             - !Sub ${RandomString}
   EndUserIAMGroup:
@@ -556,7 +555,7 @@ Resources:
     Condition: IAMGroupCondition
     Properties:
       GroupName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - !Sub ${RandomString}
           - SageMakerGroup
@@ -577,14 +576,14 @@ Resources:
           Value: !Ref ProjectID
         - Key: ProjectName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - !Sub ${RandomString}
           - SageMakerUserRolePolicy
@@ -625,11 +624,11 @@ Resources:
               - 's3:*'
             Resource:
               - !Join 
-                - '-'
+                - ''
                 - - 'arn:aws:s3:::'
                   - !Ref SagemakerS3Bucket
               - !Join 
-                - '-'
+                - ''
                 - - 'arn:aws:s3:::'
                   - !Ref SagemakerS3Bucket
                   - /*

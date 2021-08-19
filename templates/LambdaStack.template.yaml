@@ -53,12 +53,12 @@ Resources:
       Tags:
         - Key: Environment
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString} 
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - SagemakerBuildRoles
@@ -75,7 +75,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}  
               - SagemakerBuildPolicy
@@ -103,7 +103,7 @@ Resources:
                   - 'logs:PutLogEvents'
                 Resource:
                   - !Join 
-                    - '-'
+                    - ''
                     - - 'arn:aws:logs:'
                       - !Ref 'AWS::Region'
                       - ':'
@@ -118,12 +118,12 @@ Resources:
       Content:
         S3Bucket: !Ref QSS3BucketName
         S3Key: !Join
-          - '-'
+          - ''
           - - !Ref QSS3KeyPrefix
             - functions/packages/Boto3/PythonModule.zip
       Description: Python layer
       LayerName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}  
           - Boto3Layer
@@ -133,12 +133,12 @@ Resources:
       Code:
         S3Bucket: !Ref QSS3BucketName
         S3Key: !Join
-          - '-'
+          - ''
           - - !Ref QSS3KeyPrefix
             - functions/SageMakerBuild.zip
       Description: Sage Maker lambda function
       FunctionName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
           - !Sub ${RandomString}  
           - SageMakerBuild
@@ -153,7 +153,7 @@ Resources:
       Tags:
         - Key: ENVName
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
       Timeout: 840

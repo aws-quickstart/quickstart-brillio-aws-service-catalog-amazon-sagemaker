@@ -42,7 +42,7 @@ Resources:
     Type: 'AWS::ECR::Repository'
     Properties:
       RepositoryName: !Join 
-        - '-'
+        - ''
         - - !Ref ECRRepositoryName
           - !Sub ${RandomString}
       RepositoryPolicyText:
@@ -61,7 +61,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
               - !Sub ${RandomString}
               - _

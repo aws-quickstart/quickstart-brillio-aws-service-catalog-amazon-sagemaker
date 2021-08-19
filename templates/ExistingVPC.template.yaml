@@ -309,7 +309,7 @@ Resources:
       TimeoutInMinutes: 5
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         VPCID: !Ref VPCID
@@ -340,7 +340,7 @@ Resources:
       TimeoutInMinutes: 10
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
@@ -398,7 +398,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         ECRRepositoryName: !Ref ECRRepositoryName
@@ -421,7 +421,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         EFSMountIpAddr: !GetAtt
@@ -443,7 +443,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         QSS3BucketName: !GetAtt
@@ -466,7 +466,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         QSS3BucketName: !If
@@ -497,11 +497,11 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Join 
-          - '-'
+          - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
         NotebookInstanceName: !Join 
-          - '-'
+          - ''
           - - !Ref NotebookInstanceName
             - !Sub ${RandomString}
         NotebookInstanceType: !Ref NotebookInstanceType
@@ -512,7 +512,7 @@ Resources:
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
         ProjectName: !Join 
-          - '-'
+          - ''
           - - !Ref ProjectName
             - !Sub ${RandomString}
         ProjectID: !Ref ProjectID
