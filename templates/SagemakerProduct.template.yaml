@@ -507,15 +507,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !Join 
-        - ''
-        - - 'arn:aws:lambda:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':function:'
-          - !Ref ENVName
-          - '-SageMakerBuild'
+      ServiceToken: !GetAtt SageMakerCustomResource.Arn
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName
