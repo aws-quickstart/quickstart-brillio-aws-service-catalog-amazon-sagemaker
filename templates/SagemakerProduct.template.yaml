@@ -507,7 +507,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !GetAtt LambdaFunction.Outputs.SageMakerFunctionArn
+      ServiceToken: !GetAtt SageMakerStack.Outputs.LambdaFunction
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName
