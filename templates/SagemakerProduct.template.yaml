@@ -507,7 +507,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !ImportValue SageMakerFunctionArn 
+      ServiceToken: !ImportValue SageMakerFunctionArn
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName
@@ -637,11 +637,6 @@ Resources:
             Effect: Allow
             Sid: PassRoleForExecutionRoles
 Outputs:
-   LambdaFunction:
-    Value: !GetAtt 
-      - LambdaStack
-      - Outputs.LambdaFunction
-    Description: Lambda function ARN.
   Message:
     Description: Execution Status
     Value: !GetAtt 
