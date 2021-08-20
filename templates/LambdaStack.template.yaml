@@ -165,7 +165,6 @@ Outputs:
     Value: !GetAtt 
       - SageMakerFunction
       - Arn
-      - !Sub ${RandomString}
     Export:
       Name: SageMakerFunctionArn
     Description: Lambda function ARN
