@@ -166,7 +166,7 @@ Outputs:
       - SageMakerFunction
       - Arn
     Export:
-      Name: '${RandomString}-SageMakerFunctionArn'           
+      'Fn::Sub': '${RandomString}-SageMakerFunctionArn'           
     Description: Lambda function ARN
   LambdaFunctionRole:
     Value: !Ref LambdaFunctionRole
