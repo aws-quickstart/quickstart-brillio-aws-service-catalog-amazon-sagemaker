@@ -148,7 +148,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
@@ -215,6 +218,7 @@ Resources:
         - - alias/
           - 'SageMaker-CMK-'
           - !Ref ProjectName
+          - !Sub ${RandomString}
           - '-'
           - !Ref ProjectID
       TargetKeyId:
@@ -226,7 +230,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -240,6 +247,7 @@ Resources:
         - PolicyName: !Join 
             - ''
             - - !Ref ProjectName
+              - !Sub ${RandomString}
               - SageMakerExecutionPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -395,6 +403,7 @@ Resources:
       PolicyName: !Join 
         - ''
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - CodeBucketPolicy
       PolicyDocument:
         Version: 2012-10-17
@@ -425,7 +434,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   S3Policy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -505,7 +517,10 @@ Resources:
       ENVName: !Join 
         - ''
         - - !Ref ENVName
-      ProjectName: !Ref ProjectName
+      ProjectName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -521,7 +536,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
@@ -529,6 +547,7 @@ Resources:
       GroupName: !Join 
         - ''
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerGroup
   EndUserAccessRole:
     Type: 'AWS::IAM::Role'
@@ -546,13 +565,17 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Ref ProjectName
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
         - ''
         - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerUserRolePolicy
       Roles:
         - !Ref EndUserAccessRole
