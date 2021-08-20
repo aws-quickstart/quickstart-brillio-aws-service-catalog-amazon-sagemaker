@@ -507,7 +507,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !ImportValue SageMakerFunctionArn
+      ServiceToken: !ImportValue '${RandomString}-SageMakerFunctionArn' 
       NotebookInstanceName: !Join 
         - ''
         - - !Ref NotebookInstanceName
