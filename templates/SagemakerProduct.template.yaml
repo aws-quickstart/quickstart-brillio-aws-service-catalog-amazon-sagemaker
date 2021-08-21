@@ -502,6 +502,7 @@ Resources:
       ENVName: !Join 
         - ''
         - - !Ref ENVName
+          - !Sub ${RandomString}
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB

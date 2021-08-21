@@ -143,6 +143,7 @@ Resources:
       FunctionName: !Join 
         - ''
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - VPCVaildator
       Handler: index.handler
       MemorySize: 128
@@ -252,6 +253,7 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
+          - !Sub ${RandomString}
           - '-VPCVaildator'
       VPCID: !Ref VPCID
   Subnet1:
