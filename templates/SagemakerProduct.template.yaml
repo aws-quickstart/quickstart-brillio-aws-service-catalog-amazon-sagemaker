@@ -140,7 +140,7 @@ Resources:
     Type: Custom::RandomString
     Properties:
       ServiceToken: !Ref RandomStringArn
-      Number: 8
+      Number: 5
   SagemakerKMSKey:
     Type: 'AWS::KMS::Key'
     Properties:
