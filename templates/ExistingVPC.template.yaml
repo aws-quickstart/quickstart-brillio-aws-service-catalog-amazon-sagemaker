@@ -511,7 +511,7 @@ Resources:
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !ImportValue ProjectNameArn
+        ProjectName: !Ref ProjectName
         ProjectID: !Ref ProjectID
 Outputs:
   LambdaFunction:
