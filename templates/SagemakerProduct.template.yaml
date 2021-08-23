@@ -496,7 +496,10 @@ Resources:
     DependsOn: S3Policy
     Properties:
       ServiceToken: !ImportValue SageMakerFunctionArn
-      NotebookInstanceName: !Ref NotebookInstanceName
+      NotebookInstanceName: !Join 
+        - ''
+        - - !Ref NotebookInstanceName
+          - !Sub ${RandomString}
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
       ENVName: !Join 
