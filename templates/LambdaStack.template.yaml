@@ -52,10 +52,7 @@ Resources:
     Properties:
       Tags:
         - Key: Environment
-          Value: !Join 
-            - ''
-            - - !Ref ENVName
-              - !Sub ${RandomString} 
+          Value:  !ImportValue RandomNumberArn 
         - Key: Name
           Value: !Join 
             - ''
