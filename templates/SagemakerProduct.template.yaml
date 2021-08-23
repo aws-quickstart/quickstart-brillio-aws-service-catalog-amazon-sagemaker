@@ -148,7 +148,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
       KeyPolicy:
         Version: '2012-10-17'
         Statement:
@@ -214,7 +217,8 @@ Resources:
         - ''
         - - alias/
           - 'SageMaker-CMK-'
-          - !ImportValue ProjectNameArn
+          - !Ref ProjectName
+          - !Sub ${RandomString}
           - '-'
           - !Ref ProjectID
       TargetKeyId:
@@ -226,7 +230,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -239,7 +246,8 @@ Resources:
       Policies:
         - PolicyName: !Join 
             - ''
-            - !ImportValue ProjectNameArn
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
               - SageMakerExecutionPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -394,7 +402,8 @@ Resources:
     Properties:
       PolicyName: !Join 
         - ''
-        - !ImportValue ProjectNameArn
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
           - CodeBucketPolicy
       PolicyDocument:
         Version: 2012-10-17
@@ -425,7 +434,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   S3Policy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -519,13 +531,17 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
     Properties:
       GroupName: !Join 
         - ''
-        - !ImportValue ProjectNameArn
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerGroup
   EndUserAccessRole:
     Type: 'AWS::IAM::Role'
@@ -543,13 +559,17 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   UserRolePolicies:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
         - ''
-        - !ImportValue ProjectNameArn
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
           - SageMakerUserRolePolicy
       Roles:
         - !Ref EndUserAccessRole
@@ -637,7 +657,7 @@ Outputs:
     Value: !Ref NotebookInstanceName
   ProjectName:
     Description: Project ID used for SageMaker deployment
-    Value: !Ref ProjectName 
+    Value: !Ref ProjectName
   ProjectID:
     Description: Project ID used for SageMaker deployment
     Value: !Ref ProjectID
