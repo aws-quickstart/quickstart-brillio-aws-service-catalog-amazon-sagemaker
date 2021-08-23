@@ -531,10 +531,8 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !Join 
-            - ''
-            - - !Ref ProjectName
-              - !Sub ${RandomString}
+          Value: !ImportValue ProjectNameArn
+  EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
     Properties:
@@ -657,7 +655,10 @@ Outputs:
     Value: !Ref NotebookInstanceName
   ProjectName:
     Description: Project ID used for SageMaker deployment
-    Value: !Ref ProjectName
+    Value: !Join 
+      - ''
+      - - !Ref ProjectName
+        - !Sub ${RandomString}
   ProjectID:
     Description: Project ID used for SageMaker deployment
     Value: !Ref ProjectID
