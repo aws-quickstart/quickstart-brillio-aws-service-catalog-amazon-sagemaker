@@ -586,9 +586,9 @@ Outputs:
   ProjectName:
     Description: Project name used for SageMaker deployment.
     Value: !Ref ProjectName
+    Condition: SageMakerCondition
     Export:
       Name: ProjectNameArn
-    Condition: SageMakerCondition
   ProjectID:
     Description: Project ID used for SageMaker deployment.
     Value: !Ref ProjectID
