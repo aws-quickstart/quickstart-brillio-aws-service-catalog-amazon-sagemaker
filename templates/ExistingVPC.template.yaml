@@ -511,10 +511,7 @@ Resources:
         S3CodePusher: !Ref S3CodePusher
         CodeBucketName: !Ref CodeBucketName
         EnableIAMGroup: !Ref IAMGroup
-        ProjectName: !Join 
-          - ''
-          - - !Ref ProjectName
-            - !Sub ${RandomString}
+        ProjectName: !ImportValue ProjectNameArn
         ProjectID: !Ref ProjectID
 Outputs:
   LambdaFunction:
@@ -587,8 +584,6 @@ Outputs:
     Description: Project name used for SageMaker deployment.
     Value: !Ref ProjectName
     Condition: SageMakerCondition
-    Export:
-      Name: ProjectNameArn
   ProjectID:
     Description: Project ID used for SageMaker deployment.
     Value: !Ref ProjectID

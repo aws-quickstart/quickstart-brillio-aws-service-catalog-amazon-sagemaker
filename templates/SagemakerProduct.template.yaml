@@ -515,7 +515,10 @@ Resources:
         - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
-      ProjectName: !ImportValue ProjectNameArn
+      ProjectName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - !Sub ${RandomString}
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -531,7 +534,10 @@ Resources:
         - Key: ProjectID
           Value: !Ref ProjectID
         - Key: ProjectName
-          Value: !ImportValue ProjectNameArn
+          Value: !Join 
+            - ''
+            - - !Ref ProjectName
+              - !Sub ${RandomString}
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
@@ -655,10 +661,9 @@ Outputs:
     Value: !Ref NotebookInstanceName
   ProjectName:
     Description: Project ID used for SageMaker deployment
-    Value: !Join 
-      - ''
-      - - !Ref ProjectName
-        - !Sub ${RandomString}
+    Value: !Ref ProjectName
+    Export: 
+      Name: ProjectNameArn
   ProjectID:
     Description: Project ID used for SageMaker deployment
     Value: !Ref ProjectID
