@@ -310,7 +310,7 @@ Resources:
 Outputs:
   RandomStringNo:
     Description: Random String passed to  all the other stack
-    value: !Ref ENVName
+    value: !Ref RandomString
     Export:
       Name: RSNo
   VPCId:
