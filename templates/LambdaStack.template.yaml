@@ -140,7 +140,6 @@ Resources:
       FunctionName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub ${RandomString}  
           - '-SageMakerBuild'
       Handler: lambda_function.lambda_handler
       Layers:
@@ -165,8 +164,6 @@ Outputs:
     Value: !GetAtt 
       - SageMakerFunction
       - Arn
-    Export:
-      Name: SageMakerFunctionArn
     Description: Lambda function ARN
   LambdaFunctionRole:
     Value: !Ref LambdaFunctionRole

@@ -495,7 +495,15 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !ImportValue SageMakerFunctionArn
+      ServiceToken: Join 
+        - ''
+        - - 'arn:aws:lambda:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':function:'
+          - !Ref ENVName
+          - '-SageMakerBuild'
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
@@ -503,6 +511,7 @@ Resources:
         - ''
         - - !Ref ENVName
           - !Sub ${RandomString}
+      ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
       LifecycleConfig: !Ref S3CodePusher
@@ -517,6 +526,8 @@ Resources:
       Tags:
         - Key: ProjectID
           Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
   EndUserIAMGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
