@@ -401,7 +401,10 @@ Resources:
           - ''
           - - !Ref ENVName
             - !Sub ${RandomString}
-        ECRRepositoryName: !Ref ECRRepositoryName
+        ECRRepositoryName: !Join 
+          - ''
+          - - !Ref ECRRepositoryName
+            - !Sub ${RandomString}
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
