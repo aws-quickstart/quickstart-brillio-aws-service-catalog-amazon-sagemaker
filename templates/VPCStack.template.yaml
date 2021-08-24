@@ -337,3 +337,15 @@ Outputs:
       - !Ref 'QSS3BucketName'
   SubnetRandomString:
     Value: !Sub ${RandomString}
+  SubnetName1:
+  Value: !Join 
+    - ''
+    - - !Ref ENVName
+      - !Sub ${RandomString}
+      - ResourceSubnet
+  SubnetName2:
+  Value: !Join 
+    - ''
+    - - !Ref ENVName
+      - !Sub ${RandomString}
+      - ENISubnet

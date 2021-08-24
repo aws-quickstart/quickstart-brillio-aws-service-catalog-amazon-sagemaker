@@ -56,7 +56,7 @@ Parameters:
   RandomStringArn:
     Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
     Type: String
-  SubnetRandomString:
+  SubnetName1:
     Description: Subnet Random String
     Type: String
   NotebookInstanceName:
@@ -505,7 +505,8 @@ Resources:
       ENVName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub SubnetRandomString
+          - !Sub Subnet1Id
+      Subnet1: !Ref SubnetName1
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
