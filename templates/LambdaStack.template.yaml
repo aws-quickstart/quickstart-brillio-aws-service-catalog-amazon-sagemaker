@@ -166,7 +166,7 @@ Outputs:
       - SageMakerFunction
       - Arn
     Export:
-      Name: SageMakerFunctionArn
+      Name: SageMakerFunctionArnSM
     Description: Lambda function ARN
   LambdaFunctionRole:
     Value: !Ref LambdaFunctionRole
