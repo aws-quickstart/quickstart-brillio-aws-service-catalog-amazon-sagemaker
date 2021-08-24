@@ -47,6 +47,8 @@ Resources:
     Properties:
       ServiceToken: !Ref RandomStringArn
       Number: 8
+  SageMakerFunctionArn:
+
   LambdaFunctionRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -166,10 +168,7 @@ Outputs:
       - SageMakerFunction
       - Arn
     Export:
-      Name: !Join 
-        - ''
-        - SageMakerFunctionArn
-        - !Sub ${RandomString} 
+      Name: !Join [ ":", [SageMakerFunctionArn, ${RandomString} ] ]
     Description: Lambda function ARN
   LambdaFunctionRole:
     Value: !Ref LambdaFunctionRole
