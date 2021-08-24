@@ -495,7 +495,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: Join 
+      ServiceToken: !Join 
         - ''
         - - 'arn:aws:lambda:'
           - !Ref 'AWS::Region'
