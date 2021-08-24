@@ -308,6 +308,11 @@ Resources:
                   timer.cancel()
                   cfnresponse.send(event, context, status, {}, None)
 Outputs:
+  RandomStringNo:
+    Description: Random String passed to  all the other stack
+    value: !Ref ENVName
+    Export:
+      Name: RSNo
   VPCId:
     Description: VPC Id
     Value: !Ref VPC

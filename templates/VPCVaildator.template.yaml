@@ -92,12 +92,12 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
         - Key: Name
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - VPCValidatorRole
       AssumeRolePolicyDocument:
         Statement:
@@ -112,7 +112,7 @@ Resources:
         - PolicyName: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - VPCValidatorPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -143,7 +143,7 @@ Resources:
       FunctionName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub ${RandomString}
+          - !ImportValue RSNo
           - VPCVaildator
       Handler: index.handler
       MemorySize: 128
@@ -156,7 +156,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
       Timeout: 300
       Code:
         ZipFile: |
@@ -253,7 +253,7 @@ Resources:
           - !Ref 'AWS::AccountId'
           - ':function:'
           - !Ref ENVName
-          - !Sub ${RandomString}
+          - !ImportValue RSNo
           - '-VPCVaildator'
       VPCID: !Ref VPCID
   Subnet1:
@@ -270,7 +270,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - ResourceSubnet
   Subnet2:
     Type: 'AWS::EC2::Subnet'
@@ -286,7 +286,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - ENISubnet
   RouteTableSM:
     Type: 'AWS::EC2::RouteTable'
@@ -298,7 +298,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - PrivateRouteTable
   Subnet1RouteTableAssociation:
     Type: 'AWS::EC2::SubnetRouteTableAssociation'
@@ -317,7 +317,7 @@ Resources:
       GroupName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub ${RandomString}
+          - !ImportValue RSNo
           - ResourceSG
       SecurityGroupEgress:
         - CidrIp: !Ref Subnet2CidrBlock
@@ -330,7 +330,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - ResourceSG
       VpcId: !Ref VPCID
   SecurityGroup2:
@@ -340,7 +340,7 @@ Resources:
       GroupName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub ${RandomString}
+          - !ImportValue RSNo
           - ENISG
       SecurityGroupIngress:
         - CidrIp: !Ref Subnet1CidrBlock
@@ -358,7 +358,7 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
+              - !ImportValue RSNo
               - ENISG
       VpcId: !Ref VPCID
   LambdaZipsBucket:
