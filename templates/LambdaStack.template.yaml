@@ -47,8 +47,6 @@ Resources:
     Properties:
       ServiceToken: !Ref RandomStringArn
       Number: 8
-  SageMakerFunctionArn:
-
   LambdaFunctionRole:
     Type: 'AWS::IAM::Role'
     Properties:
