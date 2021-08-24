@@ -335,3 +335,5 @@ Outputs:
       - LambdaRegionCheck
       - !Ref LambdaZipsBucket
       - !Ref 'QSS3BucketName'
+  SubnetRandomString:
+    Value: !Sub ${RandomString}

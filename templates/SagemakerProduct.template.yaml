@@ -56,6 +56,9 @@ Parameters:
   RandomStringArn:
     Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
     Type: String
+  SubnetRandomString:
+    Description: Subnet Random String
+    Type: String
   NotebookInstanceName:
     AllowedPattern: '[A-Za-z0-9-]{1,63}'
     ConstraintDescription: >-
@@ -495,22 +498,14 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !Join 
-        - ''
-        - - 'arn:aws:lambda:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':function:'
-          - !Ref ENVName
-          - '-SageMakerBuild'
+      ServiceToken: !ImportValue SageMakerFunctionArn
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
       ENVName: !Join 
         - ''
         - - !Ref ENVName
-          - !Sub ${RandomString}
+          - !Sub SubnetRandomString
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
