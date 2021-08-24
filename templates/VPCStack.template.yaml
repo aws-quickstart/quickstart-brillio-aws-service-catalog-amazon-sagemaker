@@ -338,14 +338,14 @@ Outputs:
   SubnetRandomString:
     Value: !Sub ${RandomString}
   SubnetName1:
-  Value: !Join 
-    - ''
-    - - !Ref ENVName
-      - !Sub ${RandomString}
-      - ResourceSubnet
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ResourceSubnet
   SubnetName2:
-  Value: !Join 
-    - ''
-    - - !Ref ENVName
-      - !Sub ${RandomString}
-      - ENISubnet
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ENISubnet
