@@ -70,5 +70,3 @@ Outputs:
   RandomStringArn:
     Description: The ARN for the lambda function that was created
     Value: !GetAtt "RandomString.Arn"
-    Export:
-      Name: RandomNumberArn
