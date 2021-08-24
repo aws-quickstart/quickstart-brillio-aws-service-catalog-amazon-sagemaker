@@ -140,6 +140,7 @@ Resources:
       FunctionName: !Join 
         - ''
         - - !Ref ENVName
+          - !Sub ${RandomString} 
           - '-SageMakerBuild'
       Handler: lambda_function.lambda_handler
       Layers:
