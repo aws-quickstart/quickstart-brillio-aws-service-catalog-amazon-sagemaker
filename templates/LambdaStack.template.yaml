@@ -166,7 +166,7 @@ Outputs:
       - SageMakerFunction
       - Arn
     Export:
-      Name: !Join [ ":", [SageMakerFunctionArn, ${RandomString} ] ]
+      Name: SageMakerFunctionArn
     Description: Lambda function ARN
   LambdaFunctionRole:
     Value: !Ref LambdaFunctionRole
