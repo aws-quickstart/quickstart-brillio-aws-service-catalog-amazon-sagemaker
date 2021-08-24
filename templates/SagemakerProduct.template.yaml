@@ -59,6 +59,9 @@ Parameters:
   SubnetName1:
     Description: Subnet Random String
     Type: String
+  SecurityGroupName1:
+    Description: Security Group Name
+    Type: String
   NotebookInstanceName:
     AllowedPattern: '[A-Za-z0-9-]{1,63}'
     ConstraintDescription: >-
@@ -507,6 +510,7 @@ Resources:
         - - !Ref ENVName
           - !Sub Subnet1Id
       Subnet1: !Ref SubnetName1
+      SecurityGroupName1: !Ref SecurityGroupName1
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB

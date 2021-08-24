@@ -502,6 +502,9 @@ Resources:
         ProjectID: !Ref ProjectID
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         SubnetName1: !GetAtt 'VPCStack.Outputs.SubnetName1'
+        SubnetName2: !GetAtt 'VPCStack.Outputs.SubnetName2'
+        SecurityGroupName1: !GetAtt 'VPCStack.Outputs.SecurityGroupName1'
+        SecurityGroupName2: !GetAtt 'VPCStack.Outputs.SecurityGroupName2'
 Outputs:
   LambdaFunction:
     Value: !GetAtt 

@@ -349,3 +349,15 @@ Outputs:
       - - !Ref ENVName
         - !Sub ${RandomString}
         - ENISubnet
+  SecurityGroupName1:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ResourceSG
+  SecurityGroupName2:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ENISG
