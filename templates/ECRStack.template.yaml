@@ -74,7 +74,4 @@ Resources:
               - !Sub ${RandomString}
 Outputs:
   ECRRepository:
-    Value: !Join 
-      - ''
-      - - !Ref ECRRepository
-        - !Sub ${RandomString}
+    Value: !Ref ECRRepository

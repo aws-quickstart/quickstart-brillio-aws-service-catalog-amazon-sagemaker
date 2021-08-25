@@ -224,6 +224,7 @@ Resources:
         - - alias/
           - 'SageMaker-CMK-'
           - !Ref ProjectName
+          - !Sub ${RandomString}
           - '-'
           - !Ref ProjectID
       TargetKeyId:
