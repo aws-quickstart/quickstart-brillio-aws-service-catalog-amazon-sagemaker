@@ -69,4 +69,4 @@ Resources:
             - - !Ref ENVName
 Outputs:
   ECRRepository:
-    Value: !Ref ECRRepository
+    Value: !Ref ECRRepositoryName
