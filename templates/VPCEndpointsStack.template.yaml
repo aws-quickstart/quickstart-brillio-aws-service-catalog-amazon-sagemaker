@@ -57,6 +57,9 @@ Metadata:
       SecurityGroup2Id:
         default: ENI Security Group Id
 Parameters:
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   VPCId:
     Description: Enter the VPC ID used for SageMaker
     Type: String
@@ -97,6 +100,11 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   ECREndpoint:
     Type: 'AWS::EC2::VPCEndpoint'
     Properties:
