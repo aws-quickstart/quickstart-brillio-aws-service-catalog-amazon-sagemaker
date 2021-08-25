@@ -41,7 +41,10 @@ Resources:
   ECRRepository:
     Type: 'AWS::ECR::Repository'
     Properties:
-      RepositoryName: !Ref ECRRepositoryName
+      RepositoryName:  !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
       RepositoryPolicyText:
         Version: 2012-10-17
         Statement:
