@@ -63,7 +63,6 @@ Resources:
               - !Sub ${RandomString}
               - _
               - !Ref ECRRepositoryName
-              - !Sub ${RandomString}
         - Key: Environment
           Value: !Join 
             - ''
