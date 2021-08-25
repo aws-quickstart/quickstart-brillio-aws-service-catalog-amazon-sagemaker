@@ -289,6 +289,14 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomStringStack:
+    Properties:
+      TemplateURL:
+        !Sub
+          - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/Random-string.template.yaml'
+          - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+            S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+    Type: AWS::CloudFormation::Stack
   VPCStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -317,6 +325,7 @@ Resources:
           - !Ref 'AWS::Region'
           - !Ref 'QSS3BucketRegion'
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   EFSStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -332,6 +341,7 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         ENVName: !Ref ENVName
         SecurityGroup1Id: !GetAtt
           - VPCStack
@@ -372,6 +382,7 @@ Resources:
         SecurityGroup2Id: !GetAtt
           - VPCStack
           - Outputs.SecurityGroup2Id
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   ECRStack:
     Type: "AWS::CloudFormation::Stack"
     Properties:
@@ -392,6 +403,7 @@ Resources:
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   SageMakerLaunchConfigStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -411,6 +423,7 @@ Resources:
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   LambdaStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -431,6 +444,7 @@ Resources:
           - VPCStack
           - Outputs.LambdaBucket
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   ServiceCatalogStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -457,6 +471,7 @@ Resources:
           - !Ref 'AWS::Region'
           - !Ref 'QSS3BucketRegion'
         EnableIAMGroup: !Ref EnableIAMGroup
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
   SageMakerStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [VPCStack,EFSStack,VPCEndPointsStack,ECRStack,SageMakerLaunchConfigStack,LambdaStack]
@@ -485,6 +500,10 @@ Resources:
         EnableIAMGroup: !Ref IAMGroup
         ProjectName: !Ref ProjectName
         ProjectID: !Ref ProjectID
+        RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
+        SubnetName1: !GetAtt 'VPCStack.Outputs.SubnetName1'
+        SecurityGroupName1: !GetAtt 'VPCStack.Outputs.SecurityGroupName1'
+        ServiceTokenVal: !GetAtt 'LambdaStack.Outputs.LambdaFunction'
 Outputs:
   LambdaFunction:
     Value: !GetAtt 

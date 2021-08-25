@@ -53,6 +53,18 @@ Metadata:
       S3CodePusher:
         default: Code to push to S3 
 Parameters:
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  SubnetName1:
+    Description: Subnet Random String
+    Type: String
+  SecurityGroupName1:
+    Description: Security Group Name
+    Type: String
+  ServiceTokenVal:
+    Description: Service Token Value passed from Lambda Stack
+    Type: String
   NotebookInstanceName:
     AllowedPattern: '[A-Za-z0-9-]{1,63}'
     ConstraintDescription: >-
@@ -133,6 +145,11 @@ Conditions:
       - 'NO'
       - !Ref EnableIAMGroup
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 5
   SagemakerKMSKey:
     Type: 'AWS::KMS::Key'
     Properties:
@@ -207,6 +224,7 @@ Resources:
         - - alias/
           - 'SageMaker-CMK-'
           - !Ref ProjectName
+          - !Sub ${RandomString}
           - '-'
           - !Ref ProjectID
       TargetKeyId:
@@ -230,7 +248,7 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ProjectName
               - SageMakerExecutionPolicy
           PolicyDocument:
@@ -385,7 +403,7 @@ Resources:
     Condition: BucketCondition
     Properties:
       PolicyName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - CodeBucketPolicy
       PolicyDocument:
@@ -487,19 +505,16 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !Join 
-        - ''
-        - - 'arn:aws:lambda:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':function:'
-          - !Ref ENVName
-          - '-SageMakerBuild'
+      ServiceToken: !Ref ServiceTokenVal
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey
-      ENVName: !Ref ENVName
+      ENVName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub Subnet1Id
+      Subnet1: !Ref SubnetName1
+      SecurityGroupName1: !Ref SecurityGroupName1
       ProjectName: !Ref ProjectName
       RootAccess: !Ref RootAccess
       VolumeSizeInGB: !Ref VolumeSizeInGB
@@ -522,7 +537,7 @@ Resources:
     Condition: IAMGroupCondition
     Properties:
       GroupName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - SageMakerGroup
   EndUserAccessRole:
@@ -546,7 +561,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join 
-        - '-'
+        - ''
         - - !Ref ProjectName
           - SageMakerUserRolePolicy
       Roles:
