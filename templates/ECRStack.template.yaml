@@ -26,14 +26,25 @@ Parameters:
   ECRRepositoryName:
     Description: Enter the ECR Repository Name for SageMaker
     Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   ECREndpoint:
     Description: Enter the ECR Interface Endpoint for ECR access
     Type: String
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   ECRRepository:
     Type: 'AWS::ECR::Repository'
     Properties:
-      RepositoryName: !Ref ECRRepositoryName
+      RepositoryName: !Join 
+        - ''
+        - - !Ref ECRRepositoryName
+          - !Sub ${RandomString}
       RepositoryPolicyText:
         Version: 2012-10-17
         Statement:
@@ -52,10 +63,15 @@ Resources:
           Value: !Join 
             - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - _
               - !Ref ECRRepositoryName
+              - !Sub ${RandomString}
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
 Outputs:
   ECRRepository:
     Value: !Ref ECRRepository

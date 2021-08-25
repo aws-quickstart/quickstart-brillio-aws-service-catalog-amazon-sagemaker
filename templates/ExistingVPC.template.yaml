@@ -102,6 +102,9 @@ Parameters:
     Description: Infrastructure naming convention for SageMaker with guardrails.
     Type: String
     Default: QuickStart
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   VPCID:
     Description: Select existing VPC for SageMaker.
     Type: 'AWS::EC2::VPC::Id'
@@ -285,6 +288,11 @@ Rules:
               - sa-east-1
             - !Ref 'AWS::Region'
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   VPCVaildator:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -300,7 +308,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 5
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         VPCID: !Ref VPCID
         Subnet1CidrBlock: !Ref Subnet1CidrBlock
         Subnet2CidrBlock: !Ref Subnet2CidrBlock
@@ -328,7 +339,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 10
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         SecurityGroup1Id: !GetAtt
           - VPCVaildator
           - Outputs.SecurityGroup1Id
@@ -383,8 +397,14 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
-        ECRRepositoryName: !Ref ECRRepositoryName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
+        ECRRepositoryName: !Join 
+          - ''
+          - - !Ref ECRRepositoryName
+            - !Sub ${RandomString}
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
@@ -403,7 +423,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         EFSMountIpAddr: !GetAtt
           - EFSStack
           - Outputs.EFSMountIpAddr
@@ -422,7 +445,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         QSS3BucketName: !GetAtt
           - VPCVaildator
           - Outputs.LambdaBucket
@@ -442,7 +468,10 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
         QSS3BucketName: !If
           - UsingDefaultBucket
           - !Sub 'aws-quickstart-${AWS::Region}'
@@ -470,8 +499,14 @@ Resources:
             - !Ref 'QSS3BucketRegion'
       TimeoutInMinutes: 15
       Parameters:
-        ENVName: !Ref ENVName
-        NotebookInstanceName: !Ref NotebookInstanceName
+        ENVName: !Join 
+          - ''
+          - - !Ref ENVName
+            - !Sub ${RandomString}
+        NotebookInstanceName: !Join 
+          - ''
+          - - !Ref NotebookInstanceName
+            - !Sub ${RandomString}
         NotebookInstanceType: !Ref NotebookInstanceType
         DirectInternetAccess: !Ref DirectInternetAccess
         RootAccess: !Ref RootAccess
@@ -547,6 +582,8 @@ Outputs:
     Value: !GetAtt 
       - SageMakerStack
       - Outputs.NotebookInstanceName
+    Export:
+      Name: NotebookArn
     Condition: SageMakerCondition
   ProjectName:
     Description: Project name used for SageMaker deployment.
