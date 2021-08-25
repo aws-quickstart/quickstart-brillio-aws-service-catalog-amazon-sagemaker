@@ -62,6 +62,9 @@ Parameters:
   SecurityGroupName1:
     Description: Security Group Name
     Type: String
+  ServiceTokenVal:
+    Description: Service Token Value passed from Lambda Stack
+    Type: String
   NotebookInstanceName:
     AllowedPattern: '[A-Za-z0-9-]{1,63}'
     ConstraintDescription: >-
@@ -501,7 +504,7 @@ Resources:
     Type: 'Custom::SageMakerCustomResource'
     DependsOn: S3Policy
     Properties:
-      ServiceToken: !ImportValue SageMakerFunctionArnSM
+      ServiceToken: !Ref ServiceTokenVal
       NotebookInstanceName: !Ref NotebookInstanceName
       NotebookInstanceType: !Ref NotebookInstanceType
       KmsKeyId: !Ref SagemakerKMSKey

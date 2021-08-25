@@ -503,6 +503,7 @@ Resources:
         RandomStringArn: !GetAtt 'RandomStringStack.Outputs.RandomStringArn'
         SubnetName1: !GetAtt 'VPCStack.Outputs.SubnetName1'
         SecurityGroupName1: !GetAtt 'VPCStack.Outputs.SecurityGroupName1'
+        ServiceTokenVal: !GetAtt 'LambdaStack.Outputs.LambdaFunction'
 Outputs:
   LambdaFunction:
     Value: !GetAtt 
