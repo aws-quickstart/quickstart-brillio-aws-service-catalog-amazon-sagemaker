@@ -399,7 +399,7 @@ Resources:
       TimeoutInMinutes: 15
       Parameters:
         ENVName: !Ref ENVName
-        ECRRepositoryName: !GetAtt 'ECRStack.Outputs.ECRRepository'
+        ECRRepositoryName: !Ref ECRRepositoryName
         ECREndpoint: !GetAtt
           - VPCEndPointsStack
           - Outputs.ECREndpoint
