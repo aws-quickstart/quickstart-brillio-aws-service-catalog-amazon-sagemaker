@@ -63,15 +63,10 @@ Resources:
               - !Sub ${RandomString}
               - _
               - !Ref ECRRepositoryName
-              - !Sub ${RandomString}
         - Key: Environment
           Value: !Join 
             - ''
             - - !Ref ENVName
-              - !Sub ${RandomString}
 Outputs:
   ECRRepository:
-    Value: !Join 
-      - ''
-      - - !Ref ECRRepository
-        - !Sub ${RandomString}
+    Value: !Ref ECRRepository
