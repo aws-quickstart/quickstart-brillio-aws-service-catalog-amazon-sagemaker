@@ -554,6 +554,7 @@ Resources:
               - 's3:DeleteObjectTagging'
               - 's3:DeleteBucketPolicy'
               - 's3:DeleteBucket'
+              - 's3:DeleteObjectVersion' 
             Resource:
               - !Join 
                 - ''
