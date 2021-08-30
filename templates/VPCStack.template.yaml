@@ -230,7 +230,11 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/service-role/AWSLambdaBasicExecutionRole'
       Path: /
       Policies:
         - PolicyName: lambda-copier
@@ -247,18 +251,6 @@ Resources:
                       - !Ref 'QSS3BucketName'
                       - '/'
                       - !Ref 'QSS3KeyPrefix'
-                      - '*'
-              - Effect: Allow
-                Action:
-                  - s3:PutObject
-                  - s3:DeleteObject
-                 Resource:
-                  - !Join 
-                    - ''
-                    - - 'arn:aws:s3:::'
-                      - !Ref LambdaZipsBucket
-                      - '/'
-                      - !Ref QSS3KeyPrefix
                       - '*'
   CopyZipsFunction:
     Condition: LambdaRegionCheck

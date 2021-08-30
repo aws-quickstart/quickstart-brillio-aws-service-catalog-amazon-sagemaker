@@ -1018,7 +1018,6 @@ Resources:
               - 's3:PutAccelerateConfiguration'
               - 's3:PutBucketNotification'
               - 's3:GetBucketVersioning'
-              - 's3:AbortMultipartUpload'
               - 's3:GetObjectVersionTorrent'
               - 's3:PutMetricsConfiguration'
               - 's3:DeleteStorageLensConfiguration'

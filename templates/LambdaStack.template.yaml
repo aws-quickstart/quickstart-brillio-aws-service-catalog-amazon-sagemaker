@@ -71,7 +71,11 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/AmazonSageMakerFullAccess'
       Path: /
       Policies:
         - PolicyName: !Join 

@@ -98,7 +98,11 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/AWSServiceCatalogEndUserFullAccess'
   SCLaunchRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -146,15 +150,31 @@ Resources:
                         - !Ref 'AWS::AccountId'
                         - ':function:*'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/IAMFullAccess'
-        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-        - 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/IAMFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/AmazonS3FullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/AWSCloudFormationFullAccess'
   SCUserGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
     Properties:
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/AWSServiceCatalogEndUserFullAccess'
   SageMakerPortfolio:
     Type: 'AWS::ServiceCatalog::Portfolio'
     Properties:
