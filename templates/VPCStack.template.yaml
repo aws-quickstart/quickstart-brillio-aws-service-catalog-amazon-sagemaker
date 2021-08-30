@@ -241,13 +241,25 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource:
-                  - !Sub 'arn:aws:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*'
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref 'QSS3BucketName'
+                      - '/'
+                      - !Ref 'QSS3KeyPrefix'
+                      - '*'
               - Effect: Allow
                 Action:
                   - s3:PutObject
                   - s3:DeleteObject
-                Resource:
-                  - !Sub 'arn:aws:s3:::${LambdaZipsBucket}/${QSS3KeyPrefix}*'
+                 Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref 'LambdaZipsBucket'
+                      - '/'
+                      - !Ref 'QSS3KeyPrefix'
+                      - '*'
   CopyZipsFunction:
     Condition: LambdaRegionCheck
     Type: AWS::Lambda::Function

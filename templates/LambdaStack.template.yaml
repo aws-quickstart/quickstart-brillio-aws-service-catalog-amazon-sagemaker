@@ -71,7 +71,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:${AWS::Partition}:iam::aws:policy/AmazonSageMakerFullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
       Path: /
       Policies:
         - PolicyName: !Join 
@@ -384,7 +384,6 @@ Resources:
                   - 's3:GetEncryptionConfiguration'
                 Resource:
                   - 'arn:aws:s3:::*sagemaker*'
-                  - 'arn:aws:s3:::*sagemaker*/*'
               - Sid: LammbdaBasicExecution
                 Effect: Allow
                 Action:
