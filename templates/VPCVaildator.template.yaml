@@ -578,7 +578,14 @@ Resources:
                   - 'ec2:ImportKeyPair' 
                   - 'ec2:ConfirmProductInstance'
                   - 'ec2:DescribeTrafficMirrorTargets'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                      - ''
+                      - - 'arn:aws:ec2:'
+                        - !Ref 'AWS::Region'
+                        - ':'
+                        - !Ref 'AWS::AccountId'
+                        - ':instance/*'
               - Sid: LammbdaBasicExecution
                 Effect: Allow
                 Action:

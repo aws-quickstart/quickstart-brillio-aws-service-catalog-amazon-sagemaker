@@ -212,7 +212,14 @@ Resources:
           - 'kms:ConnectCustomKeyStore' 
           - 'kms:CancelKeyDeletion' 
           - 'kms:GenerateDataKey'
-          Resource: '*'
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
         - Sid: Allow access for Key Administrators
           Effect: Allow
           Principal:
@@ -251,7 +258,14 @@ Resources:
           - 'kms:UntagResource'
           - 'kms:ScheduleKeyDeletion'
           - 'kms:CancelKeyDeletion'
-          Resource: '*'
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
         - Sid: Allow use of the key
           Effect: Allow
           Principal:
@@ -278,10 +292,17 @@ Resources:
               - !GetAtt EndUserAccessRole.Arn
               - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
           Action:
-          - kms:CreateGrant
-          - kms:ListGrants
-          - kms:RevokeGrant
-          Resource: "*"
+            - kms:CreateGrant
+            - kms:ListGrants
+            - kms:RevokeGrant
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
           Condition:
             Bool:
               kms:GrantIsForAWSResource: 'true'
@@ -336,6 +357,18 @@ Resources:
                   - 'application-autoscaling:PutScheduledAction'
                   - 'application-autoscaling:RegisterScalableTarget'
                   - 'aws-marketplace:ViewSubscriptions'
+                  - 'iam:ListRoles'
+                  - 'elastic-inference:Connect'
+                  - 'sns:ListTopics'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
+              - Sid: logsArnResource
+                Effect: Allow
+                Action:
                   - 'cloudwatch:DeleteAlarms'
                   - 'cloudwatch:DescribeAlarms'
                   - 'cloudwatch:GetMetricData'
@@ -343,6 +376,53 @@ Resources:
                   - 'cloudwatch:ListMetrics'
                   - 'cloudwatch:PutMetricAlarm'
                   - 'cloudwatch:PutMetricData'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:DescribeLogStreams'
+                  - 'logs:GetLogEvents'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+              - Sid: KmsArnResource
+                Effect: Allow
+                Action:
+                    - 'kms:DescribeKey'
+                    - 'kms:ListAliases'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:kms:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':key/*'
+              - Sid: ECRArnResource
+                Effect: Allow
+                Action:
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:BatchGetImage'
+                  - 'ecr:CreateRepository'
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'ecr:DescribeRepositories'
+                  - 'ecr:DescribeImageScanFindings'
+                  - 'ecr:DescribeRegistry'
+                  - 'ecr:DescribeImages'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ecr::'
+                      - !Ref 'AWS::AccountId'
+                      - ':repository/*'
+              - Sid: EC2ArnResource
+                Effect: Allow
+                Action:        
                   - 'ec2:CreateNetworkInterface'
                   - 'ec2:CreateNetworkInterfacePermission'
                   - 'ec2:DeleteNetworkInterface'
@@ -354,33 +434,45 @@ Resources:
                   - 'ec2:DescribeSubnets'
                   - 'ec2:DescribeVpcEndpoints'
                   - 'ec2:DescribeVpcs'
-                  - 'ecr:BatchCheckLayerAvailability'
-                  - 'ecr:BatchGetImage'
-                  - 'ecr:CreateRepository'
-                  - 'ecr:GetAuthorizationToken'
-                  - 'ecr:GetDownloadUrlForLayer'
-                  - 'ecr:DescribeRepositories'
-                  - 'ecr:DescribeImageScanFindings'
-                  - 'ecr:DescribeRegistry'
-                  - 'ecr:DescribeImages'
-                  - 'elastic-inference:Connect'
-                  - 'iam:ListRoles'
-                  - 'kms:DescribeKey'
-                  - 'kms:ListAliases'
-                  - 'lambda:ListFunctions'
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:DescribeLogStreams'
-                  - 'logs:GetLogEvents'
-                  - 'logs:PutLogEvents'
-                  - 'sns:ListTopics'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ec2:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':instance/*'
+              - Sid: S3ArnResource
+                Effect: Allow
+                Action: 
                   - 's3:CreateBucket'
                   - 's3:GetBucketLocation'
-                  - 's3:ListBucket'
-                Resource: '*'
+                  - 's3:ListBucket'       
+                Resource:
+                    - 'arn:aws:s3:::*sagemaker*'
+                    - 'arn:aws:s3:::*sagemaker*/*'
+              - Sid: LambdaInvokePermission
+                Effect: Allow
+                Action:
+                  - 'lambda:ListFunctions'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:lambda:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':function:*'
               - Effect: Allow
                 Action: 'sagemaker:InvokeEndpoint'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
                 Condition:
                   StringEquals:
                     'aws:PrincipalTag/ProjectID': !Ref ProjectID
@@ -392,7 +484,14 @@ Resources:
                   - 'sagemaker:CreateEndpointConfig'
                   - 'sagemaker:CreateHyperParameterTuningJob'
                   - 'sagemaker:CreateTransformJob'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
                 Condition:
                   StringEquals:
                     'aws:PrincipalTag/ProjectID': !Ref ProjectID
@@ -404,7 +503,14 @@ Resources:
                   - 'sagemaker:DescribeTrainingJob'
                   - 'sagemaker:DescribeEndpoint'
                   - 'sagemaker:DescribeEndpointConfig'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
                 Condition:
                   StringEquals:
                     'aws:PrincipalTag/ProjectID': !Ref ProjectID
@@ -430,7 +536,14 @@ Resources:
                   - 'sagemaker:StopTrainingJob'
                   - 'sagemaker:ListEndpoints'
                   - 'sagemaker:DeleteEndpoint'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
                 Condition:
                   StringEquals:
                     'aws:PrincipalTag/ProjectID': !Ref ProjectID
@@ -466,7 +579,12 @@ Resources:
                     'aws:PrincipalTag/ProjectID': !Ref ProjectID
               - Effect: Allow
                 Action: 'iam:PassRole'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
                 Condition:
                   StringEquals:
                     'iam:PassedToService': sagemaker.amazonaws.com
@@ -647,6 +765,60 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Action:
+              - 'ec2:DescribeVpcs'
+              - 'ec2:DescribeSubnets'
+              - 'ec2:DescribeSecurityGroups'
+              - 'ec2:DescribeNetworkInterfaces'      
+            Resource:
+              - !Join 
+                  - ''
+                  - - 'arn:aws:ec2:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':instance/*'
+          - Sid: LogsArnResource
+            Effect: Allow
+            Action:
+              - 'cloudwatch:DescribeAlarmHistory'
+              - 'cloudwatch:DescribeAlarms'
+              - 'cloudwatch:DescribeInsightRules'
+              - 'cloudwatch:DescribeAlarmsForMetric'
+              - 'cloudwatch:GetMetricStream'
+              - 'cloudwatch:GetDashboard'
+              - 'cloudwatch:GetMetricData'
+              - 'cloudwatch:GetMetricWidgetImage'
+              - 'cloudwatch:GetInsightRuleReport'
+              - 'cloudwatch:GetMetricStatistics'
+              - 'cloudwatch:ListTagsForResource'
+              - 'cloudwatch:ListMetrics'
+              - 'cloudwatch:ListDashboards'
+              - 'cloudwatch:ListMetricStreams'
+              - 'logs:DescribeQueryDefinitions'
+              - 'logs:DescribeDestinations'
+              - 'logs:DescribeResourcePolicies'
+              - 'logs:DescribeQueries'
+              - 'logs:DescribeLogStreams'
+              - 'logs:DescribeMetricFilters'
+              - 'logs:DescribeLogGroups'
+              - 'logs:DescribeSubscriptionFilters'
+              - 'logs:DescribeExportTasks'
+              - 'logs:GetLogRecord'
+              - 'logs:GetLogDelivery'
+              - 'logs:GetLogGroupFields'
+              - 'logs:GetQueryResults'
+              - 'logs:GetLogEvents'
+            Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+          - Sid: SageMakerArnResource
+            Effect: Allow
+            Action:
               - 'sagemaker:ListAppImageConfigs'
               - 'sagemaker:ListModelQualityJobDefinitions'
               - 'sagemaker:ListPipelineParametersForExecution'
@@ -701,53 +873,57 @@ Resources:
               - 'sagemaker:ListDevices'
               - 'sagemaker:ListMonitoringExecutions'
               - 'sagemaker:ListLabelingJobs'
-              - 'ec2:DescribeVpcs'
-              - 'ec2:DescribeSubnets'
-              - 'ec2:DescribeSecurityGroups'
-              - 'ec2:DescribeNetworkInterfaces'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:sagemaker:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':notebook-instance-lifecycle-config/*'
+          - Sid: SagemakerKMSKey
+            Effect: Allow
+            Action:
               - 'kms:DescribeKey'
               - 'kms:ListAliases'
               - 'kms:CreateCustomKeyStore'
               - 'kms:CreateGrant'
               - 'kms:CreateKey'
               - 'kms:CreateAlias'
-              - 'aws-marketplace:ViewSubscriptions'
+            Resource:
+              - !Join 
+              - ''
+                - - 'arn:aws:kms:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':key/*'
+          - Sid: IamArnResource
+            Effect: Allow
+            Action:
               - 'iam:ListRoles'
+              - 'aws-marketplace:ViewSubscriptions'    
+            Resource:
+              - !Join 
+              - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':role/*'
+          - Sid: ECRArnResource
+            Effect: Allow
+            Action:
               - 'ecr:DescribeRegistry'
               - 'ecr:DescribeRepositories'
               - 'ecr:DescribeImageScanFindings'
               - 'ecr:DescribeImages'
-              - 'cloudwatch:DescribeAlarmHistory'
-              - 'cloudwatch:DescribeAlarms'
-              - 'cloudwatch:DescribeInsightRules'
-              - 'cloudwatch:DescribeAlarmsForMetric'
-              - 'cloudwatch:GetMetricStream'
-              - 'cloudwatch:GetDashboard'
-              - 'cloudwatch:GetMetricData'
-              - 'cloudwatch:GetMetricWidgetImage'
-              - 'cloudwatch:GetInsightRuleReport'
-              - 'cloudwatch:GetMetricStatistics'
-              - 'cloudwatch:ListTagsForResource'
-              - 'cloudwatch:ListMetrics'
-              - 'cloudwatch:ListDashboards'
-              - 'cloudwatch:ListMetricStreams'
-              - 'logs:DescribeQueryDefinitions'
-              - 'logs:DescribeDestinations'
-              - 'logs:DescribeResourcePolicies'
-              - 'logs:DescribeQueries'
-              - 'logs:DescribeLogStreams'
-              - 'logs:DescribeMetricFilters'
-              - 'logs:DescribeLogGroups'
-              - 'logs:DescribeSubscriptionFilters'
-              - 'logs:DescribeExportTasks'
-              - 'logs:GetLogRecord'
-              - 'logs:GetLogDelivery'
-              - 'logs:GetLogGroupFields'
-              - 'logs:GetQueryResults'
-              - 'logs:GetLogEvents'
-            Resource: '*'
+            Resource:
+              - !Join 
+              - ''
+                - - 'arn:aws:ecr::'
+                  - !Ref 'AWS::AccountId'
+                  - ':repository/*'
+          - Sid: CommonAccess
             Effect: Allow
-            Sid: CommonAccess
           - Condition:
               StringEquals:
                 'sagemaker:ResourceTag/ProjectID': !Ref ProjectID
@@ -940,7 +1116,14 @@ Resources:
               - 'sagemaker:DescribeLabelingJob'
               - 'sagemaker:DescribeDeviceFleet'
               - 'sagemaker:DescribeCodeRepository'
-            Resource: '*'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:sagemaker:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':notebook-instance-lifecycle-config/*'
             Effect: Allow
             Sid: DeveloperAccess
           - Condition:
@@ -948,7 +1131,12 @@ Resources:
                 'iam:PassedToService': sagemaker.amazonaws.com
             Action:
               - 'iam:PassRole'
-            Resource: '*'
+            Resource:
+              - !Join 
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - ':role/*'
             Effect: Allow
             Sid: PassRoleForExecutionRoles
 Outputs:

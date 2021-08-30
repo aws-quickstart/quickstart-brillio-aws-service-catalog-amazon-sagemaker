@@ -137,7 +137,14 @@ Resources:
                 Effect: Allow
                 Action:
                   - 'lambda:InvokeFunction'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                      - ''
+                      - - 'arn:aws:lambda:'
+                        - !Ref 'AWS::Region'
+                        - ':'
+                        - !Ref 'AWS::AccountId'
+                        - ':function:*'
       ManagedPolicyArns:
         - 'arn:aws:iam::aws:policy/IAMFullAccess'
         - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
