@@ -471,7 +471,10 @@ Resources:
                   - 's3:GetBucketLocation'
                   - 's3:ListBucket'       
                 Resource:
-                  - 'arn:aws:s3:::*sagemaker*'
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3::'
+                      - ':*sagemaker*'                  
               - Sid: LambdaInvokePermission
                 Effect: Allow
                 Action:
@@ -579,7 +582,12 @@ Resources:
                   - 'ecr:InitiateLayerUpload'
                   - 'ecr:DeleteRepository'
                   - 'ecr:PutImage'
-                Resource: 'arn:aws:ecr:::repository/*sagemaker*'
+                Resource: 
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ecr::'
+                      - 'repository/*'
+                      - 'sagemaker*'
               - Effect: Allow
                 Action:
                   - 's3:GetObject'
