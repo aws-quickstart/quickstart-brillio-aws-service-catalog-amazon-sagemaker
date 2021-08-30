@@ -283,7 +283,14 @@ Resources:
           - kms:GenerateDataKeyWithoutPlaintext
           - kms:GenerateDataKey
           - kms:DescribeKey
-          Resource: "*"
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
         - Sid: Allow attachment of persistent resources
           Effect: Allow
           Principal:
@@ -449,8 +456,8 @@ Resources:
                   - 's3:GetBucketLocation'
                   - 's3:ListBucket'       
                 Resource:
-                    - 'arn:aws:s3:::*sagemaker*'
-                    - 'arn:aws:s3:::*sagemaker*/*'
+                  - 'arn:aws:s3:::*sagemaker*'
+                  - 'arn:aws:s3:::*sagemaker*/*'
               - Sid: LambdaInvokePermission
                 Effect: Allow
                 Action:
@@ -658,7 +665,21 @@ Resources:
               - 's3:Get*'
               - 's3:Put*'
               - 's3:List*'
-              - 's3:Delete*'
+              - 's3:DeleteObject'
+              - 's3:DeleteAccessPointPolicyForObjectLambda'
+              - 's3:DeleteStorageLensConfigurationTagging'
+              - 's3:DeleteJobTagging'
+              - 's3:DeleteObjectTagging'
+              - 's3:DeleteAccessPoint'
+              - 's3:DeleteBucket'
+              - 's3:DeleteObjectVersion'
+              - 's3:DeleteStorageLensConfiguration'
+              - 's3:DeleteBucketPolicy'
+              - 's3:DeleteAccessPointForObjectLambda'
+              - 's3:DeleteObjectVersionTagging'
+              - 's3:DeleteBucketOwnershipControls'
+              - 's3:DeleteBucketWebsite'
+              - 's3:DeleteAccessPointPolicy'
             Resource:
               - !Join 
                 - ''
@@ -771,12 +792,12 @@ Resources:
               - 'ec2:DescribeNetworkInterfaces'      
             Resource:
               - !Join 
-                  - ''
-                  - - 'arn:aws:ec2:'
-                    - !Ref 'AWS::Region'
-                    - ':'
-                    - !Ref 'AWS::AccountId'
-                    - ':instance/*'
+                - ''
+                - - 'arn:aws:ec2:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':instance/*'
           - Sid: LogsArnResource
             Effect: Allow
             Action:
@@ -892,7 +913,7 @@ Resources:
               - 'kms:CreateAlias'
             Resource:
               - !Join 
-              - ''
+                - ''
                 - - 'arn:aws:kms:'
                   - !Ref 'AWS::Region'
                   - ':'
@@ -905,7 +926,7 @@ Resources:
               - 'aws-marketplace:ViewSubscriptions'    
             Resource:
               - !Join 
-              - ''
+                - ''
                 - - 'arn:aws:iam::'
                   - !Ref 'AWS::AccountId'
                   - ':role/*'
@@ -918,7 +939,7 @@ Resources:
               - 'ecr:DescribeImages'
             Resource:
               - !Join 
-              - ''
+                - ''
                 - - 'arn:aws:ecr::'
                   - !Ref 'AWS::AccountId'
                   - ':repository/*'
@@ -1133,10 +1154,10 @@ Resources:
               - 'iam:PassRole'
             Resource:
               - !Join 
-                  - ''
-                  - - 'arn:aws:iam::'
-                    - !Ref 'AWS::AccountId'
-                    - ':role/*'
+                - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':role/*'
             Effect: Allow
             Sid: PassRoleForExecutionRoles
 Outputs:
