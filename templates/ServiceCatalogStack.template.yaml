@@ -101,7 +101,7 @@ Resources:
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/AWSServiceCatalogEndUserFullAccess'
   SCLaunchRole:
     Type: 'AWS::IAM::Role'
@@ -153,17 +153,17 @@ Resources:
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/IAMFullAccess'
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/AmazonS3FullAccess'
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/AWSCloudFormationFullAccess'
   SCUserGroup:
     Type: 'AWS::IAM::Group'
@@ -173,7 +173,7 @@ Resources:
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/AWSServiceCatalogEndUserFullAccess'
   SageMakerPortfolio:
     Type: 'AWS::ServiceCatalog::Portfolio'

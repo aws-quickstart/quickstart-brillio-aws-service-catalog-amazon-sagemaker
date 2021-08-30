@@ -74,7 +74,7 @@ Resources:
         - !Join 
           - ''
           - - 'arn:aws:iam::'
-            - !Ref 'AWS::AccountId'
+            - 'aws'
             - ':policy/AmazonSageMakerFullAccess'
       Path: /
       Policies:
