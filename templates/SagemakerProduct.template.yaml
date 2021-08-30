@@ -354,6 +354,16 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
+                  - 'iam:ListRoles'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
+              - Sid: CloudArnResource
+                Effect: Allow
+                Action:
                   - 'application-autoscaling:DeleteScalingPolicy'
                   - 'application-autoscaling:DeleteScheduledAction'
                   - 'application-autoscaling:DeregisterScalableTarget'
@@ -364,13 +374,7 @@ Resources:
                   - 'application-autoscaling:PutScalingPolicy'
                   - 'application-autoscaling:PutScheduledAction'
                   - 'application-autoscaling:RegisterScalableTarget'
-                  - 'iam:ListRoles'
                 Resource:
-                  - !Join 
-                    - ''
-                    - - 'arn:aws:iam::'
-                      - !Ref 'AWS::AccountId'
-                      - ':role/*'
                   - !Join 
                     - ''
                     - - 'arn:aws:autoscaling:'
