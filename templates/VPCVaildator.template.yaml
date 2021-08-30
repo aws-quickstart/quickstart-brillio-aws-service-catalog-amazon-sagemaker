@@ -851,7 +851,11 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - !Ref 'AWS::AccountId'
+            - ':policy/service-role/AWSLambdaBasicExecutionRole'
       Path: /
       Policies:
         - PolicyName: lambda-copier

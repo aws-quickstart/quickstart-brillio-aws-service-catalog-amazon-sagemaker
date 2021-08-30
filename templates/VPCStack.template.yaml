@@ -256,9 +256,9 @@ Resources:
                   - !Join 
                     - ''
                     - - 'arn:aws:s3:::'
-                      - !Ref 'LambdaZipsBucket'
+                      - !Ref LambdaZipsBucket
                       - '/'
-                      - !Ref 'QSS3KeyPrefix'
+                      - !Ref QSS3KeyPrefix
                       - '*'
   CopyZipsFunction:
     Condition: LambdaRegionCheck

@@ -960,8 +960,6 @@ Resources:
                 - - 'arn:aws:ecr::'
                   - !Ref 'AWS::AccountId'
                   - ':repository/*'
-            Effect: Allow
-            Sid: CommonAccess
           - Condition:
               StringEquals:
                 'sagemaker:ResourceTag/ProjectID': !Ref ProjectID
