@@ -363,16 +363,22 @@ Resources:
                   - 'application-autoscaling:PutScalingPolicy'
                   - 'application-autoscaling:PutScheduledAction'
                   - 'application-autoscaling:RegisterScalableTarget'
-                  - 'aws-marketplace:ViewSubscriptions'
                   - 'iam:ListRoles'
-                  - 'elastic-inference:Connect'
-                  - 'sns:ListTopics'
                 Resource:
                   - !Join 
                     - ''
                     - - 'arn:aws:iam::'
                       - !Ref 'AWS::AccountId'
                       - ':role/*'
+              - Sid: SNSArnResource
+                Effect: Allow
+                Action:
+                  - 'sns:ListTopics'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sns::'
+                      - !Ref 'AWS::AccountId:*'
               - Sid: logsArnResource
                 Effect: Allow
                 Action:
@@ -785,7 +791,9 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Action:
+          - Sid: EC2ArnResource
+            Effect: Allow
+            Action:
               - 'ec2:DescribeVpcs'
               - 'ec2:DescribeSubnets'
               - 'ec2:DescribeSecurityGroups'
@@ -830,13 +838,13 @@ Resources:
               - 'logs:GetQueryResults'
               - 'logs:GetLogEvents'
             Resource:
-                  - !Join 
-                    - ''
-                    - - 'arn:aws:logs:'
-                      - !Ref 'AWS::Region'
-                      - ':'
-                      - !Ref 'AWS::AccountId'
-                      - ':log-group:/aws/lambda/*'
+              - !Join 
+                - ''
+                - - 'arn:aws:logs:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':log-group:/aws/lambda/*'
           - Sid: SageMakerArnResource
             Effect: Allow
             Action:
