@@ -166,53 +166,53 @@ Resources:
           Principal:
             AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
           Action: 
-          - 'kms:Encrypt'
-          - 'kms:PutKeyPolicy' 
-          - 'kms:CreateKey' 
-          - 'kms:GetKeyRotationStatus' 
-          - 'kms:DeleteImportedKeyMaterial' 
-          - 'kms:GetKeyPolicy' 
-          - 'kms:UpdateCustomKeyStore' 
-          - 'kms:GenerateRandom' 
-          - 'kms:UpdateAlias'
-          - 'kms:ImportKeyMaterial'
-          - 'kms:ListRetirableGrants' 
-          - 'kms:CreateGrant' 
-          - 'kms:DeleteAlias'
-          - 'kms:RetireGrant'
-          - 'kms:ScheduleKeyDeletion' 
-          - 'kms:DisableKeyRotation' 
-          - 'kms:TagResource' 
-          - 'kms:CreateAlias' 
-          - 'kms:EnableKeyRotation' 
-          - 'kms:DisableKey'
-          - 'kms:ListResourceTags'
-          - 'kms:Verify' 
-          - 'kms:DeleteCustomKeyStore'
-          - 'kms:Sign' 
-          - 'kms:ListKeys'
-          - 'kms:ListGrants'
-          - 'kms:ListAliases' 
-          - 'kms:ReEncryptTo' 
-          - 'kms:UntagResource' 
-          - 'kms:GetParametersForImport'
-          - 'kms:ListKeyPolicies'
-          - 'kms:GenerateDataKeyPair'
-          - 'kms:GenerateDataKeyPairWithoutPlaintext' 
-          - 'kms:GetPublicKey' 
-          - 'kms:Decrypt' 
-          - 'kms:ReEncryptFrom'
-          - 'kms:DisconnectCustomKeyStore' 
-          - 'kms:DescribeKey'
-          - 'kms:GenerateDataKeyWithoutPlaintext'
-          - 'kms:DescribeCustomKeyStores' 
-          - 'kms:CreateCustomKeyStore'
-          - 'kms:EnableKey'
-          - 'kms:RevokeGrant'
-          - 'kms:UpdateKeyDescription' 
-          - 'kms:ConnectCustomKeyStore' 
-          - 'kms:CancelKeyDeletion' 
-          - 'kms:GenerateDataKey'
+            - 'kms:Encrypt'
+            - 'kms:PutKeyPolicy' 
+            - 'kms:CreateKey' 
+            - 'kms:GetKeyRotationStatus' 
+            - 'kms:DeleteImportedKeyMaterial' 
+            - 'kms:GetKeyPolicy' 
+            - 'kms:UpdateCustomKeyStore' 
+            - 'kms:GenerateRandom' 
+            - 'kms:UpdateAlias'
+            - 'kms:ImportKeyMaterial'
+            - 'kms:ListRetirableGrants' 
+            - 'kms:CreateGrant' 
+            - 'kms:DeleteAlias'
+            - 'kms:RetireGrant'
+            - 'kms:ScheduleKeyDeletion' 
+            - 'kms:DisableKeyRotation' 
+            - 'kms:TagResource' 
+            - 'kms:CreateAlias' 
+            - 'kms:EnableKeyRotation' 
+            - 'kms:DisableKey'
+            - 'kms:ListResourceTags'
+            - 'kms:Verify' 
+            - 'kms:DeleteCustomKeyStore'
+            - 'kms:Sign' 
+            - 'kms:ListKeys'
+            - 'kms:ListGrants'
+            - 'kms:ListAliases' 
+            - 'kms:ReEncryptTo' 
+            - 'kms:UntagResource' 
+            - 'kms:GetParametersForImport'
+            - 'kms:ListKeyPolicies'
+            - 'kms:GenerateDataKeyPair'
+            - 'kms:GenerateDataKeyPairWithoutPlaintext' 
+            - 'kms:GetPublicKey' 
+            - 'kms:Decrypt' 
+            - 'kms:ReEncryptFrom'
+            - 'kms:DisconnectCustomKeyStore' 
+            - 'kms:DescribeKey'
+            - 'kms:GenerateDataKeyWithoutPlaintext'
+            - 'kms:DescribeCustomKeyStores' 
+            - 'kms:CreateCustomKeyStore'
+            - 'kms:EnableKey'
+            - 'kms:RevokeGrant'
+            - 'kms:UpdateKeyDescription' 
+            - 'kms:ConnectCustomKeyStore' 
+            - 'kms:CancelKeyDeletion' 
+            - 'kms:GenerateDataKey'
           Resource:
             - !Join 
               - ''
@@ -227,38 +227,38 @@ Resources:
             AWS: 
               - !GetAtt SageMakerExecutionRole.Arn
           Action:
-          - 'kms:CreateAlias'
-          - 'kms:CreateKey'
-          - 'kms:CreateGrant' 
-          - 'kms:CreateCustomKeyStore'
-          - 'kms:DescribeKey'
-          - 'kms:DescribeCustomKeyStores'
-          - 'kms:EnableKey'
-          - 'kms:EnableKeyRotation'
-          - 'kms:ListKeys'
-          - 'kms:ListAliases'
-          - 'kms:ListKeyPolicies'
-          - 'kms:ListGrants'
-          - 'kms:ListRetirableGrants'
-          - 'kms:ListResourceTags'
-          - 'kms:PutKeyPolicy'
-          - 'kms:UpdateAlias'
-          - 'kms:UpdateKeyDescription'
-          - 'kms:UpdateCustomKeyStore'
-          - 'kms:RevokeGrant'
-          - 'kms:DisableKey'
-          - 'kms:DisableKeyRotation'
-          - 'kms:GetPublicKey'
-          - 'kms:GetKeyRotationStatus'
-          - 'kms:GetKeyPolicy'
-          - 'kms:GetParametersForImport'
-          - 'kms:DeleteCustomKeyStore'
-          - 'kms:DeleteImportedKeyMaterial'
-          - 'kms:DeleteAlias'
-          - 'kms:TagResource'
-          - 'kms:UntagResource'
-          - 'kms:ScheduleKeyDeletion'
-          - 'kms:CancelKeyDeletion'
+            - 'kms:CreateAlias'
+            - 'kms:CreateKey'
+            - 'kms:CreateGrant' 
+            - 'kms:CreateCustomKeyStore'
+            - 'kms:DescribeKey'
+            - 'kms:DescribeCustomKeyStores'
+            - 'kms:EnableKey'
+            - 'kms:EnableKeyRotation'
+            - 'kms:ListKeys'
+            - 'kms:ListAliases'
+            - 'kms:ListKeyPolicies'
+            - 'kms:ListGrants'
+            - 'kms:ListRetirableGrants'
+            - 'kms:ListResourceTags'
+            - 'kms:PutKeyPolicy'
+            - 'kms:UpdateAlias'
+            - 'kms:UpdateKeyDescription'
+            - 'kms:UpdateCustomKeyStore'
+            - 'kms:RevokeGrant'
+            - 'kms:DisableKey'
+            - 'kms:DisableKeyRotation'
+            - 'kms:GetPublicKey'
+            - 'kms:GetKeyRotationStatus'
+            - 'kms:GetKeyPolicy'
+            - 'kms:GetParametersForImport'
+            - 'kms:DeleteCustomKeyStore'
+            - 'kms:DeleteImportedKeyMaterial'
+            - 'kms:DeleteAlias'
+            - 'kms:TagResource'
+            - 'kms:UntagResource'
+            - 'kms:ScheduleKeyDeletion'
+            - 'kms:CancelKeyDeletion'
           Resource:
             - !Join 
               - ''
@@ -275,15 +275,15 @@ Resources:
               - !GetAtt EndUserAccessRole.Arn
               - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
           Action:
-          - kms:Encrypt
-          - kms:Decrypt
-          - kms:ReEncryptTo
-          - kms:ReEncryptFrom
-          - kms:GenerateDataKeyPair
-          - kms:GenerateDataKeyPairWithoutPlaintext
-          - kms:GenerateDataKeyWithoutPlaintext
-          - kms:GenerateDataKey
-          - kms:DescribeKey
+            - kms:Encrypt
+            - kms:Decrypt
+            - kms:ReEncryptTo
+            - kms:ReEncryptFrom
+            - kms:GenerateDataKeyPair
+            - kms:GenerateDataKeyPairWithoutPlaintext
+            - kms:GenerateDataKeyWithoutPlaintext
+            - kms:GenerateDataKey
+            - kms:DescribeKey
           Resource:
             - !Join 
               - ''
@@ -418,8 +418,8 @@ Resources:
               - Sid: KmsArnResource
                 Effect: Allow
                 Action:
-                    - 'kms:DescribeKey'
-                    - 'kms:ListAliases'
+                  - 'kms:DescribeKey'
+                  - 'kms:ListAliases'
                 Resource:
                   - !Join 
                     - ''
