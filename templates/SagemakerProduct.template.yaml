@@ -386,11 +386,7 @@ Resources:
                 Effect: Allow
                 Action:
                   'aws-marketplace:ViewSubscriptions'  
-                Resource:
-                  - !Join 
-                    - ''
-                    - - 'arn:aws:'
-                      - '*'   
+                Resource: '*'  
               - Sid: ElasticArnResource
                 Effect: Allow
                 Action:
