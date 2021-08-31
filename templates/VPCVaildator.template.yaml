@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: SageMaker VPC Validator Lambda Function Setup (qs-1qojf6qel)
+Description: SageMaker VPC Validator Lambda Function Setup (qs-1qojf6qel) 
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:

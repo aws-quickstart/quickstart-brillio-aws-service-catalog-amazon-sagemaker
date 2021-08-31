@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CFT for creating ECR Repository with the given name (qs-1qojf6qam)
+Description: CFT for creating ECR Repository with the given name (qs-1qojf6qam) 
 Metadata:
   "AWS::CloudFormation::Interface":
     ParameterGroups:

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CFT for EFS creation and mounting it to Resource Sunbnet (qs-1qojf6qda)
+Description: CFT for EFS creation and mounting it to Resource Sunbnet (qs-1qojf6qda) 
 Metadata:
   "AWS::CloudFormation::Interface":
     ParameterGroups:

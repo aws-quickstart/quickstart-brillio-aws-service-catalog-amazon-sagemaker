@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: SageMaker Lambda Function Setup (qs-1qojf6qdk)
+Description: SageMaker Lambda Function Setup (qs-1qojf6qdk) 
 Metadata:
   "AWS::CloudFormation::Interface":
     ParameterGroups:
