@@ -739,7 +739,7 @@ Resources:
                 - ''
                 - - 'arn:aws:s3:::'
                   - !Ref SagemakerS3Bucket
-                  - /*
+                  - '/*'
           - Sid: DenyPolicy
             Effect: Deny
             Principal: "*"
@@ -755,7 +755,7 @@ Resources:
                 - ''
                 - - 'arn:aws:s3:::'
                   - !Ref SagemakerS3Bucket
-                  - /*
+                  - '/*'
             Condition:
               StringLike:
                 'aws:PrincipalArn':
