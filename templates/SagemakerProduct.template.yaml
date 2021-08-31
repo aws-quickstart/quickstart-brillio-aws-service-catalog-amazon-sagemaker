@@ -361,7 +361,7 @@ Resources:
                     - - 'arn:aws:iam::'
                       - !Ref 'AWS::AccountId'
                       - ':role/*'
-               - Effect: Allow
+              - Effect: Allow
                 Action:
                   - 'application-autoscaling:DeleteScalingPolicy'
                   - 'application-autoscaling:DeleteScheduledAction'
