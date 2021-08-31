@@ -99,9 +99,8 @@ Resources:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
         - !Join 
-          - ''
-          - - 'arn:aws:iam::'
-            - 'aws'
+          - - 'arn:aws:iam:'
+            - ':aws'
             - ':policy/AWSServiceCatalogEndUserFullAccess'
   SCLaunchRole:
     Type: 'AWS::IAM::Role'
@@ -151,19 +150,18 @@ Resources:
                         - ':function:*'
       ManagedPolicyArns:
         - !Join 
-          - ''
-          - - 'arn:aws:iam::'
-            - 'aws'
+          - - 'arn:aws:iam:'
+            - ':aws'
             - ':policy/IAMFullAccess'
         - !Join 
           - ''
-          - - 'arn:aws:iam::'
-            - 'aws'
+          - - 'arn:aws:iam:'
+            - ':aws'
             - ':policy/AmazonS3FullAccess'
         - !Join 
           - ''
-          - - 'arn:aws:iam::'
-            - 'aws'
+          - - 'arn:aws:iam:'
+            - ':aws'
             - ':policy/AWSCloudFormationFullAccess'
   SCUserGroup:
     Type: 'AWS::IAM::Group'
@@ -171,9 +169,8 @@ Resources:
     Properties:
       ManagedPolicyArns:
         - !Join 
-          - ''
-          - - 'arn:aws:iam::'
-            - 'aws'
+          - - 'arn:aws:iam:'
+            - ':aws'
             - ':policy/AWSServiceCatalogEndUserFullAccess'
   SageMakerPortfolio:
     Type: 'AWS::ServiceCatalog::Portfolio'
