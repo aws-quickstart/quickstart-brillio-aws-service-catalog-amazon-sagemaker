@@ -382,11 +382,6 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':*'
-              - Sid: MarketplaceArnResource
-                Effect: Allow
-                Action:
-                  'aws-marketplace:ViewSubscriptions'  
-                Resource: '*'  
               - Sid: ElasticArnResource
                 Effect: Allow
                 Action:
