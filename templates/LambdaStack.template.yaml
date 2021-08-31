@@ -386,7 +386,11 @@ Resources:
                   - 's3:GetStorageLensConfiguration' 
                   - 's3:DeleteObjectTagging'  
                   - 's3:GetEncryptionConfiguration'
-                Resource: 'arn:aws:s3:::*sagemaker*'
+                Resource: 
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3::'
+                      - ':*sagemaker*'
               - Sid: LammbdaBasicExecution
                 Effect: Allow
                 Action:

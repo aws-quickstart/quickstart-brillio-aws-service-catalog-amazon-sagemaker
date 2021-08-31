@@ -361,8 +361,7 @@ Resources:
                     - - 'arn:aws:iam::'
                       - !Ref 'AWS::AccountId'
                       - ':role/*'
-              - Sid: CloudArnResource
-                Effect: Allow
+               - Effect: Allow
                 Action:
                   - 'application-autoscaling:DeleteScalingPolicy'
                   - 'application-autoscaling:DeleteScheduledAction'
@@ -382,8 +381,7 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':*'
-              - Sid: SNSArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action:
                   - 'sns:ListTopics'
                 Resource:
@@ -392,8 +390,7 @@ Resources:
                     - - 'arn:aws:sns::'
                       - !Ref 'AWS::AccountId'
                       - ':*'
-              - Sid: logsArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action:
                   - 'cloudwatch:DeleteAlarms'
                   - 'cloudwatch:DescribeAlarms'
@@ -415,8 +412,7 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':log-group:/aws/lambda/*'
-              - Sid: KmsArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action:
                   - 'kms:DescribeKey'
                   - 'kms:ListAliases'
@@ -428,8 +424,7 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':key/*'
-              - Sid: ECRArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action:
                   - 'ecr:BatchCheckLayerAvailability'
                   - 'ecr:BatchGetImage'
@@ -446,8 +441,7 @@ Resources:
                     - - 'arn:aws:ecr::'
                       - !Ref 'AWS::AccountId'
                       - ':repository/*'
-              - Sid: EC2ArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action:        
                   - 'ec2:CreateNetworkInterface'
                   - 'ec2:CreateNetworkInterfacePermission'
@@ -468,8 +462,7 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':instance/*'
-              - Sid: S3ArnResource
-                Effect: Allow
+              - Effect: Allow
                 Action: 
                   - 's3:CreateBucket'
                   - 's3:GetBucketLocation'
@@ -478,9 +471,8 @@ Resources:
                   - !Join 
                     - ''
                     - - 'arn:aws:s3::'
-                      - ':*sagemaker*'                  
-              - Sid: LambdaInvokePermission
-                Effect: Allow
+                      - ':*sagemaker*'          
+              - Effect: Allow
                 Action:
                   - 'lambda:ListFunctions'
                 Resource:
@@ -590,8 +582,7 @@ Resources:
                   - !Join 
                     - ''
                     - - 'arn:aws:ecr::'
-                      - 'repository/*'
-                      - 'sagemaker*'
+                      - 'repository/*sagemaker*'
               - Effect: Allow
                 Action:
                   - 's3:GetObject'
@@ -812,8 +803,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Sid: EC2ArnResource
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'ec2:DescribeVpcs'
               - 'ec2:DescribeSubnets'
@@ -827,8 +817,7 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':instance/*'
-          - Sid: LogsArnResource
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'cloudwatch:DescribeAlarmHistory'
               - 'cloudwatch:DescribeAlarms'
@@ -866,8 +855,7 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':log-group:/aws/lambda/*'
-          - Sid: SageMakerArnResource
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'sagemaker:ListAppImageConfigs'
               - 'sagemaker:ListModelQualityJobDefinitions'
@@ -931,8 +919,7 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':notebook-instance-lifecycle-config/*'
-          - Sid: SagemakerKMSKey
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'kms:DescribeKey'
               - 'kms:ListAliases'
@@ -948,8 +935,7 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':key/*'
-          - Sid: IamArnResource
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'iam:ListRoles'
               - 'aws-marketplace:ViewSubscriptions'    
@@ -959,8 +945,7 @@ Resources:
                 - - 'arn:aws:iam::'
                   - !Ref 'AWS::AccountId'
                   - ':role/*'
-          - Sid: ECRArnResource
-            Effect: Allow
+          - Effect: Allow
             Action:
               - 'ecr:DescribeRegistry'
               - 'ecr:DescribeRepositories'
