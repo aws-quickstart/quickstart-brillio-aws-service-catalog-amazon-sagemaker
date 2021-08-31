@@ -389,7 +389,8 @@ Resources:
                 Resource:
                   - !Join 
                     - ''
-                    - - 'arn:aws:*'   
+                    - - 'arn:aws:'
+                      - '*'   
               - Sid: ElasticArnResource
                 Effect: Allow
                 Action:
