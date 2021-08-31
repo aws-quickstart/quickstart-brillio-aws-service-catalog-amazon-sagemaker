@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: NotebookInstance LifecycleConfig (qs-1qojf6qdr)
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: Launch Configuration Details
+        Parameters:
+          - EFSMountIpAddr
+    ParameterLabels:
+      ENVName:
+        default: Environment Name
+      EFSMountIpAddr:
+        default: EFS mount target Ip address
+Parameters:
+  ENVName:
+    Description: SageMaker Project name
+    Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  EFSMountIpAddr:
+    Description: EFS mount target Ip address
+    Type: String
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
+  EFSLifecycleConfig:
+    Type: 'AWS::SageMaker::NotebookInstanceLifecycleConfig'
+    Properties:
+      NotebookInstanceLifecycleConfigName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - '-EFS-LC'
+      OnCreate:
+        - Content: !Base64 
+            'Fn::Join':
+              - ''
+              - - |
+                  #!/bin/bash 
+                - |
+                  sudo -u ec2-user -i 
+                - |
+                  # Creating the directory for EFS 
+                - |
+                  sudo mkdir /home/ec2-user/SageMaker/efs 
+                - |
+                  #Mount The EFS to that directory
+                - !Sub >
+                  sudo mount -t nfs -o
+                  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2
+                  ${EFSMountIpAddr}:/ /home/ec2-user/SageMaker/efs 
+                - |
+                  # Permission chnage 
+                - >
+                  sudo chown ec2-user:ec2-user /home/ec2-user/SageMaker/efs
+                  --recursive 
+                - |
+                  aws configure set sts_regional_endpoints regional 
+                - yes | cp -rf ~/.aws/config /home/ec2-user/.aws/config
+      OnStart:
+        - Content: !Base64 
+            'Fn::Join':
+              - ''
+              - - |
+                  #!/bin/bash  
+                - |
+                  aws configure set sts_regional_endpoints regional 
+                - yes | cp -rf ~/.aws/config /home/ec2-user/.aws/config
+Outputs:
+  NbInstanceLifecycleConfig:
+    Value: !Ref EFSLifecycleConfig
+    Description: SageMaker Lifecycle Configuration

@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for creating ECR Repository with the given name (qs-1qojf6qam) 
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: ECR Configuration for SageMaker
+        Parameters:
+          - ECRRepositoryName
+          - ECREndpoint
+    ParameterLabels:
+      ECRRepositoryName:
+        default: ECR Repository Name
+      ECREndpoint:
+        default: ECR Interface Endpoint
+      ENVName:
+        default: Environment Name
+Parameters:
+  ENVName:
+    Description: ENVName For the Reasources in the VPC
+    Type: String
+  ECRRepositoryName:
+    Description: Enter the ECR Repository Name for SageMaker
+    Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  ECREndpoint:
+    Description: Enter the ECR Interface Endpoint for ECR access
+    Type: String
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
+  ECRRepository:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Join 
+        - ''
+        - - !Ref ECRRepositoryName
+          - !Sub ${RandomString}
+      RepositoryPolicyText:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowPull
+            Effect: Deny
+            Principal: '*'
+            Action:
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:BatchGetImage'
+              - 'ecr:GetDownloadUrlForLayer'
+            Condition:
+              StringNotEquals:
+                'aws:sourceVpce': !Ref ECREndpoint
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - _
+              - !Ref ECRRepositoryName
+              - !Sub ${RandomString}
+        - Key: Environment
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+Outputs:
+  ECRRepository:
+    Value: !Ref ECRRepository

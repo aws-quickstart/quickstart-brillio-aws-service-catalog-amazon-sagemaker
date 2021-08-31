@@ -1,0 +1,367 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for creating the VPC, sunbnets & security groups. (qs-1qojf6qfa)
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCCIDR
+          - Subnet1CidrBlock
+          - Subnet2CidrBlock
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      VPCCIDR:
+        default: VPC CIDR block
+      Subnet1CidrBlock:
+        default: Resource Subnet CIDR block
+      Subnet2CidrBlock:
+        default: ENI Subnet CIDR block
+      ENVName:
+        default: Environment Name
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+Parameters:
+  ENVName:
+    Description: ENVName For the Reasources in the VPC
+    Type: String
+    Default: SageMaker
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  VPCCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC
+    Type: String
+  Subnet1CidrBlock:
+    Description: CIDR for the Subnet-1
+    Type: String
+    Default: 10.0.1.0/24
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+  Subnet2CidrBlock:
+    Description: CIDR for the Subnet-2
+    Type: String
+    Default: 10.0.2.0/24
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets.
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-2'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
+Conditions:
+  LambdaRegionCheck:
+    !Not [!Equals [!Ref QSS3BucketRegion, !Ref 'AWS::Region']]
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: !Ref VPCCIDR
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - VPC
+  Subnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet1CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ResourceSubnet
+  Subnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet2CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ENISubnet
+  RouteTableSM:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - PrivateRouteTable
+  Subnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet1
+  Subnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet2
+  SecurityGroup1:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside Resource subnet
+      GroupName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - ResourceSG
+      SecurityGroupEgress:
+        - CidrIp: !Ref Subnet2CidrBlock
+          Description: HTTPStraffic
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ResourceSG
+      VpcId: !Ref VPC
+  SecurityGroup2:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside ENI subnet
+      GroupName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - ENISG
+      SecurityGroupIngress:
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 2049
+          FromPort: 2049
+          IpProtocol: tcp
+          ToPort: 2049
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ENISG
+      VpcId: !Ref VPC
+  LambdaZipsBucket:
+    Condition: LambdaRegionCheck
+    Type: AWS::S3::Bucket
+  CopyZips:
+    Condition: LambdaRegionCheck
+    Type: Custom::CopyZips
+    Properties:
+      ServiceToken: !GetAtt 'CopyZipsFunction.Arn'
+      DestBucket: !Ref 'LambdaZipsBucket'
+      SourceBucket: !Ref 'QSS3BucketName'
+      Prefix: !Ref 'QSS3KeyPrefix'
+      Objects:
+        - functions/SageMakerBuild.zip
+        - functions/packages/Boto3/PythonModule.zip
+  CopyZipsRole:
+    Condition: LambdaRegionCheck
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/service-role/AWSLambdaBasicExecutionRole'
+      Path: /
+      Policies:
+        - PolicyName: lambda-copier
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref 'QSS3BucketName'
+                      - '/'
+                      - !Ref 'QSS3KeyPrefix'
+                      - '*'
+  CopyZipsFunction:
+    Condition: LambdaRegionCheck
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Copies objects from a source S3 bucket to a destination
+      Handler: index.handler
+      Runtime: python3.8
+      Role: !GetAtt 'CopyZipsRole.Arn'
+      Timeout: 240
+      Code:
+        ZipFile: |
+          import json
+          import logging
+          import threading
+          import boto3
+          import cfnresponse
+          def copy_objects(source_bucket, dest_bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              for o in objects:
+                  key = prefix + o
+                  copy_source = {
+                      'Bucket': source_bucket,
+                      'Key': key
+                  }
+                  print('copy_source: %s' % copy_source)
+                  print('dest_bucket = %s'%dest_bucket)
+                  print('key = %s' %key)
+                  s3.copy_object(CopySource=copy_source, Bucket=dest_bucket,
+                        Key=key)
+          def delete_objects(bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              objects = {'Objects': [{'Key': prefix + o} for o in objects]}
+              s3.delete_objects(Bucket=bucket, Delete=objects)
+          def timeout(event, context):
+              logging.error('Execution is about to time out, sending failure response to CloudFormation')
+              cfnresponse.send(event, context, cfnresponse.FAILED, {}, None)
+          def handler(event, context):
+              # make sure we send a failure to CloudFormation if the function
+              # is going to timeout
+              timer = threading.Timer((context.get_remaining_time_in_millis()
+                        / 1000.00) - 0.5, timeout, args=[event, context])
+              timer.start()
+              print('Received event: %s' % json.dumps(event))
+              status = cfnresponse.SUCCESS
+              try:
+                  source_bucket = event['ResourceProperties']['SourceBucket']
+                  dest_bucket = event['ResourceProperties']['DestBucket']
+                  prefix = event['ResourceProperties']['Prefix']
+                  objects = event['ResourceProperties']['Objects']
+                  if event['RequestType'] == 'Delete':
+                      delete_objects(dest_bucket, prefix, objects)
+                  else:
+                      copy_objects(source_bucket, dest_bucket, prefix, objects)
+              except Exception as e:
+                  logging.error('Exception: %s' % e, exc_info=True)
+                  status = cfnresponse.FAILED
+              finally:
+                  timer.cancel()
+                  cfnresponse.send(event, context, status, {}, None)
+Outputs:
+  VPCId:
+    Description: VPC Id
+    Value: !Ref VPC
+  Subnet1Id:
+    Description: Resource Subnet Id
+    Value: !Ref Subnet1
+  Subnet2Id:
+    Description: ENI Subnet Id
+    Value: !Ref Subnet2
+  RouteTableId:
+    Description: Route Table Id
+    Value: !Ref RouteTableSM
+  SecurityGroup1Id:
+    Description: Id of the security group-1
+    Value: !GetAtt 
+      - SecurityGroup1
+      - GroupId
+  SecurityGroup2Id:
+    Description: Id of the security group-2
+    Value: !GetAtt 
+      - SecurityGroup2
+      - GroupId
+  LambdaBucket:
+    Value: !If
+      - LambdaRegionCheck
+      - !Ref LambdaZipsBucket
+      - !Ref 'QSS3BucketName'
+  SubnetRandomString:
+    Value: !Sub ${RandomString}
+  SubnetName1:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ResourceSubnet
+  SubnetName2:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ENISubnet
+  SecurityGroupName1:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ResourceSG
+  SecurityGroupName2:
+    Value: !Join 
+      - ''
+      - - !Ref ENVName
+        - !Sub ${RandomString}
+        - ENISG

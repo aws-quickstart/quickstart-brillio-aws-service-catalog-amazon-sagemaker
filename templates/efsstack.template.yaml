@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CFT for EFS creation and mounting it to Resource Sunbnet (qs-1qojf6qda) 
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: ECR Configuration for SageMaker
+        Parameters:
+          - Subnet1Id
+          - SecurityGroup1Id
+          - SecurityGroup2Id
+    ParameterLabels:
+      Subnet1Id:
+        default: Resource Subnet ID
+      SecurityGroup1Id:
+        default: Resource Security Group Id
+      SecurityGroup2Id:
+        default: ENI Security Group Id
+      ENVName:
+        default: Environment Name
+Parameters:
+  ENVName:
+    Description: ENVName For the Reasources in the VPC
+    Type: String
+    Default: SageMaker
+  Subnet1Id:
+    Description: Enter the Resource subnet ID used for SageMaker
+    Type: String
+  SecurityGroup1Id:
+    Description: Enter the Resource Security Group ID used for SageMaker (ResourceSG)
+    Type: String
+  SecurityGroup2Id:
+    Description: Enter the ENI Security Group ID used for SageMaker (ENISG)
+    Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 7
+  ElasticFileSystem:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      FileSystemTags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - EFS
+      PerformanceMode: generalPurpose
+  EFSMountTarget:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      SubnetId: !Ref Subnet1Id
+      FileSystemId: !Ref ElasticFileSystem
+      SecurityGroups:
+        - !Ref SecurityGroup2Id
+  OutboundRule:
+    Type: 'AWS::EC2::SecurityGroupEgress'
+    Properties:
+      CidrIp: !Join 
+        - ''
+        - - !GetAtt 
+            - EFSMountTarget
+            - IpAddress
+          - /32
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      GroupId: !Ref SecurityGroup1Id
+Outputs:
+  EFileSystemId:
+    Value: !Ref ElasticFileSystem
+  EFSMountTargetId:
+    Value: !Ref EFSMountTarget
+  EFSMountIpAddr:
+    Value: !GetAtt 
+      - EFSMountTarget
+      - IpAddress

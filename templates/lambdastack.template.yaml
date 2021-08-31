@@ -1,0 +1,467 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SageMaker Lambda Function Setup (qs-1qojf6qdk) 
+Metadata:
+  "AWS::CloudFormation::Interface":
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+    ParameterLabels:
+      ENVName:
+        default: Environment Name
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+Parameters:
+  ENVName:
+    Description: SageMaker Project name
+    Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets.
+    Type: String
+    Default: aws-quickstart
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Type: String
+    Default: deployment/
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
+  LambdaFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Tags:
+        - Key: Environment
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString} 
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - SagemakerBuildRoles
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/AmazonSageMakerFullAccess'
+      Path: /
+      Policies:
+        - PolicyName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}  
+              - SagemakerBuildPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: SagemakerBuildAction
+                Effect: Allow
+                Action:
+                  - 'iam:UpdateRole'
+                  - 'iam:ListPolicies'
+                  - 'iam:CreateServiceLinkedRole'
+                  - 'iam:DeactivateMFADevice'
+                  - 'iam:AddUserToGroup'
+                  - 'iam:CreateRole' 
+                  - 'iam:ListRolePolicies'
+                  - 'iam:UpdateSAMLProvider' 
+                  - 'iam:DeleteVirtualMFADevice'
+                  - 'iam:SetDefaultPolicyVersion'
+                  - 'iam:UntagRole'
+                  - 'iam:DetachRolePolicy'
+                  - 'iam:UpdateSigningCertificate' 
+                  - 'iam:ListPolicyVersions'
+                  - 'iam:GetOrganizationsAccessReport' 
+                  - 'iam:ResyncMFADevice'
+                  - 'iam:GetContextKeysForCustomPolicy' 
+                  - 'iam:GetRolePolicy'
+                  - 'iam:GetAccountPasswordPolicy'
+                  - 'iam:DetachGroupPolicy'
+                  - 'iam:TagSAMLProvider'
+                  - 'iam:DeleteOpenIDConnectProvider' 
+                  - 'iam:DeleteGroup'
+                  - 'iam:UntagSAMLProvider'
+                  - 'iam:GetServiceLinkedRoleDeletionStatus'
+                  - 'iam:DeletePolicyVersion'
+                  - 'iam:UpdateRoleDescription'
+                  - 'iam:ListSAMLProviders' 
+                  - 'iam:DeleteServiceSpecificCredential'
+                  - 'iam:UpdateAccessKey'
+                  - 'iam:DeleteServiceLinkedRole'
+                  - 'iam:GetRole' 
+                  - 'iam:CreateOpenIDConnectProvider' 
+                  - 'iam:UpdateLoginProfile'
+                  - 'iam:RemoveUserFromGroup' 
+                  - 'iam:ListAttachedGroupPolicies'
+                  - 'iam:GetSAMLProvider'
+                  - 'iam:UntagServerCertificate'
+                  - 'iam:ListAccountAliases'
+                  - 'iam:GetAccountAuthorizationDetails'
+                  - 'iam:AttachGroupPolicy'
+                  - 'iam:ListPoliciesGrantingServiceAccess'
+                  - 'iam:PutUserPolicy'
+                  - 'iam:ListGroups'
+                  - 'iam:ListServiceSpecificCredentials'
+                  - 'iam:CreatePolicyVersion'
+                  - 'iam:DeleteAccountPasswordPolicy'
+                  - 'iam:UntagUser' 
+                  - 'iam:ListOpenIDConnectProviderTags'
+                  - 'iam:ListVirtualMFADevices' 
+                  - 'iam:UntagInstanceProfile'
+                  - 'iam:GetSSHPublicKey' 
+                  - 'iam:PassRole'
+                  - 'iam:UpdateServerCertificate'
+                  - 'iam:TagUser'
+                  - 'iam:EnableMFADevice' 
+                  - 'iam:ListInstanceProfileTags'
+                  - 'iam:GetGroup'
+                  - 'iam:GetAccessKeyLastUsed' 
+                  - 'iam:GetPolicy' 
+                  - 'iam:GetContextKeysForPrincipalPolicy' 
+                  - 'iam:ListAttachedUserPolicies' 
+                  - 'iam:UpdateAccountPasswordPolicy' 
+                  - 'iam:GetServiceLastAccessedDetailsWithEntities'
+                  - 'iam:UploadSSHPublicKey'
+                  - 'iam:ListInstanceProfiles'
+                  - 'iam:AddRoleToInstanceProfile' 
+                  - 'iam:ListSSHPublicKeys'
+                  - 'iam:TagInstanceProfile' 
+                  - 'iam:TagMFADevice'
+                  - 'iam:ListRoleTags' 
+                  - 'iam:CreateVirtualMFADevice' 
+                  - 'iam:DeleteUserPolicy'
+                  - 'iam:AttachRolePolicy' 
+                  - 'iam:DeleteUser'
+                  - 'iam:GetAccountSummary'
+                  - 'iam:AddClientIDToOpenIDConnectProvider'
+                  - 'iam:CreateGroup'
+                  - 'iam:ListUsers' 
+                  - 'iam:CreateAccessKey'
+                  - 'iam:CreateSAMLProvider'
+                  - 'iam:TagPolicy' 
+                  - 'iam:ListMFADeviceTags'
+                  - 'iam:ListUserPolicies'
+                  - 'iam:CreateAccountAlias'
+                  - 'iam:UpdateGroup'
+                  - 'iam:GetOpenIDConnectProvider'
+                  - 'iam:GetUserPolicy'
+                  - 'iam:DeleteSAMLProvider' 
+                  - 'iam:GetGroupPolicy' 
+                  - 'iam:GenerateOrganizationsAccessReport'
+                  - 'iam:ListGroupPolicies'
+                  - 'iam:DetachUserPolicy' 
+                  - 'iam:ListEntitiesForPolicy' 
+                  - 'iam:ListServerCertificates'
+                  - 'iam:SimulatePrincipalPolicy' 
+                  - 'iam:PutUserPermissionsBoundary' 
+                  - 'iam:CreateLoginProfile'
+                  - 'iam:UntagPolicy' 
+                  - 'iam:ChangePassword' 
+                  - 'iam:ListPolicyTags'
+                  - 'iam:UploadServerCertificate' 
+                  - 'iam:CreatePolicy' 
+                  - 'iam:GenerateServiceLastAccessedDetails'
+                  - 'iam:GetLoginProfile' 
+                  - 'iam:ListSigningCertificates' 
+                  - 'iam:SetSecurityTokenServicePreferences'
+                  - 'iam:UpdateOpenIDConnectProviderThumbprint' 
+                  - 'iam:TagServerCertificate' 
+                  - 'iam:ListServerCertificateTags'
+                  - 'iam:CreateServiceSpecificCredential'
+                  - 'iam:ResetServiceSpecificCredential' 
+                  - 'iam:ListInstanceProfilesForRole'
+                  - 'iam:UpdateUser'
+                  - 'iam:DeleteRole'
+                  - 'iam:GetServerCertificate'
+                  - 'iam:RemoveClientIDFromOpenIDConnectProvider'
+                  - 'iam:DeleteSigningCertificate' 
+                  - 'iam:ListAttachedRolePolicies'
+                  - 'iam:GetServiceLastAccessedDetails'
+                  - 'iam:UpdateServiceSpecificCredential' 
+                  - 'iam:DeleteRolePermissionsBoundary' 
+                  - 'iam:DeleteAccessKey' 
+                  - 'iam:DeleteAccountAlias'
+                  - 'iam:ListAccessKeys'
+                  - 'iam:DeleteLoginProfile'
+                  - 'iam:RemoveRoleFromInstanceProfile'
+                  - 'iam:CreateUser'
+                  - 'iam:DeleteServerCertificate'
+                  - 'iam:PutRolePolicy'
+                  - 'iam:UpdateSSHPublicKey'
+                  - 'iam:DeleteSSHPublicKey'
+                  - 'iam:ListGroupsForUser' 
+                  - 'iam:ListRoles'
+                  - 'iam:GenerateCredentialReport'
+                  - 'iam:UntagMFADevice'
+                  - 'iam:TagOpenIDConnectProvider' 
+                  - 'iam:UpdateAssumeRolePolicy'
+                  - 'iam:SimulateCustomPolicy'
+                  - 'iam:CreateInstanceProfile'
+                  - 'iam:UntagOpenIDConnectProvider' 
+                  - 'iam:DeleteUserPermissionsBoundary' 
+                  - 'iam:PutGroupPolicy' 
+                  - 'iam:DeleteInstanceProfile' 
+                  - 'iam:DeleteRolePolicy'
+                  - 'iam:GetUser'
+                  - 'iam:UploadSigningCertificate' 
+                  - 'iam:ListUserTags' 
+                  - 'iam:GetCredentialReport' 
+                  - 'iam:AttachUserPolicy' 
+                  - 'iam:ListOpenIDConnectProviders'
+                  - 'iam:ListMFADevices'
+                  - 'iam:DeleteGroupPolicy' 
+                  - 'iam:PutRolePermissionsBoundary'
+                  - 'iam:GetPolicyVersion'
+                  - 'iam:TagRole'
+                  - 'iam:ListSAMLProviderTags'
+                  - 'iam:GetInstanceProfile'
+                  - 'iam:DeletePolicy'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
+              - Sid: SagemakerKMSKey
+                Effect: Allow
+                Action:
+                  - 'kms:CreateGrant'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:kms:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':key/*'
+              - Sid: SagemakerBucketCleanUp
+                Effect: Allow
+                Action:
+                  - 's3:GetObjectRetention' 
+                  - 's3:GetAccessPoint'  
+                  - 's3:DeleteObject'  
+                  - 's3:ListAccessPointsForObjectLambda' 
+                  - 's3:PutBucketVersioning' 
+                  - 's3:PutLifecycleConfiguration' 
+                  - 's3:PutBucketObjectLockConfiguration' 
+                  - 's3:PutObjectAcl' 
+                  - 's3:DeleteAccessPoint' 
+                  - 's3:ListAllMyBuckets' 
+                  - 's3:GetAccelerateConfiguration' 
+                  - 's3:PutObjectVersionTagging'  
+                  - 's3:GetObjectVersionTagging'  
+                  - 's3:PutBucketPolicy' 
+                  - 's3:GetAccountPublicAccessBlock' 
+                  - 's3:PutJobTagging' 
+                  - 's3:RestoreObject'  
+                  - 's3:GetIntelligentTieringConfiguration' 
+                  - 's3:CreateJob' 
+                  - 's3:ListBucketVersions' 
+                  - 's3:GetBucketAcl'  
+                  - 's3:PutObjectTagging' 
+                  - 's3:DeleteAccessPointPolicy' 
+                  - 's3:GetBucketRequestPayment' 
+                  - 's3:GetObjectLegalHold'  
+                  - 's3:GetAccessPointConfigurationForObjectLambda'  
+                  - 's3:GetAccessPointPolicy' 
+                  - 's3:PutObjectVersionAcl'  
+                  - 's3:GetObjectAcl'  
+                  - 's3:DeleteObjectVersion'  
+                  - 's3:GetObjectVersionAcl'  
+                  - 's3:PutBucketPublicAccessBlock' 
+                  - 's3:DeleteStorageLensConfigurationTagging'  
+                  - 's3:DeleteAccessPointPolicyForObjectLambda' 
+                  - 's3:GetObjectTorrent' 
+                  - 's3:DeleteBucketPolicy'  
+                  - 's3:ReplicateTags' 
+                  - 's3:DeleteBucket' 
+                  - 's3:UpdateJobStatus'  
+                  - 's3:PutBucketAcl' 
+                  - 's3:GetAccessPointPolicyStatus'  
+                  - 's3:PutAccessPointPolicy'  
+                  - 's3:AbortMultipartUpload' 
+                  - 's3:GetObjectVersion' 
+                  - 's3:PutReplicationConfiguration' 
+                  - 's3:GetInventoryConfiguration' 
+                  - 's3:ListBucket'  
+                  - 's3:GetBucketTagging'  
+                  - 's3:GetObject' 
+                  - 's3:PutObjectLegalHold' 
+                  - 's3:GetBucketLogging' 
+                  - 's3:PutInventoryConfiguration' 
+                  - 's3:PutAccessPointConfigurationForObjectLambda' 
+                  - 's3:DeleteBucketWebsite'  
+                  - 's3:DeleteStorageLensConfiguration' 
+                  - 's3:GetObjectVersionTorrent' 
+                  - 's3:CreateAccessPointForObjectLambda' 
+                  - 's3:GetBucketOwnershipControls'  
+                  - 's3:GetAccessPointForObjectLambda'  
+                  - 's3:PutBucketNotification' 
+                  - 's3:GetJobTagging' 
+                  - 's3:ObjectOwnerOverrideToBucketOwner' 
+                  - 's3:CreateBucket' 
+                  - 's3:GetBucketPolicy' 
+                  - 's3:GetAnalyticsConfiguration' 
+                  - 's3:GetObjectVersionForReplication' 
+                  - 's3:GetAccessPointPolicyForObjectLambda'  
+                  - 's3:DeleteJobTagging'  
+                  - 's3:PutBucketLogging'  
+                  - 's3:DeleteBucketOwnershipControls' 
+                  - 's3:ListJobs' 
+                  - 's3:PutBucketOwnershipControls' 
+                  - 's3:ListBucketMultipartUploads'  
+                  - 's3:PutAnalyticsConfiguration' 
+                  - 's3:CreateAccessPoint' 
+                  - 's3:GetMetricsConfiguration' 
+                  - 's3:PutBucketCORS' 
+                  - 's3:PutStorageLensConfiguration'  
+                  - 's3:GetObjectTagging'  
+                  - 's3:GetStorageLensConfigurationTagging'  
+                  - 's3:GetLifecycleConfiguration' 
+                  - 's3:ReplicateObject'
+                  - 's3:PutAccelerateConfiguration' 
+                  - 's3:GetBucketVersioning' 
+                  - 's3:GetBucketWebsite' 
+                  - 's3:GetBucketLocation'  
+                  - 's3:GetBucketNotification'  
+                  - 's3:DeleteObjectVersionTagging' 
+                  - 's3:PutBucketRequestPayment'  
+                  - 's3:ListMultipartUploadParts'  
+                  - 's3:PutIntelligentTieringConfiguration' 
+                  - 's3:ListAccessPoints'  
+                  - 's3:DescribeJob' 
+                  - 's3:UpdateJobPriority'  
+                  - 's3:PutObjectRetention'  
+                  - 's3:GetBucketCORS' 
+                  - 's3:GetBucketObjectLockConfiguration' 
+                  - 's3:PutBucketWebsite' 
+                  - 's3:DeleteAccessPointForObjectLambda'  
+                  - 's3:GetBucketPublicAccessBlock' 
+                  - 's3:PutStorageLensConfigurationTagging' 
+                  - 's3:ReplicateDelete'  
+                  - 's3:GetStorageLensDashboard' 
+                  - 's3:PutAccessPointPolicyForObjectLambda' 
+                  - 's3:ListStorageLensConfigurations' 
+                  - 's3:GetBucketPolicyStatus'  
+                  - 's3:PutAccountPublicAccessBlock'  
+                  - 's3:GetAccessPointPolicyStatusForObjectLambda' 
+                  - 's3:PutObject'  
+                  - 's3:PutBucketTagging'  
+                  - 's3:PutMetricsConfiguration' 
+                  - 's3:GetReplicationConfiguration'  
+                  - 's3:PutEncryptionConfiguration' 
+                  - 's3:BypassGovernanceRetention'  
+                  - 's3:GetStorageLensConfiguration' 
+                  - 's3:DeleteObjectTagging'  
+                  - 's3:GetEncryptionConfiguration'
+                Resource: 
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3::'
+                      - ':*sagemaker*'
+              - Sid: LammbdaBasicExecution
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+  PythonLayer:
+    Type: 'AWS::Lambda::LayerVersion'
+    Properties:
+      CompatibleRuntimes:
+        - python3.6
+        - python2.7
+      Content:
+        S3Bucket: !Ref QSS3BucketName
+        S3Key: !Join
+          - ''
+          - - !Ref QSS3KeyPrefix
+            - functions/packages/Boto3/PythonModule.zip
+      Description: Python layer
+      LayerName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}  
+          - Boto3Layer
+  SageMakerFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: !Ref QSS3BucketName
+        S3Key: !Join
+          - ''
+          - - !Ref QSS3KeyPrefix
+            - functions/SageMakerBuild.zip
+      Description: Sage Maker lambda function
+      FunctionName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString} 
+          - '-SageMakerBuild'
+      Handler: lambda_function.lambda_handler
+      Layers:
+        - !Ref PythonLayer
+      MemorySize: 128
+      Role: !GetAtt 
+        - LambdaFunctionRole
+        - Arn
+      Runtime: python3.6
+      Tags:
+        - Key: ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+      Timeout: 840
+Outputs:
+  PythonLayer:
+    Value: !Ref PythonLayer
+    Description: Lambda layer ARN
+  LambdaFunction:
+    Value: !GetAtt 
+      - SageMakerFunction
+      - Arn
+    Description: Lambda function ARN
+  LambdaFunctionRole:
+    Value: !Ref LambdaFunctionRole
+    Description: Lambda function Role
