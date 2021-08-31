@@ -361,7 +361,8 @@ Resources:
                     - - 'arn:aws:iam::'
                       - !Ref 'AWS::AccountId'
                       - ':role/*'
-              - Effect: Allow
+              - Sid: CloudArnResource
+                Effect: Allow
                 Action:
                   - 'application-autoscaling:DeleteScalingPolicy'
                   - 'application-autoscaling:DeleteScheduledAction'
@@ -381,16 +382,40 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':*'
-              - Effect: Allow
+              - Sid: MarketplaceArnResource
+                Effect: Allow
+                Action:
+                  'aws-marketplace:ViewSubscriptions'  
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:*'   
+              - Sid: ElasticArnResource
+                Effect: Allow
+                Action:
+                  - 'elastic-inference:Connect'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:elastic-inference:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':elastic-inference-accelerator/*'  
+              - Sid: SNSArnResource
+                Effect: Allow
                 Action:
                   - 'sns:ListTopics'
                 Resource:
                   - !Join 
                     - ''
-                    - - 'arn:aws:sns::'
+                    - - 'arn:aws:sns:'
+                      - !Ref 'AWS::Region'
+                      - ':'
                       - !Ref 'AWS::AccountId'
                       - ':*'
-              - Effect: Allow
+              - Sid: logsArnResource
+                Effect: Allow
                 Action:
                   - 'cloudwatch:DeleteAlarms'
                   - 'cloudwatch:DescribeAlarms'
@@ -412,7 +437,8 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':log-group:/aws/lambda/*'
-              - Effect: Allow
+              - Sid: KmsArnResource
+                Effect: Allow
                 Action:
                   - 'kms:DescribeKey'
                   - 'kms:ListAliases'
@@ -424,7 +450,8 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':key/*'
-              - Effect: Allow
+              - Sid: ECRArnResource
+                Effect: Allow
                 Action:
                   - 'ecr:BatchCheckLayerAvailability'
                   - 'ecr:BatchGetImage'
@@ -438,10 +465,13 @@ Resources:
                 Resource:
                   - !Join 
                     - ''
-                    - - 'arn:aws:ecr::'
+                    - - 'arn:aws:ecr:'
+                      - !Ref 'AWS::Region'
+                      - ':'
                       - !Ref 'AWS::AccountId'
                       - ':repository/*'
-              - Effect: Allow
+              - Sid: EC2ArnResource
+                Effect: Allow
                 Action:        
                   - 'ec2:CreateNetworkInterface'
                   - 'ec2:CreateNetworkInterfacePermission'
@@ -462,7 +492,8 @@ Resources:
                       - ':'
                       - !Ref 'AWS::AccountId'
                       - ':instance/*'
-              - Effect: Allow
+              - Sid: S3ArnResource
+                Effect: Allow
                 Action: 
                   - 's3:CreateBucket'
                   - 's3:GetBucketLocation'
@@ -471,8 +502,9 @@ Resources:
                   - !Join 
                     - ''
                     - - 'arn:aws:s3::'
-                      - ':*sagemaker*'          
-              - Effect: Allow
+                      - ':*sagemaker*'                  
+              - Sid: LambdaInvokePermission
+                Effect: Allow
                 Action:
                   - 'lambda:ListFunctions'
                 Resource:
@@ -581,8 +613,11 @@ Resources:
                 Resource: 
                   - !Join 
                     - ''
-                    - - 'arn:aws:ecr::'
-                      - 'repository/*sagemaker*'
+                    - - 'arn:aws:ecr:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':repository/*sagemaker*'
               - Effect: Allow
                 Action:
                   - 's3:GetObject'
@@ -803,7 +838,8 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - Effect: Allow
+          - Sid: EC2ArnResource
+            Effect: Allow
             Action:
               - 'ec2:DescribeVpcs'
               - 'ec2:DescribeSubnets'
@@ -817,7 +853,8 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':instance/*'
-          - Effect: Allow
+          - Sid: LogsArnResource
+            Effect: Allow
             Action:
               - 'cloudwatch:DescribeAlarmHistory'
               - 'cloudwatch:DescribeAlarms'
@@ -855,7 +892,8 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':log-group:/aws/lambda/*'
-          - Effect: Allow
+          - Sid: SageMakerArnResource
+            Effect: Allow
             Action:
               - 'sagemaker:ListAppImageConfigs'
               - 'sagemaker:ListModelQualityJobDefinitions'
@@ -919,7 +957,8 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':notebook-instance-lifecycle-config/*'
-          - Effect: Allow
+          - Sid: SagemakerKMSKey
+            Effect: Allow
             Action:
               - 'kms:DescribeKey'
               - 'kms:ListAliases'
@@ -935,7 +974,8 @@ Resources:
                   - ':'
                   - !Ref 'AWS::AccountId'
                   - ':key/*'
-          - Effect: Allow
+          - Sid: IamArnResource
+            Effect: Allow
             Action:
               - 'iam:ListRoles'
               - 'aws-marketplace:ViewSubscriptions'    
@@ -945,7 +985,8 @@ Resources:
                 - - 'arn:aws:iam::'
                   - !Ref 'AWS::AccountId'
                   - ':role/*'
-          - Effect: Allow
+          - Sid: ECRArnResource
+            Effect: Allow
             Action:
               - 'ecr:DescribeRegistry'
               - 'ecr:DescribeRepositories'
@@ -954,7 +995,9 @@ Resources:
             Resource:
               - !Join 
                 - ''
-                - - 'arn:aws:ecr::'
+                - - 'arn:aws:ecr:'
+                  - !Ref 'AWS::Region'
+                  - ':'
                   - !Ref 'AWS::AccountId'
                   - ':repository/*'
           - Condition:
