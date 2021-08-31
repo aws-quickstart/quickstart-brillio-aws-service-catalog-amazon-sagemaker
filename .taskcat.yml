@@ -26,4 +26,4 @@ tests:
       ProjectName: SM170920
     regions:
       - us-east-1
-    template: templates/Main.template.yaml
+    template: templates/main.template.yaml
