@@ -72,8 +72,9 @@ Resources:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
         - !Join 
-          - - 'arn:aws:iam:'
-            - ':aws'
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
             - ':policy/AmazonSageMakerFullAccess'
       Path: /
       Policies:

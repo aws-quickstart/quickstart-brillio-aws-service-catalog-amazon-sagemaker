@@ -852,8 +852,9 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - !Join 
-          - - 'arn:aws:iam:'
-            - ':aws'
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
             - ':policy/service-role/AWSLambdaBasicExecutionRole'
       Path: /
       Policies:
