@@ -32,6 +32,9 @@ Parameters:
   ENVName:
     Description: SageMaker Project name
     Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
     ConstraintDescription: >-
@@ -65,17 +68,26 @@ Conditions:
       - "NO"
       - !Ref EnableIAMGroup
 Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
   SCEndUserRole:
     Type: 'AWS::IAM::Role'
     Properties:
       Description: Provides full access to service catalog enduser capabilities
       Tags:
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCEndUserRole
       AssumeRolePolicyDocument:
         Statement:
@@ -86,18 +98,26 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/AWSServiceCatalogEndUserFullAccess'
   SCLaunchRole:
     Type: 'AWS::IAM::Role'
     Properties:
       Description: Provides full access to service catalog to launch product
       Tags:
         - Key: Environment
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCLaunchRole
       AssumeRolePolicyDocument:
         Statement:
@@ -110,8 +130,9 @@ Resources:
       Path: /
       Policies:
         - PolicyName: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SCLaunchPolicy
           PolicyDocument:
             Version: 2012-10-17
@@ -120,35 +141,63 @@ Resources:
                 Effect: Allow
                 Action:
                   - 'lambda:InvokeFunction'
-                Resource: '*'
+                Resource:
+                  - !Join 
+                      - ''
+                      - - 'arn:aws:lambda:'
+                        - !Ref 'AWS::Region'
+                        - ':'
+                        - !Ref 'AWS::AccountId'
+                        - ':function:*'
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/IAMFullAccess'
-        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
-        - 'arn:aws:iam::aws:policy/AWSCloudFormationFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/IAMFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/AmazonS3FullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/AWSCloudFormationFullAccess'
   SCUserGroup:
     Type: 'AWS::IAM::Group'
     Condition: IAMGroupCondition
     Properties:
       ManagedPolicyArns:
-        - 'arn:aws:iam::aws:policy/AWSServiceCatalogEndUserFullAccess'
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/AWSServiceCatalogEndUserFullAccess'
   SageMakerPortfolio:
     Type: 'AWS::ServiceCatalog::Portfolio'
     Properties:
       AcceptLanguage: en
       Description: Sagemaker Portfolio with all Guardrails
       DisplayName: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - SageMakerPortfolio
       ProviderName: Brillio
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SageMakerPortfolio
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
   SageMakerProduct:
     Type: 'AWS::ServiceCatalog::CloudFormationProduct'
     Properties:
@@ -156,8 +205,9 @@ Resources:
       Description: This product creates SageMaker Product with provided parameter values.
       Distributor: Amazon
       Name: !Join 
-        - '-'
+        - ''
         - - !Ref ENVName
+          - !Sub ${RandomString}
           - SageMakerProduct
       Owner: Brillio
       ProvisioningArtifactParameters:
@@ -183,11 +233,15 @@ Resources:
       Tags:
         - Key: Name
           Value: !Join 
-            - '-'
+            - ''
             - - !Ref ENVName
+              - !Sub ${RandomString}
               - SageMakerProduct
         - Key: ENVName
-          Value: !Ref ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
   SageMakerProductAssociation:
     Type: 'AWS::ServiceCatalog::PortfolioProductAssociation'
     Properties:
