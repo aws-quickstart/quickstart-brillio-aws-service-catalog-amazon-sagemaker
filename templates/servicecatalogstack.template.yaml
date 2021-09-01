@@ -7,6 +7,7 @@ Metadata:
           default: Environment Details
         Parameters:
           - ENVName
+          - RandomStringArn
       - Label:
           default: AWS Quick Start Configuration
         Parameters:
@@ -20,6 +21,8 @@ Metadata:
     ParameterLabels:
       EnableIAMGroup:
         default: Enable IAM group access for Service catalog
+      RandomStringArn:
+        default: Random String Generator
       ENVName:
         default: Environment Name
       QSS3BucketName:
@@ -216,15 +219,15 @@ Resources:
             values.
           Info:
             LoadTemplateFromURL: !Sub
-              - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/SagemakerProduct.template.yaml
-              - S3Bucket: !If
-                  - UsingDefaultBucket
-                  - !Sub 'aws-quickstart-${AWS::Region}'
-                  - !Ref 'QSS3BucketName'
-                S3Region: !If
+              - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/sagemakerproduct.template.yaml
+              - S3Region: !If
                   - UsingDefaultBucket
                   - !Ref 'AWS::Region'
                   - !Ref 'QSS3BucketRegion'
+                S3Bucket: !If
+                  - UsingDefaultBucket
+                  - !Sub '${QSS3BucketName}-${AWS::Region}'
+                  - !Ref 'QSS3BucketName'
           Name: Version 1
       SupportDescription: Brillio DI Team
       SupportEmail: aws-brillio@brillio.com
