@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Main stack that creates all required nested stacks (qs-1r9regld0)
+Description: Main stack that creates all required nested stacks for the Quick Start (qs-1r9regld0)
 Metadata:
   QuickStartDocumentation:
     EntrypointName: "Parameters for launching into a new VPC"
