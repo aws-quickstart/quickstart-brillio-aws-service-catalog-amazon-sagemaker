@@ -1,0 +1,974 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SageMaker VPC Validator Lambda Function Setup (qs-1qojf6qel) 
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Environment Details
+        Parameters:
+          - ENVName
+      - Label:
+          default: Existing VPC Network Configuration for SageMaker
+        Parameters:
+          - VPCID
+          - Subnet1CidrBlock
+          - Subnet2CidrBlock
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      ENVName:
+        default: Environment Name
+      VPCID:
+        default: VPC Name
+      Subnet1CidrBlock:
+        default: Resource Subnet CIDR block
+      Subnet2CidrBlock:
+        default: ENI Subnet CIDR block
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+Parameters:
+  ENVName:
+    Description: SageMaker Project name
+    Type: String
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  VPCID:
+    Description: Select Existing VPC for SageMaker
+    Type: 'AWS::EC2::VPC::Id'
+  Subnet1CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-1
+    Type: String
+    Default: 10.0.1.0/24
+  Subnet2CidrBlock:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Description: CIDR for the Subnet-2
+    Type: String
+    Default: 10.0.2.0/24
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: S3 bucket name for the Quick Start assets.
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Description: "The S3 key prefix for the Quick Start assets. The Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/)."
+    Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-2'
+    Description: The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.
+    Type: String
+Conditions:
+  LambdaRegionCheck:
+    !Not [!Equals [!Ref QSS3BucketRegion, !Ref 'AWS::Region']]
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 8
+  LambdaFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Tags:
+        - Key: Environment
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - VPCValidatorRole
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - VPCValidatorPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: EC2FullAccess
+                Effect: Allow
+                Action:
+                  - 'ec2:DeleteManagedPrefixList'
+                  - 'ec2:EnableVpcClassicLink'
+                  - 'ec2:DescribeLocalGatewayRouteTables'
+                  - 'ec2:ModifyInstanceCapacityReservationAttributes'
+                  - 'ec2:DetachVpnGateway'
+                  - 'ec2:DescribeExportImageTasks'
+                  - 'ec2:DescribeManagedPrefixLists'
+                  - 'ec2:GetLaunchTemplateData'
+                  - 'ec2:DescribeSpotDatafeedSubscription'
+                  - 'ec2:RequestSpotFleet'
+                  - 'ec2:DescribeVpcEndpointConnections'
+                  - 'ec2:ModifySpotFleetRequest'
+                  - 'ec2:ImportImage'
+                  - 'ec2:CreateTags'
+                  - 'ec2:AssociateTransitGatewayMulticastDomain'
+                  - 'ec2:DeleteSecurityGroup'
+                  - 'ec2:DescribeVpcs'
+                  - 'ec2:CreateTrafficMirrorFilter'
+                  - 'ec2:DescribeImageAttribute'
+                  - 'ec2:DescribeIdentityIdFormat'
+                  - 'ec2:DescribeAggregateIdFormat'
+                  - 'ec2:DescribeDhcpOptions'
+                  - 'ec2:DeleteFlowLogs'
+                  - 'ec2:RestoreAddressToClassic'
+                  - 'ec2:DescribeSnapshots'
+                  - 'ec2:DetachClassicLinkVpc'
+                  - 'ec2:CreateRoute'
+                  - 'ec2:DescribeTransitGatewayConnects'
+                  - 'ec2:AttachNetworkInterface'
+                  - 'ec2:DescribeVpcEndpointConnections'
+                  - 'ec2:DescribeVpcEndpointConnections'
+                  - 'ec2:DescribeVpcEndpointConnections'
+                  - 'ec2:CreateTransitGatewayPrefixListReference'
+                  - 'ec2:DisableImageDeprecation'
+                  - 'ec2:GetFlowLogsIntegrationTemplate'
+                  - 'ec2:DescribeInternetGateways'
+                  - 'ec2:DeleteTags'
+                  - 'ec2:AssignIpv6Addresses'
+                  - 'ec2:DescribeTransitGatewayRouteTables'
+                  - 'ec2:CreateVolume'
+                  - 'ec2:DescribeKeyPairs'
+                  - 'ec2:RejectVpcEndpointConnections'
+                  - 'ec2:EnableImageDeprecation'
+                  - 'ec2:CreateTransitGatewayConnect'
+                  - 'ec2:WithdrawByoipCidr'
+                  - 'ec2:MoveAddressToVpc'
+                  - 'ec2:ReplaceNetworkAclAssociation'
+                  - 'ec2:DeleteLaunchTemplateVersions'
+                  - 'ec2:CreateCustomerGateway'
+                  - 'ec2:AssociateVpcCidrBlock'
+                  - 'ec2:DescribePublicIpv4Pools'
+                  - 'ec2:DeleteNatGateway'
+                  - 'ec2:DescribeSpotFleetInstances'
+                  - 'ec2:CopySnapshot'
+                  - 'ec2:CreateTrafficMirrorFilterRule'
+                  - 'ec2:ModifySubnetAttribute'
+                  - 'ec2:DeleteLocalGatewayRoute'
+                  - 'ec2:ModifyTrafficMirrorFilterRule'
+                  - 'ec2:DescribeAddressesAttribute'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                  - 'ec2:AuthorizeSecurityGroupIngress'
+                  - 'ec2:DescribeEgressOnlyInternetGateways'
+                  - 'ec2:DescribeVolumeStatus'
+                  - 'ec2:DescribeRegions'
+                  - 'ec2:DescribeAccountAttributes'
+                  - 'ec2:ModifySecurityGroupRules'
+                  - 'ec2:CreateFlowLogs'
+                  - 'ec2:DeleteFleets'
+                  - 'ec2:CancelReservedInstancesListing'
+                  - 'ec2:DeleteVpcEndpoints'
+                  - 'ec2:CreateVpcEndpoint'
+                  - 'ec2:CreateStoreImageTask'
+                  - 'ec2:AcceptVpcPeeringConnection'
+                  - 'ec2:ModifyFleet'
+                  - 'ec2:DescribeLocalGateways'
+                  - 'ec2:DisableTransitGatewayRouteTablePropagation'
+                  - 'ec2:DescribeTransitGateways'
+                  - 'ec2:DescribeReservedInstancesListings'
+                  - 'ec2:CreateTransitGatewayVpcAttachment'
+                  - 'ec2:DescribeConversionTasks'
+                  - 'ec2:DescribeElasticGpus'
+                  - 'ec2:DescribeLocalGatewayVirtualInterfaceGroups'
+                  - 'ec2:ModifyInstanceCreditSpecification'
+                  - 'ec2:ImportInstance'
+                  - 'ec2:DescribeHosts'
+                  - 'ec2:ExportClientVpnClientConfiguration'
+                  - 'ec2:DeleteNetworkAclEntry'
+                  - 'ec2:CreateNetworkInterfacePermission'
+                  - 'ec2:DescribePrefixLists'
+                  - 'ec2:DisableEbsEncryptionByDefault'
+                  - 'ec2:DescribeVpcEndpoints'
+                  - 'ec2:DeleteTransitGatewayRouteTable'
+                  - 'ec2:AssociateIamInstanceProfile'
+                  - 'ec2:DescribeTags'
+                  - 'ec2:CreateEgressOnlyInternetGateway'
+                  - 'ec2:DescribeStaleSecurityGroups'
+                  - 'ec2:EnableSerialConsoleAccess'
+                  - 'ec2:DeleteClientVpnEndpoint'
+                  - 'ec2:CreateClientVpnRoute'
+                  - 'ec2:DeleteNetworkInsightsPath'
+                  - 'ec2:CreateSnapshot'
+                  - 'ec2:DeleteSpotDatafeedSubscription'
+                  - 'ec2:ModifyInstanceAttribute'
+                  - 'ec2:DescribeTransitGatewayAttachments'
+                  - 'ec2:DeleteVpcPeeringConnection'
+                  - 'ec2:ModifyTransitGateway'
+                  - 'ec2:GetTransitGatewayPrefixListReferences'
+                  - 'ec2:DescribeInstanceCreditSpecifications'
+                  - 'ec2:DescribeVpcEndpointServicePermissions'
+                  - 'ec2:RebootInstances'
+                  - 'ec2:GetTransitGatewayAttachmentPropagations'
+                  - 'ec2:ImportClientVpnClientCertificateRevocationList'
+                  - 'ec2:ModifyCapacityReservation'
+                  - 'ec2:CreatePlacementGroup'
+                  - 'ec2:CreateReplaceRootVolumeTask'
+                  - 'ec2:GetAssociatedIpv6PoolCidrs'
+                  - 'ec2:DisassociateClientVpnTargetNetwork'
+                  - 'ec2:ModifyVolumeAttribute'
+                  - 'ec2:ModifyTransitGatewayPrefixListReference'
+                  - 'ec2:DeleteVpcEndpointServiceConfigurations'
+                  - 'ec2:RunScheduledInstances'
+                  - 'ec2:RejectVpcPeeringConnection'
+                  - 'ec2:CreateTrafficMirrorSession'
+                  - 'ec2:DescribeTransitGatewayConnectPeers'
+                  - 'ec2:UnmonitorInstances'
+                  - 'ec2:DescribeInstanceAttribute'
+                  - 'ec2:ReportInstanceStatus'
+                  - 'ec2:CreateTransitGateway'
+                  - 'ec2:CancelImportTask'
+                  - 'ec2:CreateVpcEndpointConnectionNotification'
+                  - 'ec2:DescribeSecurityGroups'
+                  - 'ec2:DeregisterTransitGatewayMulticastGroupMembers'
+                  - 'ec2:ModifyVpcPeeringConnectionOptions'
+                  - 'ec2:DeleteRoute'
+                  - 'ec2:DescribeCapacityReservations'
+                  - 'ec2:DescribeNatGateways'
+                  - 'ec2:GetConsoleScreenshot'
+                  - 'ec2:DetachNetworkInterface'
+                  - 'ec2:AssociateEnclaveCertificateIamRole'
+                  - 'ec2:DescribeHostReservations'
+                  - 'ec2:DescribeFpgaImages'
+                  - 'ec2:DeleteVpnConnectionRoute'
+                  - 'ec2:DescribeLocalGatewayRouteTableVpcAssociations'
+                  - 'ec2:DeleteVpnGateway'
+                  - 'ec2:DeleteLocalGatewayRouteTableVpcAssociation'
+                  - 'ec2:PurchaseHostReservation'
+                  - 'ec2:EnableVgwRoutePropagation'
+                  - 'ec2:GetPasswordData'
+                  - 'ec2:DisassociateTransitGatewayRouteTable'
+                  - 'ec2:DescribeAddresses'
+                  - 'ec2:ReleaseAddress'
+                  - 'ec2:DescribeInstanceTypeOfferings'
+                  - 'ec2:CreateTransitGatewayConnectPeer'
+                  - 'ec2:CancelSpotInstanceRequests'
+                  - 'ec2:ModifyImageAttribute'
+                  - 'ec2:GetConsoleOutput'
+                  - 'ec2:ReleaseHosts'
+                  - 'ec2:AssociateClientVpnTargetNetwork'
+                  - 'ec2:DeleteClientVpnRoute'
+                  - 'ec2:DeleteTransitGatewayVpcAttachment'
+                  - 'ec2:DescribeIamInstanceProfileAssociations'
+                  - 'ec2:DescribeTransitGatewayPeeringAttachments'
+                  - 'ec2:DescribeBundleTasks'
+                  - 'ec2:ModifyDefaultCreditSpecification'
+                  - 'ec2:DeleteVolume'
+                  - 'ec2:GetDefaultCreditSpecification'
+                  - 'ec2:SearchTransitGatewayRoutes'
+                  - 'ec2:ApplySecurityGroupsToClientVpnTargetNetwork'
+                  - 'ec2:DescribeFpgaImageAttribute'
+                  - 'ec2:DescribeReservedInstancesOfferings'
+                  - 'ec2:ExportClientVpnClientCertificateRevocationList'
+                  - 'ec2:DescribeInstanceTypes'
+                  - 'ec2:ModifyManagedPrefixList'
+                  - 'ec2:SendDiagnosticInterrupt'
+                  - 'ec2:DescribeSecurityGroupReferences'
+                  - 'ec2:DeregisterImage'
+                  - 'ec2:DescribeExportTasks'
+                  - 'ec2:DescribeImportImageTasks'
+                  - 'ec2:DescribeSpotFleetRequests'
+                  - 'ec2:PurchaseScheduledInstances'
+                  - 'ec2:GetCoipPoolUsage'
+                  - 'ec2:CreateVpcPeeringConnection'
+                  - 'ec2:DeleteQueuedReservedInstances'
+                  - 'ec2:CreateSubnet'
+                  - 'ec2:DescribeVolumeAttribute'
+                  - 'ec2:DescribeReservedInstancesModifications'
+                  - 'ec2:DeleteTransitGatewayMulticastDomain'
+                  - 'ec2:DeleteTransitGatewayMulticastDomain'
+                  - 'ec2:AdvertiseByoipCidr'
+                  - 'ec2:DisassociateAddress'
+                  - 'ec2:DescribeClientVpnRoutes'
+                  - 'ec2:DescribeCustomerGateways'
+                  - 'ec2:DeleteTransitGatewayPrefixListReference'
+                  - 'ec2:ModifyVpnTunnelCertificate'
+                  - 'ec2:UnassignIpv6Addresses'
+                  - 'ec2:CreateNetworkInsightsPath'
+                  - 'ec2:DescribeSpotPriceHistory'
+                  - 'ec2:DescribeFlowLogs'
+                  - 'ec2:CreateCapacityReservation'
+                  - 'ec2:DescribeNetworkInterfaceAttribute'
+                  - 'ec2:StartInstances'
+                  - 'ec2:BundleInstance'
+                  - 'ec2:CreateDhcpOptions'
+                  - 'ec2:ModifyLaunchTemplate'
+                  - 'ec2:DescribeVpnConnections'
+                  - 'ec2:DeleteFpgaImage'
+                  - 'ec2:ResetEbsDefaultKmsKeyId'
+                  - 'ec2:RevokeClientVpnIngress'
+                  - 'ec2:UnassignPrivateIpAddresses'
+                  - 'ec2:DescribeVpcAttribute'
+                  - 'ec2:AllocateHosts'
+                  - 'ec2:ResetFpgaImageAttribute'
+                  - 'ec2:ResetSnapshotAttribute'
+                  - 'ec2:CopyImage'
+                  - 'ec2:ReplaceRouteTableAssociation'
+                  - 'ec2:ModifyInstanceMetadataOptions'
+                  - 'ec2:ModifyVpcAttribute'
+                  - 'ec2:ModifyNetworkInterfaceAttribute'
+                  - 'ec2:DescribeVpcClassicLinkDnsSupport'
+                  - 'ec2:CreateSecurityGroup'
+                  - 'ec2:DescribeVpcEndpointServiceConfigurations'
+                  - 'ec2:DescribeByoipCidrs'
+                  - 'ec2:CreateVpc'
+                  - 'ec2:DescribeImportSnapshotTasks'
+                  - 'ec2:ReplaceTransitGatewayRoute'
+                  - 'ec2:DeregisterTransitGatewayMulticastGroupSources'
+                  - 'ec2:CreateFleet'
+                  - 'ec2:AssignPrivateIpAddresses'
+                  - 'ec2:CreateTrafficMirrorTarget'
+                  - 'ec2:GetReservedInstancesExchangeQuote'
+                  - 'ec2:ResetInstanceAttribute'
+                  - 'ec2:DeleteVpc'
+                  - 'ec2:DeleteTrafficMirrorSession'
+                  - 'ec2:DeleteTrafficMirrorFilterRule'
+                  - 'ec2:CreateRestoreImageTask'
+                  - 'ec2:DescribeVpcClassicLink'
+                  - 'ec2:CreateCarrierGateway'
+                  - 'ec2:AssociateAddress'
+                  - 'ec2:DeleteSnapshot'
+                  - 'ec2:DescribeFastSnapshotRestores'
+                  - 'ec2:CreateVpnConnectionRoute'
+                  - 'ec2:DescribeFleetInstances'
+                  - 'ec2:GetReservedInstancesExchangeQuote'
+                  - 'ec2:DescribeCoipPools'
+                  - 'ec2:DescribeIpv6Pools'
+                  - 'ec2:DescribeClientVpnConnections'
+                  - 'ec2:DescribeTransitGatewayVpcAttachments'
+                  - 'ec2:ModifyHosts'
+                  - 'ec2:CancelConversionTask'
+                  - 'ec2:CreateTransitGatewayRoute'
+                  - 'ec2:StopInstances'
+                  - 'ec2:DeleteTransitGatewayConnectPeer'
+                  - 'ec2:CreateLocalGatewayRoute'
+                  - 'ec2:ModifyEbsDefaultKmsKeyId'
+                  - 'ec2:ReplaceNetworkAclEntry'
+                  - 'ec2:ModifyClientVpnEndpoint'
+                  - 'ec2:DeleteDhcpOptions'
+                  - 'ec2:DescribeNetworkInterfacePermissions'
+                  - 'ec2:RegisterInstanceEventNotificationAttributes'
+                  - 'ec2:EnableVpcClassicLinkDnsSupport'
+                  - 'ec2:ModifySnapshotAttribute'
+                  - 'ec2:AssociateTransitGatewayRouteTable'
+                  - 'ec2:DeleteNetworkInsightsAnalysis'
+                  - 'ec2:GetTransitGatewayMulticastDomainAssociations'
+                  - 'ec2:ModifyVpcEndpointConnectionNotification'
+                  - 'ec2:DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociations'
+                  - 'ec2:DescribeNetworkAcls'
+                  - 'ec2:AcceptTransitGatewayVpcAttachment'
+                  - 'ec2:DeleteCustomerGateway'
+                  - 'ec2:CreateManagedPrefixList'
+                  - 'ec2:CreateKeyPair'
+                  - 'ec2:GetEbsEncryptionByDefault'
+                  - 'ec2:ProvisionByoipCidr'
+                  - 'ec2:DescribeSubnets'
+                  - 'ec2:GetEbsDefaultKmsKeyId'
+                  - 'ec2:AssociateRouteTable'
+                  - 'ec2:AllocateAddress'
+                  - 'ec2:SearchLocalGatewayRoutes'
+                  - 'ec2:ReplaceRoute'
+                  - 'ec2:DescribeTrafficMirrorFilters'
+                  - 'ec2:DescribeSpotInstanceRequests'
+                  - 'ec2:DescribeCarrierGateways' 
+                  - 'ec2:DisassociateTransitGatewayMulticastDomain'
+                  - 'ec2:DescribeVolumes' 
+                  - 'ec2:AssociateSubnetCidrBlock' 
+                  - 'ec2:RejectTransitGatewayPeeringAttachment'
+                  - 'ec2:CreateLaunchTemplateVersion'
+                  - 'ec2:DeleteTransitGateway' 
+                  - 'ec2:DeleteCarrierGateway' 
+                  - 'ec2:ModifyReservedInstances' 
+                  - 'ec2:ModifyInstanceEventStartTime'
+                  - 'ec2:CreateVpcEndpointServiceConfiguration' 
+                  - 'ec2:AcceptReservedInstancesExchangeQuote' 
+                  - 'ec2:DeleteTrafficMirrorTarget'
+                  - 'ec2:DeleteRouteTable' 
+                  - 'ec2:DisableVgwRoutePropagation' 
+                  - 'ec2:UpdateSecurityGroupRuleDescriptionsEgress'
+                  - 'ec2:CopyFpgaImage'
+                  - 'ec2:DescribeTransitGatewayMulticastDomains'
+                  - 'ec2:ModifyVpnConnectionOptions'
+                  - 'ec2:RequestSpotInstances' 
+                  - 'ec2:DeleteTransitGatewayPeeringAttachment'
+                  - 'ec2:DescribeClientVpnTargetNetworks'
+                  - 'ec2:ModifyInstancePlacement'
+                  - 'ec2:DeleteTransitGatewayRoute'
+                  - 'ec2:CreateClientVpnEndpoint'
+                  - 'ec2:DescribeClassicLinkInstances' 
+                  - 'ec2:AcceptTransitGatewayMulticastDomainAssociations' 
+                  - 'ec2:TerminateClientVpnConnections'
+                  - 'ec2:GetManagedPrefixListEntries' 
+                  - 'ec2:CreateNetworkInterface' 
+                  - 'ec2:CreateNetworkAclEntry' 
+                  - 'ec2:ModifyTransitGatewayVpcAttachment' 
+                  - 'ec2:GetHostReservationPurchasePreview' 
+                  - 'ec2:DeprovisionByoipCidr'
+                  - 'ec2:DescribeInstanceEventNotificationAttributes' 
+                  - 'ec2:ModifyVpcEndpoint' 
+                  - 'ec2:ModifyVpcEndpointServiceConfiguration' 
+                  - 'ec2:DescribePlacementGroups'
+                  - 'ec2:ExportTransitGatewayRoutes' 
+                  - 'ec2:ModifyVpnTunnelOptions' 
+                  - 'ec2:DescribeInstanceStatus' 
+                  - 'ec2:DeregisterInstanceEventNotificationAttributes'
+                  - 'ec2:AcceptVpcEndpointConnections' 
+                  - 'ec2:DescribeClientVpnAuthorizationRules' 
+                  - 'ec2:DeleteNetworkInterfacePermission'
+                  - 'ec2:AcceptTransitGatewayPeeringAttachment' 
+                  - 'ec2:GetManagedPrefixListAssociations'
+                  - 'ec2:DeleteInternetGateway' 
+                  - 'ec2:DescribeMovingAddresses' 
+                  - 'ec2:DescribeVpcEndpointConnectionNotifications' 
+                  - 'ec2:CreateTransitGatewayPeeringAttachment'
+                  - 'ec2:MonitorInstances'
+                  - 'ec2:DescribeNetworkInsightsPaths' 
+                  - 'ec2:ModifyIdFormat'
+                  - 'ec2:ModifyTrafficMirrorSession' 
+                  - 'ec2:DeleteNetworkInterface'
+                  - 'ec2:DetachVolume' 
+                  - 'ec2:DeleteTransitGatewayConnect' 
+                  - 'ec2:RevokeSecurityGroupEgress'
+                  - 'ec2:ExportImage' 
+                  - 'ec2:DescribeRouteTables'
+                  - 'ec2:SearchTransitGatewayMulticastGroups' 
+                  - 'ec2:DisassociateSubnetCidrBlock' 
+                  - 'ec2:DescribeTrafficMirrorSessions'
+                  - 'ec2:ResetAddressAttribute' 
+                  - 'ec2:CancelCapacityReservation'
+                  - 'ec2:DeleteSubnet' 
+                  - 'ec2:DeleteLaunchTemplate' 
+                  - 'ec2:GetCapacityReservationUsage'
+                  - 'ec2:CreateRouteTable' 
+                  - 'ec2:RevokeSecurityGroupIngress' 
+                  - 'ec2:DeleteNetworkAcl' 
+                  - 'ec2:ReplaceIamInstanceProfileAssociation' 
+                  - 'ec2:ModifyAvailabilityZoneGroup'
+                  - 'ec2:DescribeSpotFleetRequestHistory'
+                  - 'ec2:ModifyTrafficMirrorFilterNetworkServices'
+                  - 'ec2:DeleteKeyPair' 
+                  - 'ec2:CreateTransitGatewayRouteTable'
+                  - 'ec2:EnableEbsEncryptionByDefault' 
+                  - 'ec2:DeleteEgressOnlyInternetGateway' 
+                  - 'ec2:PurchaseReservedInstancesOffering'
+                  - 'ec2:DescribeScheduledInstanceAvailability'
+                  - 'ec2:GetSerialConsoleAccessStatus' 
+                  - 'ec2:RegisterTransitGatewayMulticastGroupSources'
+                  - 'ec2:CreateVpnConnection'
+                  - 'ec2:DescribeClientVpnEndpoints' 
+                  - 'ec2:DisableFastSnapshotRestores' 
+                  - 'ec2:RestoreManagedPrefixListVersion'
+                  - 'ec2:DisableVpcClassicLink' 
+                  - 'ec2:DescribePrincipalIdFormat'
+                  - 'ec2:AttachVolume' 
+                  - 'ec2:ModifyAddressAttribute'
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:EnableFastSnapshotRestores' 
+                  - 'ec2:CreateSnapshots'
+                  - 'ec2:RegisterTransitGatewayMulticastGroupMembers' 
+                  - 'ec2:ImportSnapshot' 
+                  - 'ec2:DeleteTrafficMirrorFilter'
+                  - 'ec2:CreateInternetGateway'
+                  - 'ec2:AssociateDhcpOptions'
+                  - 'ec2:DescribeVpnGateways'
+                  - 'ec2:DescribeReservedInstances'
+                  - 'ec2:RunInstances' 
+                  - 'ec2:DisassociateVpcCidrBlock'
+                  - 'ec2:ResetImageAttribute' 
+                  - 'ec2:CreateDefaultVpc'
+                  - 'ec2:StartVpcEndpointServicePrivateDnsVerification'
+                  - 'ec2:DescribeVpcEndpointServices' 
+                  - 'ec2:CreateDefaultSubnet' 
+                  - 'ec2:GetTransitGatewayRouteTablePropagations'
+                  - 'ec2:ModifyFpgaImageAttribute'
+                  - 'ec2:DisassociateIamInstanceProfile'
+                  - 'ec2:DeleteVpcEndpointConnectionNotifications' 
+                  - 'ec2:DescribeInstances' 
+                  - 'ec2:DescribeSecurityGroupRules'
+                  - 'ec2:DisassociateEnclaveCertificateIamRole' 
+                  - 'ec2:EnableTransitGatewayRouteTablePropagation'
+                  - 'ec2:UpdateSecurityGroupRuleDescriptionsIngress' 
+                  - 'ec2:CreateLocalGatewayRouteTableVpcAssociation' 
+                  - 'ec2:ImportVolume' 
+                  - 'ec2:DescribeSnapshotAttribute'
+                  - 'ec2:DescribeIdFormat' 
+                  - 'ec2:ModifyIdentityIdFormat'
+                  - 'ec2:DescribeHostReservationOfferings'
+                  - 'ec2:CancelSpotFleetRequests' 
+                  - 'ec2:DescribeLocalGatewayVirtualInterfaces'
+                  - 'ec2:DescribeLaunchTemplateVersions' 
+                  - 'ec2:CancelExportTask' 
+                  - 'ec2:EnableVolumeIO'
+                  - 'ec2:DescribeVolumesModifications'
+                  - 'ec2:ModifyVpcTenancy' 
+                  - 'ec2:DescribeFleetHistory'
+                  - 'ec2:DetachInternetGateway' 
+                  - 'ec2:AuthorizeSecurityGroupEgress' 
+                  - 'ec2:CreateSpotDatafeedSubscription' 
+                  - 'ec2:ModifyVolume' 
+                  - 'ec2:StartNetworkInsightsAnalysis' 
+                  - 'ec2:CreateVpnGateway' 
+                  - 'ec2:AttachInternetGateway'
+                  - 'ec2:CreateNetworkAcl' 
+                  - 'ec2:AuthorizeClientVpnIngress'
+                  - 'ec2:ModifyVpnConnection'
+                  - 'ec2:DescribeLaunchTemplates'
+                  - 'ec2:CreateTransitGatewayMulticastDomain' 
+                  - 'ec2:DisableSerialConsoleAccess'
+                  - 'ec2:DescribeFleets'
+                  - 'ec2:ResetNetworkInterfaceAttribute' 
+                  - 'ec2:CreateFpgaImage'
+                  - 'ec2:DisableVpcClassicLinkDnsSupport' 
+                  - 'ec2:DeleteVpnConnection' 
+                  - 'ec2:CreateInstanceExportTask' 
+                  - 'ec2:GetGroupsForCapacityReservation'
+                  - 'ec2:GetAssociatedEnclaveCertificateIamRoles'
+                  - 'ec2:DescribeScheduledInstances' 
+                  - 'ec2:DescribeStoreImageTasks'
+                  - 'ec2:CreateLaunchTemplate' 
+                  - 'ec2:DeletePlacementGroup' 
+                  - 'ec2:CreateNatGateway'
+                  - 'ec2:ModifyVpcEndpointServicePermissions'
+                  - 'ec2:DescribeNetworkInsightsAnalyses' 
+                  - 'ec2:RegisterImage'
+                  - 'ec2:CancelBundleTask' 
+                  - 'ec2:DescribeReplaceRootVolumeTasks' 
+                  - 'ec2:CreateImage' 
+                  - 'ec2:DescribeImages'
+                  - 'ec2:GetTransitGatewayRouteTableAssociations' 
+                  - 'ec2:TerminateInstances'
+                  - 'ec2:RejectTransitGatewayVpcAttachment' 
+                  - 'ec2:RejectTransitGatewayMulticastDomainAssociations' 
+                  - 'ec2:AttachClassicLinkVpc'
+                  - 'ec2:DescribeAvailabilityZones'
+                  - 'ec2:DescribeVpcPeeringConnections'
+                  - 'ec2:ImportKeyPair' 
+                  - 'ec2:ConfirmProductInstance'
+                  - 'ec2:DescribeTrafficMirrorTargets'
+                Resource:
+                  - !Join 
+                      - ''
+                      - - 'arn:aws:ec2:'
+                        - !Ref 'AWS::Region'
+                        - ':'
+                        - !Ref 'AWS::AccountId'
+                        - ':instance/*'
+              - Sid: LammbdaBasicExecution
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+  VPCValidatorFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: Sage Maker lambda function
+      FunctionName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - VPCVaildator
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt 
+        - LambdaFunctionRole
+        - Arn
+      Runtime: python3.8
+      Tags:
+        - Key: ENVName
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+      Timeout: 300
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          from botocore.vendored import requests
+          import cfnresponse
+
+          def CFTFailedResponse(event, status, message):
+              data = {"Subnet1Id":"Nil","Subnet2Id":"Nil","RouteTableId":"Nil"}
+              responseBody = {
+                  'Status': status,
+                  'Reason': message,
+                  'PhysicalResourceId': event['ServiceToken'],
+                  'StackId': event['StackId'],
+                  'RequestId': event['RequestId'],
+                  'LogicalResourceId': event['LogicalResourceId'],
+                  'Data': data
+              }
+              headers={'content-type':'','content-length':str(len(json.dumps(responseBody)))}	
+              print('Response = ' + json.dumps(responseBody))
+              try:	
+                  req=requests.put(event['ResponseURL'], data=json.dumps(responseBody),headers=headers)
+              except Exception as e:
+                  print("Failed to send cf response {}".format(e))
+                  
+          def CFTSuccessResponse(event, status, data=None):
+              responseBody = {
+                  'Status': status,
+                  'Reason': 'See the details in CloudWatch Log Stream',
+                  'PhysicalResourceId': event['ServiceToken'],
+                  'StackId': event['StackId'],
+                  'RequestId': event['RequestId'],
+                  'LogicalResourceId': event['LogicalResourceId'],
+                  'Data': data
+              }
+              headers={'content-type':'','content-length':str(len(json.dumps(responseBody)))}	
+              print('Response = ' + json.dumps(responseBody))
+              try:	
+                  req=requests.put(event['ResponseURL'], data=json.dumps(responseBody),headers=headers)
+              except Exception as e:
+                  print("Failed to send cf response {}".format(e))
+
+          def modify_vpc(event,client,vpcId):
+              try:
+                  response = client.modify_vpc_attribute(EnableDnsHostnames={'Value': True},VpcId=vpcId)
+              except Exception as e:
+                  CFTFailedResponse(event, "FAILED", "VPC DnsHostnames error - "+str(e))
+              try:
+                  response = client.modify_vpc_attribute(EnableDnsSupport={'Value': True},VpcId=vpcId)
+              except Exception as e:
+                  CFTFailedResponse(event, "FAILED", "VPC DnsSupport error - "+str(e))
+
+          def auditVPC(event,client,vpcId):
+              response = client.describe_internet_gateways(Filters=[{'Name': 'attachment.vpc-id','Values': [vpcId]}])
+              if len(response['InternetGateways']) > 0:
+                  CFTFailedResponse(event, "FAILED", "Provided VPC is exposed to internet gateway.")
+                  return False
+              else:
+                  return True
+
+          def handler(event, context):
+              print(event)
+              client = boto3.client('ec2')
+              data = {}
+              if event['RequestType'] == 'Create':
+                  try:
+                      vpcId = event['ResourceProperties']['VPCID']
+                  except Exception as e:
+                      CFTFailedResponse(event, "FAILED", "VPC Validator parameter Error: "+str(e))
+                  try:
+                      status = auditVPC(event,client,vpcId)
+                  except Exception as e:
+                      CFTFailedResponse(event, "FAILED", "VPC Validation Error: "+str(e))
+                  if status:
+                      modify_vpc(event,client,vpcId)
+                      data['Message'] = "VPC is successfully configured."
+                      CFTSuccessResponse(event, "SUCCESS", data)  
+              if event['RequestType'] == 'Delete':
+                  data["Message"] = "Delete operation is completed"
+                  CFTSuccessResponse(event, "SUCCESS", data)
+              if  event['RequestType'] == 'Update':
+                  data["Message"] = "Update operation is not available"
+                  CFTSuccessResponse(event, "SUCCESS", data)
+  VPCCustomResource:
+    Type: 'Custom::VPCCustomResource'
+    DependsOn: VPCValidatorFunction
+    Properties:
+      ServiceToken: !Join 
+        - ''
+        - - 'arn:aws:lambda:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':function:'
+          - !Ref ENVName
+          - !Sub ${RandomString}
+          - '-VPCVaildator'
+      VPCID: !Ref VPCID
+  Subnet1:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet1CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ResourceSubnet
+  Subnet2:
+    Type: 'AWS::EC2::Subnet'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select 
+        - '1'
+        - !GetAZs ''
+      CidrBlock: !Ref Subnet2CidrBlock
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ENISubnet
+  RouteTableSM:
+    Type: 'AWS::EC2::RouteTable'
+    DependsOn: VPCCustomResource
+    Properties:
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - PrivateRouteTable
+  Subnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet1
+  Subnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref RouteTableSM
+      SubnetId: !Ref Subnet2
+  SecurityGroup1:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside Resource subnet
+      GroupName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - ResourceSG
+      SecurityGroupEgress:
+        - CidrIp: !Ref Subnet2CidrBlock
+          Description: HTTPStraffic
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ResourceSG
+      VpcId: !Ref VPCID
+  SecurityGroup2:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Access for resource inside ENI subnet
+      GroupName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub ${RandomString}
+          - ENISG
+      SecurityGroupIngress:
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+        - CidrIp: !Ref Subnet1CidrBlock
+          Description: Resource Subnet CIDR allow on port 2049
+          FromPort: 2049
+          IpProtocol: tcp
+          ToPort: 2049
+      Tags:
+        - Key: Name
+          Value: !Join 
+            - ''
+            - - !Ref ENVName
+              - !Sub ${RandomString}
+              - ENISG
+      VpcId: !Ref VPCID
+  LambdaZipsBucket:
+    Condition: LambdaRegionCheck
+    Type: AWS::S3::Bucket
+  CopyZips:
+    Condition: LambdaRegionCheck
+    Type: Custom::CopyZips
+    Properties:
+      ServiceToken: !GetAtt 'CopyZipsFunction.Arn'
+      DestBucket: !Ref 'LambdaZipsBucket'
+      SourceBucket: !Ref 'QSS3BucketName'
+      Prefix: !Ref 'QSS3KeyPrefix'
+      Objects:
+        - functions/SageMakerBuild.zip
+        - functions/packages/Boto3/PythonModule.zip
+  CopyZipsRole:
+    Condition: LambdaRegionCheck
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Join 
+          - ''
+          - - 'arn:aws:iam::'
+            - 'aws'
+            - ':policy/service-role/AWSLambdaBasicExecutionRole'
+      Path: /
+      Policies:
+        - PolicyName: lambda-copier
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref 'QSS3BucketName'
+                      - '/'
+                      - !Ref 'QSS3KeyPrefix'
+                      - '*'
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref 'LambdaZipsBucket'
+                      - '/'
+                      - !Ref 'QSS3KeyPrefix'
+                      - '*'
+  CopyZipsFunction:
+    Condition: LambdaRegionCheck
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Copies objects from a source S3 bucket to a destination
+      Handler: index.handler
+      Runtime: python3.8
+      Role: !GetAtt 'CopyZipsRole.Arn'
+      Timeout: 240
+      Code:
+        ZipFile: |
+          import json
+          import logging
+          import threading
+          import boto3
+          import cfnresponse
+          def copy_objects(source_bucket, dest_bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              for o in objects:
+                  key = prefix + o
+                  copy_source = {
+                      'Bucket': source_bucket,
+                      'Key': key
+                  }
+                  print('copy_source: %s' % copy_source)
+                  print('dest_bucket = %s'%dest_bucket)
+                  print('key = %s' %key)
+                  s3.copy_object(CopySource=copy_source, Bucket=dest_bucket,
+                        Key=key)
+          def delete_objects(bucket, prefix, objects):
+              s3 = boto3.client('s3')
+              objects = {'Objects': [{'Key': prefix + o} for o in objects]}
+              s3.delete_objects(Bucket=bucket, Delete=objects)
+          def timeout(event, context):
+              logging.error('Execution is about to time out, sending failure response to CloudFormation')
+              cfnresponse.send(event, context, cfnresponse.FAILED, {}, None)
+          def handler(event, context):
+              # make sure we send a failure to CloudFormation if the function
+              # is going to timeout
+              timer = threading.Timer((context.get_remaining_time_in_millis()
+                        / 1000.00) - 0.5, timeout, args=[event, context])
+              timer.start()
+              print('Received event: %s' % json.dumps(event))
+              status = cfnresponse.SUCCESS
+              try:
+                  source_bucket = event['ResourceProperties']['SourceBucket']
+                  dest_bucket = event['ResourceProperties']['DestBucket']
+                  prefix = event['ResourceProperties']['Prefix']
+                  objects = event['ResourceProperties']['Objects']
+                  if event['RequestType'] == 'Delete':
+                      delete_objects(dest_bucket, prefix, objects)
+                  else:
+                      copy_objects(source_bucket, dest_bucket, prefix, objects)
+              except Exception as e:
+                  logging.error('Exception: %s' % e, exc_info=True)
+                  status = cfnresponse.FAILED
+              finally:
+                  timer.cancel()
+                  cfnresponse.send(event, context, status, {}, None)
+Outputs:
+  VPCId:
+    Description: VPC Id
+    Value: !Ref VPCID
+  Subnet1Id:
+    Description: Resource Subnet Id
+    Value: !Ref Subnet1
+  Subnet2Id:
+    Description: ENI Subnet Id
+    Value: !Ref Subnet2
+  RouteTableId:
+    Description: Route Table Id
+    Value: !Ref RouteTableSM
+  SecurityGroup1Id:
+    Description: Id of the security group-1
+    Value: !GetAtt 
+      - SecurityGroup1
+      - GroupId
+  SecurityGroup2Id:
+    Description: Id of the security group-2
+    Value: !GetAtt 
+      - SecurityGroup2
+      - GroupId
+  LambdaBucket:
+    Value: !If
+      - LambdaRegionCheck
+      - !Ref LambdaZipsBucket
+      - !Ref 'QSS3BucketName'

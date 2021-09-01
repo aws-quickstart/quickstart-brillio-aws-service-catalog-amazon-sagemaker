@@ -4,8 +4,6 @@ project:
   package_lambda: true
   regions:
     - us-east-1
-    - us-west-2
-    - us-east-2
 tests:
   default:
     parameters:
@@ -28,6 +26,4 @@ tests:
       ProjectName: SM170920
     regions:
       - us-east-1
-      - us-west-2
-      - us-east-2
-    template: templates/Main.template.yaml
+    template: templates/main.template.yaml

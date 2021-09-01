@@ -1,0 +1,71 @@
+
+.Environment details
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Environment name
+(`ENVName`)|`QuickStart`|Infrastructure naming convention for SageMaker with guardrails.
+|===
+.VPC network configuration for SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|VPC CIDR block
+(`VPCCIDR`)|`10.0.0.0/16`|CIDR block for the VPC.|Resource subnet CIDR block
+(`Subnet1CidrBlock`)|`10.0.1.0/24`|CIDR for subnet 1.|ENI subnet CIDR block
+(`Subnet2CidrBlock`)|`10.0.2.0/24`|CIDR for subnet 2.
+|===
+.ECR repository details
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|ECR repository name
+(`ECRRepositoryName`)|`quickstart-repository`|ECR repository name.
+|===
+.AWS Quick Start configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Quick Start S3 bucket name
+(`QSS3BucketName`)|`aws-quickstart`|Name of the S3 bucket for your copy of the Quick Start assets. Keep the default name unless you are customizing the template. Changing the name updates code references to point to a new Quick Start location. This name can include numbers, lowercase letters, uppercase letters, and hyphens, but do not start or end with a hyphen (-). See https://aws-quickstart.github.io/option1.html.|Quick Start S3 key prefix
+(`QSS3KeyPrefix`)|`deployment/`|S3 key prefix that is used to simulate a directory for your copy of the  Quick Start assets. Keep the default prefix unless you are customizing  the template. Changing this prefix updates code references to point to  a new Quick Start location. This prefix can include numbers, lowercase  letters, uppercase letters, hyphens (-), and forward slashes (/).  See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html  and https://aws-quickstart.github.io/option1.html.|Quick Start S3 bucket Region
+(`QSS3BucketRegion`)|`us-east-2`|AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. Keep the default Region unless you are customizing the template. Changing this Region updates code references to point to a new Quick Start location. When using your own bucket, specify the Region. See https://aws-quickstart.github.io/option1.html.
+|===
+.Access to Service Catalog for launching SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|(Optional) Enable the IAM group accessing the Service Catalog
+(`EnableIAMGroup`)|`NO`|IAM group for launching SageMaker. By default, this IAM role is enabled for launching SageMaker.
+|===
+.(Optional) Enable SageMaker launch from main template
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Deploy SageMaker
+(`SageMakerLaunch`)|`YES`|Do you want to launch SageMaker from the main template?
+|===
+.SageMaker notebook configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Notebook instance name
+(`NotebookInstanceName`)|`**__Requires input__**`|SageMaker notebook instance name.|Notebook instance type
+(`NotebookInstanceType`)|`ml.t2.medium`|Select the instance type for the SageMaker notebook.|Default internet access
+(`DirectInternetAccess`)|`Disabled`|When value is Disabled (the default setting), this notebook instance can only access resources in your VPC. |Root access
+(`RootAccess`)|`Enabled`|Root access for the SageMaker notebook user.|Volume size for the SageMaker notebook
+(`VolumeSizeInGB`)|`5`|The size (in GB) of the ML storage volume to attach to the notebook instance. The default value is 5 GB.
+|===
+.Push code from S3 bucket to SageMaker
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Code to push from S3
+(`S3CodePusher`)|`NO`|Do you want to load the code from S3 to the SageMaker notebook?|Code bucket name
+(`CodeBucketName`)|`quickstart-code-bucket`|S3 bucket name from which you want to push code.
+|===
+.Access to SageMaker notebook
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Enable IAM group access for SageMaker notebook
+(`IAMGroup`)|`NO`|IAM group for accessing the SageMaker notebook. By default, this IAM role is enabled for accessing the SageMaker notebook.
+|===
+.Project detail
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Project suffix
+(`ProjectName`)|`**__Requires input__**`|The suffix appended to all resources in the stack. This suffix allows multiple copies of the same stack to be created in the same account.|SageMaker project ID
+(`ProjectID`)|`QuickStart007`|Enter a valid project ID.
+|===

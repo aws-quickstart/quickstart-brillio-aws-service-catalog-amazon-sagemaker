@@ -1,0 +1,1225 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Template to create a SageMaker notebook (qs-1r50ggqbg)
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Environment detail
+        Parameters:
+          - ENVName
+      - Label:
+          default: SageMaker Notebook configuration
+        Parameters:
+          - NotebookInstanceName
+          - NotebookInstanceType
+          - DirectInternetAccess
+          - RootAccess
+          - VolumeSizeInGB
+      - Label:
+          default: Pushing code from S3 Bucket to SageMaker
+        Parameters:
+          - S3CodePusher
+          - CodeBucketName
+      - Label:
+          default: Access to SageMaker notebook [By default IAM role will be enabled for accessing SageMaker notebook]
+        Parameters:
+          - EnableIAMGroup
+      - Label:
+          default: Project detail
+        Parameters:
+          - ProjectName
+          - ProjectID
+    ParameterLabels:
+      DirectInternetAccess:
+        default: Default Internet Access
+      NotebookInstanceName:
+        default: Notebook Instance Name
+      NotebookInstanceType:
+        default: Notebook Instance Type
+      ENVName:
+        default: Environment Name
+      ProjectName:
+        default: Project Suffix
+      RootAccess:
+        default: Root access
+      VolumeSizeInGB:
+        default: Volume size for the SageMaker Notebook
+      ProjectID:
+        default: SageMaker ProjectID
+      EnableIAMGroup:
+        default: Enable IAM group access for SageMaker Notebook
+      CodeBucketName:
+        default: Code Bucket Name
+      S3CodePusher:
+        default: Code to push to S3 
+Parameters:
+  RandomStringArn:
+    Description: The ARN for the function that will generate the random value to be used in the naming of the S3 Buckets
+    Type: String
+  SubnetName1:
+    Description: Subnet Random String
+    Type: String
+  SecurityGroupName1:
+    Description: Security Group Name
+    Type: String
+  ServiceTokenVal:
+    Description: Service Token Value passed from Lambda Stack
+    Type: String
+  NotebookInstanceName:
+    AllowedPattern: '[A-Za-z0-9-]{1,63}'
+    ConstraintDescription: >-
+      Maximum of 63 alphanumeric characters. Can include hyphens (-), but not
+      spaces. Must be unique within your account in an AWS Region.
+    Description: SageMaker Notebook instance name
+    MaxLength: '63'
+    MinLength: '1'
+    Type: String
+  NotebookInstanceType:
+    AllowedValues:
+      - ml.t2.medium
+      - ml.m4.xlarge
+      - ml.p2.xlarge
+    ConstraintDescription: Must select a valid notebook instance type.
+    Default: ml.t2.medium
+    Description: Select Instance type for the SageMaker Notebook
+    Type: String
+  ENVName:
+    Description: SageMaker infrastructure naming convention
+    Type: String
+  ProjectName:
+    Description: >-
+      The suffix appended to all resources in the stack.  This will allow
+      multiple copies of the same stack to be created in the same account.
+    Type: String
+  RootAccess:
+    Description: Root access for the SageMaker Notebook user
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Enabled
+    Type: String
+  VolumeSizeInGB:
+    Description: >-
+      The size, in GB, of the ML storage volume to attach to the notebook
+      instance. The default value is 5 GB.
+    Type: Number
+    Default: '5'
+  DirectInternetAccess:
+    Description: >-
+      If you set this to Disabled this notebook instance will be able to access
+      resources only in your VPC. As per the Project requirement, we have
+      Disabled it.
+    Type: String
+    Default: Disabled
+    AllowedValues:
+      - Disabled
+    ConstraintDescription: Must select a valid notebook instance type.
+  ProjectID:
+    Type: String
+    Description: Enter a valid ProjectID.
+    Default: QuickStart007
+  S3CodePusher:
+    Description: Do you want to load the code from S3 to SageMaker Notebook
+    Default: 'NO'
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+    Type: String
+  CodeBucketName:
+    Description: S3 Bucket name from which you want to push code.
+    Default: quickstart-code-bucket
+    Type: String
+  EnableIAMGroup:
+    Description: IAM Group for accessing SageMaker Notebook (Optional)
+    Default: 'NO'
+    Type: String
+    AllowedValues:
+      - 'YES'
+      - 'NO'
+Conditions:
+  BucketCondition: !Equals 
+    - 'YES'
+    - !Ref S3CodePusher
+  IAMGroupCondition: !Not 
+    - !Equals 
+      - 'NO'
+      - !Ref EnableIAMGroup
+Resources:
+  RandomString:
+    Type: Custom::RandomString
+    Properties:
+      ServiceToken: !Ref RandomStringArn
+      Number: 5
+  SagemakerKMSKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      EnableKeyRotation: true
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+          Action: 
+            - 'kms:Encrypt'
+            - 'kms:PutKeyPolicy' 
+            - 'kms:CreateKey' 
+            - 'kms:GetKeyRotationStatus' 
+            - 'kms:DeleteImportedKeyMaterial' 
+            - 'kms:GetKeyPolicy' 
+            - 'kms:UpdateCustomKeyStore' 
+            - 'kms:GenerateRandom' 
+            - 'kms:UpdateAlias'
+            - 'kms:ImportKeyMaterial'
+            - 'kms:ListRetirableGrants' 
+            - 'kms:CreateGrant' 
+            - 'kms:DeleteAlias'
+            - 'kms:RetireGrant'
+            - 'kms:ScheduleKeyDeletion' 
+            - 'kms:DisableKeyRotation' 
+            - 'kms:TagResource' 
+            - 'kms:CreateAlias' 
+            - 'kms:EnableKeyRotation' 
+            - 'kms:DisableKey'
+            - 'kms:ListResourceTags'
+            - 'kms:Verify' 
+            - 'kms:DeleteCustomKeyStore'
+            - 'kms:Sign' 
+            - 'kms:ListKeys'
+            - 'kms:ListGrants'
+            - 'kms:ListAliases' 
+            - 'kms:ReEncryptTo' 
+            - 'kms:UntagResource' 
+            - 'kms:GetParametersForImport'
+            - 'kms:ListKeyPolicies'
+            - 'kms:GenerateDataKeyPair'
+            - 'kms:GenerateDataKeyPairWithoutPlaintext' 
+            - 'kms:GetPublicKey' 
+            - 'kms:Decrypt' 
+            - 'kms:ReEncryptFrom'
+            - 'kms:DisconnectCustomKeyStore' 
+            - 'kms:DescribeKey'
+            - 'kms:GenerateDataKeyWithoutPlaintext'
+            - 'kms:DescribeCustomKeyStores' 
+            - 'kms:CreateCustomKeyStore'
+            - 'kms:EnableKey'
+            - 'kms:RevokeGrant'
+            - 'kms:UpdateKeyDescription' 
+            - 'kms:ConnectCustomKeyStore' 
+            - 'kms:CancelKeyDeletion' 
+            - 'kms:GenerateDataKey'
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
+        - Sid: Allow access for Key Administrators
+          Effect: Allow
+          Principal:
+            AWS: 
+              - !GetAtt SageMakerExecutionRole.Arn
+          Action:
+            - 'kms:CreateAlias'
+            - 'kms:CreateKey'
+            - 'kms:CreateGrant' 
+            - 'kms:CreateCustomKeyStore'
+            - 'kms:DescribeKey'
+            - 'kms:DescribeCustomKeyStores'
+            - 'kms:EnableKey'
+            - 'kms:EnableKeyRotation'
+            - 'kms:ListKeys'
+            - 'kms:ListAliases'
+            - 'kms:ListKeyPolicies'
+            - 'kms:ListGrants'
+            - 'kms:ListRetirableGrants'
+            - 'kms:ListResourceTags'
+            - 'kms:PutKeyPolicy'
+            - 'kms:UpdateAlias'
+            - 'kms:UpdateKeyDescription'
+            - 'kms:UpdateCustomKeyStore'
+            - 'kms:RevokeGrant'
+            - 'kms:DisableKey'
+            - 'kms:DisableKeyRotation'
+            - 'kms:GetPublicKey'
+            - 'kms:GetKeyRotationStatus'
+            - 'kms:GetKeyPolicy'
+            - 'kms:GetParametersForImport'
+            - 'kms:DeleteCustomKeyStore'
+            - 'kms:DeleteImportedKeyMaterial'
+            - 'kms:DeleteAlias'
+            - 'kms:TagResource'
+            - 'kms:UntagResource'
+            - 'kms:ScheduleKeyDeletion'
+            - 'kms:CancelKeyDeletion'
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
+        - Sid: Allow use of the key
+          Effect: Allow
+          Principal:
+            AWS: 
+              - !GetAtt SageMakerExecutionRole.Arn
+              - !GetAtt EndUserAccessRole.Arn
+              - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
+          Action:
+            - kms:Encrypt
+            - kms:Decrypt
+            - kms:ReEncryptTo
+            - kms:ReEncryptFrom
+            - kms:GenerateDataKeyPair
+            - kms:GenerateDataKeyPairWithoutPlaintext
+            - kms:GenerateDataKeyWithoutPlaintext
+            - kms:GenerateDataKey
+            - kms:DescribeKey
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
+        - Sid: Allow attachment of persistent resources
+          Effect: Allow
+          Principal:
+            AWS: 
+              - !GetAtt SageMakerExecutionRole.Arn
+              - !GetAtt EndUserAccessRole.Arn
+              - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
+          Action:
+            - kms:CreateGrant
+            - kms:ListGrants
+            - kms:RevokeGrant
+          Resource:
+            - !Join 
+              - ''
+              - - 'arn:aws:kms:'
+                - !Ref 'AWS::Region'
+                - ':'
+                - !Ref 'AWS::AccountId'
+                - ':key/*'
+          Condition:
+            Bool:
+              kms:GrantIsForAWSResource: 'true'
+  KeyAlias:
+    Type: AWS::KMS::Alias
+    Properties:
+      AliasName: !Join 
+        - ''
+        - - alias/
+          - 'SageMaker-CMK-'
+          - !Ref ProjectName
+          - !Sub ${RandomString}
+          - '-'
+          - !Ref ProjectID
+      TargetKeyId:
+        Ref: SagemakerKMSKey
+  SageMakerExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - sagemaker.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: !Join 
+            - ''
+            - - !Ref ProjectName
+              - SageMakerExecutionPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'iam:ListRoles'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
+              - Sid: CloudArnResource
+                Effect: Allow
+                Action:
+                  - 'application-autoscaling:DeleteScalingPolicy'
+                  - 'application-autoscaling:DeleteScheduledAction'
+                  - 'application-autoscaling:DeregisterScalableTarget'
+                  - 'application-autoscaling:DescribeScalableTargets'
+                  - 'application-autoscaling:DescribeScalingActivities'
+                  - 'application-autoscaling:DescribeScalingPolicies'
+                  - 'application-autoscaling:DescribeScheduledActions'
+                  - 'application-autoscaling:PutScalingPolicy'
+                  - 'application-autoscaling:PutScheduledAction'
+                  - 'application-autoscaling:RegisterScalableTarget'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:autoscaling:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':*'
+              - Sid: ElasticArnResource
+                Effect: Allow
+                Action:
+                  - 'elastic-inference:Connect'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:elastic-inference:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':elastic-inference-accelerator/*'  
+              - Sid: SNSArnResource
+                Effect: Allow
+                Action:
+                  - 'sns:ListTopics'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sns:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':*'
+              - Sid: logsArnResource
+                Effect: Allow
+                Action:
+                  - 'cloudwatch:DeleteAlarms'
+                  - 'cloudwatch:DescribeAlarms'
+                  - 'cloudwatch:GetMetricData'
+                  - 'cloudwatch:GetMetricStatistics'
+                  - 'cloudwatch:ListMetrics'
+                  - 'cloudwatch:PutMetricAlarm'
+                  - 'cloudwatch:PutMetricData'
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:DescribeLogStreams'
+                  - 'logs:GetLogEvents'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:logs:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':log-group:/aws/lambda/*'
+              - Sid: KmsArnResource
+                Effect: Allow
+                Action:
+                  - 'kms:DescribeKey'
+                  - 'kms:ListAliases'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:kms:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':key/*'
+              - Sid: ECRArnResource
+                Effect: Allow
+                Action:
+                  - 'ecr:BatchCheckLayerAvailability'
+                  - 'ecr:BatchGetImage'
+                  - 'ecr:CreateRepository'
+                  - 'ecr:GetAuthorizationToken'
+                  - 'ecr:GetDownloadUrlForLayer'
+                  - 'ecr:DescribeRepositories'
+                  - 'ecr:DescribeImageScanFindings'
+                  - 'ecr:DescribeRegistry'
+                  - 'ecr:DescribeImages'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ecr:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':repository/*'
+              - Sid: EC2ArnResource
+                Effect: Allow
+                Action:        
+                  - 'ec2:CreateNetworkInterface'
+                  - 'ec2:CreateNetworkInterfacePermission'
+                  - 'ec2:DeleteNetworkInterface'
+                  - 'ec2:DeleteNetworkInterfacePermission'
+                  - 'ec2:DescribeDhcpOptions'
+                  - 'ec2:DescribeNetworkInterfaces'
+                  - 'ec2:DescribeRouteTables'
+                  - 'ec2:DescribeSecurityGroups'
+                  - 'ec2:DescribeSubnets'
+                  - 'ec2:DescribeVpcEndpoints'
+                  - 'ec2:DescribeVpcs'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ec2:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':instance/*'
+              - Sid: S3ArnResource
+                Effect: Allow
+                Action: 
+                  - 's3:CreateBucket'
+                  - 's3:GetBucketLocation'
+                  - 's3:ListBucket'       
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3::'
+                      - ':*sagemaker*'                  
+              - Sid: LambdaInvokePermission
+                Effect: Allow
+                Action:
+                  - 'lambda:ListFunctions'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:lambda:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':function'
+                      - ':*'
+              - Effect: Allow
+                Action: 'sagemaker:InvokeEndpoint'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
+                Condition:
+                  StringEquals:
+                    'aws:PrincipalTag/ProjectID': !Ref ProjectID
+              - Effect: Allow
+                Action:
+                  - 'sagemaker:CreateTrainingJob'
+                  - 'sagemaker:CreateEndpoint'
+                  - 'sagemaker:CreateModel'
+                  - 'sagemaker:CreateEndpointConfig'
+                  - 'sagemaker:CreateHyperParameterTuningJob'
+                  - 'sagemaker:CreateTransformJob'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
+                Condition:
+                  StringEquals:
+                    'aws:PrincipalTag/ProjectID': !Ref ProjectID
+                  'ForAllValues:StringEquals':
+                    'aws:TagKeys':
+                      - Username
+              - Effect: Allow
+                Action:
+                  - 'sagemaker:DescribeTrainingJob'
+                  - 'sagemaker:DescribeEndpoint'
+                  - 'sagemaker:DescribeEndpointConfig'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
+                Condition:
+                  StringEquals:
+                    'aws:PrincipalTag/ProjectID': !Ref ProjectID
+              - Effect: Allow
+                Action:
+                  - 'sagemaker:DeleteTags'
+                  - 'sagemaker:ListTags'
+                  - 'sagemaker:DescribeNotebookInstance'
+                  - 'sagemaker:ListNotebookInstanceLifecycleConfigs'
+                  - 'sagemaker:DescribeModel'
+                  - 'sagemaker:ListTrainingJobs'
+                  - 'sagemaker:DescribeHyperParameterTuningJob'
+                  - 'sagemaker:UpdateEndpointWeightsAndCapacities'
+                  - 'sagemaker:ListHyperParameterTuningJobs'
+                  - 'sagemaker:ListEndpointConfigs'
+                  - 'sagemaker:DescribeNotebookInstanceLifecycleConfig'
+                  - 'sagemaker:ListTrainingJobsForHyperParameterTuningJob'
+                  - 'sagemaker:StopHyperParameterTuningJob'
+                  - 'sagemaker:DescribeEndpointConfig'
+                  - 'sagemaker:ListModels'
+                  - 'sagemaker:AddTags'
+                  - 'sagemaker:ListNotebookInstances'
+                  - 'sagemaker:StopTrainingJob'
+                  - 'sagemaker:ListEndpoints'
+                  - 'sagemaker:DeleteEndpoint'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:sagemaker:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':notebook-instance-lifecycle-config/*'
+                Condition:
+                  StringEquals:
+                    'aws:PrincipalTag/ProjectID': !Ref ProjectID
+              - Effect: Allow
+                Action:
+                  - 'ecr:SetRepositoryPolicy'
+                  - 'ecr:CompleteLayerUpload'
+                  - 'ecr:BatchDeleteImage'
+                  - 'ecr:UploadLayerPart'
+                  - 'ecr:DeleteRepositoryPolicy'
+                  - 'ecr:InitiateLayerUpload'
+                  - 'ecr:DeleteRepository'
+                  - 'ecr:PutImage'
+                Resource: 
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:ecr:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':repository/*sagemaker*'
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:ListBucket'
+                  - 's3:PutObject'
+                  - 's3:DeleteObject'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref SagemakerS3Bucket
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:s3:::'
+                      - !Ref SagemakerS3Bucket
+                      - /*
+                Condition:
+                  StringEquals:
+                    'aws:PrincipalTag/ProjectID': !Ref ProjectID
+              - Effect: Allow
+                Action: 'iam:PassRole'
+                Resource:
+                  - !Join 
+                    - ''
+                    - - 'arn:aws:iam::'
+                      - !Ref 'AWS::AccountId'
+                      - ':role/*'
+                Condition:
+                  StringEquals:
+                    'iam:PassedToService': sagemaker.amazonaws.com
+  CodeBucketPolicy:
+    Type: 'AWS::IAM::Policy'
+    Condition: BucketCondition
+    Properties:
+      PolicyName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - CodeBucketPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 's3:GetObject'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref CodeBucketName
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref CodeBucketName
+                  - '/*'
+      Roles:
+        - !Ref SageMakerExecutionRole
+  SagemakerS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+  S3Policy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref SagemakerS3Bucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: AllowPolicy
+            Effect: Allow
+            Principal:
+              AWS:
+                - !Join 
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - ':role/'
+                    - !Ref SageMakerExecutionRole
+                - !If 
+                  - IAMGroupCondition
+                  - !Sub >-
+                    arn:aws:iam::${AWS::AccountId}:group/${ProjectName}-SageMakerGroup
+                  - !Ref 'AWS::NoValue'
+                - !Join 
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - ':root'
+                - !GetAtt EndUserAccessRole.Arn
+            Action:
+              - 's3:Get*'
+              - 's3:Put*'
+              - 's3:List*'
+              - 's3:DeleteObject'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+                  - '/*'
+          - Sid: DenyPolicy
+            Effect: Deny
+            Principal: "*"
+            Action:
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+                  - '/*'
+            Condition:
+              StringLike:
+                'aws:PrincipalArn':
+                  - !GetAtt SageMakerExecutionRole.Arn
+                  - !GetAtt EndUserAccessRole.Arn
+                  - !If [IAMGroupCondition, !GetAtt EndUserIAMGroup.Arn, !Ref 'AWS::NoValue']
+  SageMakerCustomResource:
+    Type: 'Custom::SageMakerCustomResource'
+    DependsOn: S3Policy
+    Properties:
+      ServiceToken: !Ref ServiceTokenVal
+      NotebookInstanceName: !Ref NotebookInstanceName
+      NotebookInstanceType: !Ref NotebookInstanceType
+      KmsKeyId: !Ref SagemakerKMSKey
+      ENVName: !Join 
+        - ''
+        - - !Ref ENVName
+          - !Sub Subnet1Id
+      Subnet1: !Ref SubnetName1
+      SecurityGroupName1: !Ref SecurityGroupName1
+      ProjectName: !Ref ProjectName
+      RootAccess: !Ref RootAccess
+      VolumeSizeInGB: !Ref VolumeSizeInGB
+      LifecycleConfig: !Ref S3CodePusher
+      CodeBucketName: !If 
+        - BucketCondition
+        - !Ref CodeBucketName
+        - !Ref 'AWS::NoValue'
+      DirectInternetAccess: !Ref DirectInternetAccess
+      RoleArn: !GetAtt 
+        - SageMakerExecutionRole
+        - Arn
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+  EndUserIAMGroup:
+    Type: 'AWS::IAM::Group'
+    Condition: IAMGroupCondition
+    Properties:
+      GroupName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - SageMakerGroup
+  EndUserAccessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: Provides full access to service catalog enduser capabilities
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Tags:
+        - Key: ProjectID
+          Value: !Ref ProjectID
+        - Key: ProjectName
+          Value: !Ref ProjectName
+  UserRolePolicies:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: !Join 
+        - ''
+        - - !Ref ProjectName
+          - SageMakerUserRolePolicy
+      Roles:
+        - !Ref EndUserAccessRole
+      Groups:
+        - !If 
+          - IAMGroupCondition
+          - !Ref EndUserIAMGroup 
+          - !Ref 'AWS::NoValue'
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: EC2ArnResource
+            Effect: Allow
+            Action:
+              - 'ec2:DescribeVpcs'
+              - 'ec2:DescribeSubnets'
+              - 'ec2:DescribeSecurityGroups'
+              - 'ec2:DescribeNetworkInterfaces'      
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:ec2:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':instance/*'
+          - Sid: LogsArnResource
+            Effect: Allow
+            Action:
+              - 'cloudwatch:DescribeAlarmHistory'
+              - 'cloudwatch:DescribeAlarms'
+              - 'cloudwatch:DescribeInsightRules'
+              - 'cloudwatch:DescribeAlarmsForMetric'
+              - 'cloudwatch:GetMetricStream'
+              - 'cloudwatch:GetDashboard'
+              - 'cloudwatch:GetMetricData'
+              - 'cloudwatch:GetMetricWidgetImage'
+              - 'cloudwatch:GetInsightRuleReport'
+              - 'cloudwatch:GetMetricStatistics'
+              - 'cloudwatch:ListTagsForResource'
+              - 'cloudwatch:ListMetrics'
+              - 'cloudwatch:ListDashboards'
+              - 'cloudwatch:ListMetricStreams'
+              - 'logs:DescribeQueryDefinitions'
+              - 'logs:DescribeDestinations'
+              - 'logs:DescribeResourcePolicies'
+              - 'logs:DescribeQueries'
+              - 'logs:DescribeLogStreams'
+              - 'logs:DescribeMetricFilters'
+              - 'logs:DescribeLogGroups'
+              - 'logs:DescribeSubscriptionFilters'
+              - 'logs:DescribeExportTasks'
+              - 'logs:GetLogRecord'
+              - 'logs:GetLogDelivery'
+              - 'logs:GetLogGroupFields'
+              - 'logs:GetQueryResults'
+              - 'logs:GetLogEvents'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:logs:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':log-group:/aws/lambda/*'
+          - Sid: SageMakerArnResource
+            Effect: Allow
+            Action:
+              - 'sagemaker:ListAppImageConfigs'
+              - 'sagemaker:ListModelQualityJobDefinitions'
+              - 'sagemaker:ListPipelineParametersForExecution'
+              - 'sagemaker:ListActions'
+              - 'sagemaker:ListCompilationJobs'
+              - 'sagemaker:ListDataQualityJobDefinitions'
+              - 'sagemaker:ListWorkforces'
+              - 'sagemaker:ListAutoMLJobs'
+              - 'sagemaker:ListLabelingJobsForWorkteam'
+              - 'sagemaker:ListTrainingJobsForHyperParameterTuningJob'
+              - 'sagemaker:ListModelExplainabilityJobDefinitions'
+              - 'sagemaker:ListContexts'
+              - 'sagemaker:ListExperiments'
+              - 'sagemaker:ListTrials'
+              - 'sagemaker:ListNotebookInstances'
+              - 'sagemaker:ListTrialComponents'
+              - 'sagemaker:ListModelPackages'
+              - 'sagemaker:ListPipelines'
+              - 'sagemaker:ListNotebookInstanceLifecycleConfigs'
+              - 'sagemaker:ListHumanTaskUis'
+              - 'sagemaker:ListModelPackageGroups'
+              - 'sagemaker:ListEdgePackagingJobs'
+              - 'sagemaker:ListTags'
+              - 'sagemaker:ListUserProfiles'
+              - 'sagemaker:ListMonitoringSchedules'
+              - 'sagemaker:ListEndpointConfigs'
+              - 'sagemaker:ListAssociations'
+              - 'sagemaker:ListWorkteams'
+              - 'sagemaker:ListProcessingJobs'
+              - 'sagemaker:ListCodeRepositories'
+              - 'sagemaker:ListAlgorithms'
+              - 'sagemaker:ListFlowDefinitions'
+              - 'sagemaker:ListCandidatesForAutoMLJob'
+              - 'sagemaker:ListImageVersions'
+              - 'sagemaker:ListApps'
+              - 'sagemaker:ListDeviceFleets'
+              - 'sagemaker:ListProjects'
+              - 'sagemaker:ListFeatureGroups'
+              - 'sagemaker:ListPipelineExecutions'
+              - 'sagemaker:ListTrainingJobs'
+              - 'sagemaker:ListHumanLoops'
+              - 'sagemaker:ListPipelineExecutionSteps'
+              - 'sagemaker:ListArtifacts'
+              - 'sagemaker:ListHyperParameterTuningJobs'
+              - 'sagemaker:ListSubscribedWorkteams'
+              - 'sagemaker:ListEndpoints'
+              - 'sagemaker:ListModels'
+              - 'sagemaker:ListModelBiasJobDefinition'
+              - 'sagemaker:ListImages'
+              - 'sagemaker:ListTransformJobs'
+              - 'sagemaker:ListDomains'
+              - 'sagemaker:ListDevices'
+              - 'sagemaker:ListMonitoringExecutions'
+              - 'sagemaker:ListLabelingJobs'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:sagemaker:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':notebook-instance-lifecycle-config/*'
+          - Sid: SagemakerKMSKey
+            Effect: Allow
+            Action:
+              - 'kms:DescribeKey'
+              - 'kms:ListAliases'
+              - 'kms:CreateCustomKeyStore'
+              - 'kms:CreateGrant'
+              - 'kms:CreateKey'
+              - 'kms:CreateAlias'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:kms:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':key/*'
+          - Sid: IamArnResource
+            Effect: Allow
+            Action:
+              - 'iam:ListRoles'
+              - 'aws-marketplace:ViewSubscriptions'    
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':role/*'
+          - Sid: ECRArnResource
+            Effect: Allow
+            Action:
+              - 'ecr:DescribeRegistry'
+              - 'ecr:DescribeRepositories'
+              - 'ecr:DescribeImageScanFindings'
+              - 'ecr:DescribeImages'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:ecr:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':repository/*'
+          - Condition:
+              StringEquals:
+                'sagemaker:ResourceTag/ProjectID': !Ref ProjectID
+            Action:
+              - 's3:PutBucketVersioning'
+              - 's3:PutObjectTagging'
+              - 's3:DeleteStorageLensConfigurationTagging'
+              - 's3:DeleteBucket'
+              - 's3:DeleteObjectVersion'
+              - 's3:ReplicateTags'
+              - 's3:GetObjectLegalHold'
+              - 's3:ListAccessPointsForObjectLambda'
+              - 's3:GetObjectVersionTagging'
+              - 's3:CreateJob'
+              - 's3:PutAccessPointPolicyForObjectLambda'
+              - 's3:GetObjectVersion'
+              - 's3:DeleteAccessPointPolicy'
+              - 's3:PutBucketPublicAccessBlock'
+              - 's3:GetAccountPublicAccessBlock'
+              - 's3:DeleteBucketPolicy'
+              - 's3:GetBucketWebsite'
+              - 's3:PutObjectVersionTagging'
+              - 's3:CreateAccessPointForObjectLambda'
+              - 's3:ReplicateObject'
+              - 's3:PutAccessPointConfigurationForObjectLambda'
+              - 's3:PutAccessPointPolicy'
+              - 's3:DeleteObjectTagging'
+              - 's3:GetBucketPolicyStatus'
+              - 's3:GetBucketLogging'
+              - 's3:PutIntelligentTieringConfiguration'
+              - 's3:GetMetricsConfiguration'
+              - 's3:GetAccessPoint'
+              - 's3:GetStorageLensConfigurationTagging'
+              - 's3:GetObjectRetention'
+              - 's3:GetObjectVersionForReplication'
+              - 's3:GetBucketCORS'
+              - 's3:DescribeJob'
+              - 's3:PutAnalyticsConfiguration'
+              - 's3:GetBucketRequestPayment'
+              - 's3:PutBucketAcl'
+              - 's3:CreateAccessPoint'
+              - 's3:PutJobTagging'
+              - 's3:GetStorageLensDashboard'
+              - 's3:DeleteObject'
+              - 's3:GetBucketNotification'
+              - 's3:GetBucketPublicAccessBlock'
+              - 's3:ListAccessPoints'
+              - 's3:DeleteAccessPointPolicyForObjectLambda'
+              - 's3:BypassGovernanceRetention'
+              - 's3:CreateBucket'
+              - 's3:GetObject'
+              - 's3:PutBucketPolicy'
+              - 's3:GetAccessPointForObjectLambda'
+              - 's3:UpdateJobStatus'
+              - 's3:ListJobs'
+              - 's3:PutAccelerateConfiguration'
+              - 's3:PutBucketNotification'
+              - 's3:GetBucketVersioning'
+              - 's3:GetObjectVersionTorrent'
+              - 's3:PutMetricsConfiguration'
+              - 's3:DeleteStorageLensConfiguration'
+              - 's3:GetBucketOwnershipControls'
+              - 's3:PutBucketTagging'
+              - 's3:PutBucketObjectLockConfiguration'
+              - 's3:GetAccelerateConfiguration'
+              - 's3:GetBucketObjectLockConfiguration'
+              - 's3:PutObjectLegalHold'
+              - 's3:PutBucketOwnershipControls'
+              - 's3:ListStorageLensConfigurations'
+              - 's3:GetObjectAcl'
+              - 's3:GetAccessPointPolicy'
+              - 's3:GetStorageLensConfiguration'
+              - 's3:PutBucketLogging'
+              - 's3:PutObjectRetention'
+              - 's3:PutStorageLensConfigurationTagging'
+              - 's3:DeleteBucketOwnershipControls'
+              - 's3:GetAccessPointPolicyStatus'
+              - 's3:ReplicateDelete'
+              - 's3:UpdateJobPriority'
+              - 's3:PutBucketOwnershipControls'
+              - 's3:PutObjectLegalHold'
+              - 's3:DeleteAccessPointForObjectLambda'
+              - 's3:GetBucketAcl'
+              - 's3:PutObject'
+              - 's3:GetAccessPointConfigurationForObjectLambda'
+              - 's3:DeleteObjectVersionTagging'
+              - 's3:ObjectOwnerOverrideToBucketOwner'
+              - 's3:GetJobTagging'
+              - 's3:GetAccessPointPolicyForObjectLambda'
+              - 's3:ListMultipartUploadParts'
+              - 's3:PutObjectAcl'
+              - 's3:GetBucketTagging'
+              - 's3:GetReplicationConfiguration'
+              - 's3:GetBucketLocation'
+              - 's3:PutLifecycleConfiguration'
+              - 's3:GetEncryptionConfiguration'
+              - 's3:PutBucketWebsite'
+              - 's3:DeleteJobTagging'
+              - 's3:PutBucketRequestPayment'
+              - 's3:GetObjectVersionAcl'
+              - 's3:ListAllMyBuckets'
+              - 's3:PutAccountPublicAccessBlock'
+              - 's3:GetBucketPolicy'
+              - 's3:GetAnalyticsConfiguration'
+              - 's3:GetObjectTagging'
+              - 's3:ListBucketMultipartUploads'
+              - 's3:PutObjectVersionAcl'
+              - 's3:GetLifecycleConfiguration'
+              - 's3:RestoreObject'
+              - 's3:PutInventoryConfiguration'
+              - 's3:GetObjectTorrent'
+              - 's3:DeleteAccessPoint'
+              - 's3:ListBucket'
+              - 's3:PutStorageLensConfiguration'
+              - 's3:PutReplicationConfiguration'
+              - 's3:GetInventoryConfiguration'
+              - 's3:DeleteBucketWebsite'
+              - 's3:ListBucketVersions'        
+              - 's3:PutEncryptionConfiguration'
+              - 's3:PutIntelligentTieringConfiguration'
+              - 's3:PutIntelligentTieringConfiguration'
+              - 's3:PutIntelligentTieringConfiguration'
+              - 's3:PutIntelligentTieringConfiguration'
+              - 's3:PutIntelligentTieringConfiguration'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+              - !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref SagemakerS3Bucket
+                  - /*
+            Effect: Allow
+            Sid: S3Access
+          - Condition:
+              StringEquals:
+                'sagemaker:ResourceTag/ProjectID': !Ref ProjectID
+            Action:
+              - 'sagemaker:StartNotebookInstance'
+              - 'sagemaker:StopNotebookInstance'
+              - 'sagemaker:CreatePresignedNotebookInstanceUrl'
+              - 'sagemaker:DescribeAppImageConfig'
+              - 'sagemaker:DescribeContext'
+              - 'sagemaker:DescribeImage'
+              - 'sagemaker:DescribeProcessingJob'
+              - 'sagemaker:DescribeWorkteam'
+              - 'sagemaker:DescribeModelBiasJobDefinition'
+              - 'sagemaker:DescribeCompilationJob'
+              - 'sagemaker:DescribeNotebookInstanceLifecycleConfig'
+              - 'sagemaker:DescribeHumanTaskUi'
+              - 'sagemaker:DescribeModelPackageGroup'
+              - 'sagemaker:DescribeModelExplainabilityJobDefinition'
+              - 'sagemaker:DescribeTransformJob'
+              - 'sagemaker:DescribeEndpointConfig'
+              - 'sagemaker:DescribeHumanLoop'
+              - 'sagemaker:DescribeNotebookInstance'
+              - 'sagemaker:DescribeModelPackage'
+              - 'sagemaker:DescribeTrainingJob'
+              - 'sagemaker:DescribeModel'
+              - 'sagemaker:DescribeExperiment'
+              - 'sagemaker:DescribeAlgorithm'
+              - 'sagemaker:DescribeFeatureGroup'
+              - 'sagemaker:DescribeAutoMLJob'
+              - 'sagemaker:DescribeUserProfile'
+              - 'sagemaker:DescribeMonitoringSchedule'
+              - 'sagemaker:DescribePipeline'
+              - 'sagemaker:DescribeImageVersion'
+              - 'sagemaker:DescribeFlowDefinition'
+              - 'sagemaker:DescribeArtifact'
+              - 'sagemaker:DescribeModelQualityJobDefinition'
+              - 'sagemaker:DescribeAction'
+              - 'sagemaker:DescribePipelineExecution'
+              - 'sagemaker:DescribeEdgePackagingJob'
+              - 'sagemaker:DescribeTrial'
+              - 'sagemaker:DescribeDomain'
+              - 'sagemaker:DescribeApp'
+              - 'sagemaker:DescribeProject'
+              - 'sagemaker:DescribeHyperParameterTuningJob'
+              - 'sagemaker:DescribeDevice'
+              - 'sagemaker:DescribeWorkforce'
+              - 'sagemaker:DescribeEndpoint'
+              - 'sagemaker:DescribeAlgorithm'
+              - 'sagemaker:DescribePipelineDefinitionForExecution'
+              - 'sagemaker:DescribeTrialComponent'
+              - 'sagemaker:DescribeDataQualityJobDefinition'
+              - 'sagemaker:DescribeSubscribedWorkteam'
+              - 'sagemaker:DescribeLabelingJob'
+              - 'sagemaker:DescribeDeviceFleet'
+              - 'sagemaker:DescribeCodeRepository'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:sagemaker:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':notebook-instance-lifecycle-config/*'
+            Effect: Allow
+            Sid: DeveloperAccess
+          - Condition:
+              StringEquals:
+                'iam:PassedToService': sagemaker.amazonaws.com
+            Action:
+              - 'iam:PassRole'
+            Resource:
+              - !Join 
+                - ''
+                - - 'arn:aws:iam::'
+                  - !Ref 'AWS::AccountId'
+                  - ':role/*'
+            Effect: Allow
+            Sid: PassRoleForExecutionRoles
+Outputs:
+  Message:
+    Description: Execution Status
+    Value: !GetAtt 
+      - SageMakerCustomResource
+      - Message
+  SagemakerKMSKey:
+    Description: KMS Key for encrypting Sagemaker resource
+    Value: !Ref KeyAlias
+  ExecutionRoleArn:
+    Description: ARN of the Sagemaker Execution Role
+    Value: !Ref SageMakerExecutionRole
+  S3BucketName:
+    Description: S3 bucket for SageMaker Notebook operation
+    Value: !Ref SagemakerS3Bucket
+  NotebookInstanceName:
+    Description: Name of the Sagemaker Notebook instance created
+    Value: !Ref NotebookInstanceName
+  ProjectName:
+    Description: Project ID used for SageMaker deployment
+    Value: !Ref ProjectName
+  ProjectID:
+    Description: Project ID used for SageMaker deployment
+    Value: !Ref ProjectID
+  EndUserAccessRole:
+    Value: !Ref EndUserAccessRole
+    Description: Provides enduser to access the SageMaker Notebook
+  EndUserIAMGroup:
+    Value: !Ref EndUserIAMGroup
+    Condition: IAMGroupCondition
+    Description: Provides enduser to access the SageMaker Notebook by IAM group

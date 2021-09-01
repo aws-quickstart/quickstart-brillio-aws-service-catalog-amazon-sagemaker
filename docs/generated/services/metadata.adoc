@@ -28,6 +28,7 @@
 :template_cloudformation:
 :template_copyzips:
 :template_custom_copyzips:
+:template_custom_randomstring:
 :template_custom_sagemakercustomresource:
 :template_custom_vpccustomresource:
 :template_ec2:
@@ -36,6 +37,7 @@
 :template_iam:
 :template_kms:
 :template_lambda:
+:template_randomstring:
 :template_s3:
 :template_sagemaker:
 :template_sagemakercustomresource:
