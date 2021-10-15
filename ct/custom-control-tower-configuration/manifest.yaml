@@ -1,0 +1,54 @@
+---
+region: us-east-1
+version: 2021-03-15
+resources:
+  - name: brillio-01
+    description: Main stack that creates all required nested stacks for the Quick Start (qs-1r9regld0)
+    resource_file: s3://aws-quickstart-us-east-1/quickstart-sagemaker-guardrail/templates/Main.template.yaml
+    parameters:
+      - parameter_key: CodeBucketName
+        parameter_value: quickstart-code-bucket
+      - parameter_key: DirectInternetAccess
+        parameter_value: Disabled
+      - parameter_key: ECRRepositoryName
+        parameter_value: quickstart-repository
+      - parameter_key: ENVName
+        parameter_value: QuickStart
+      - parameter_key: EnableIAMGroup
+        parameter_value: "NO"
+      - parameter_key: IAMGroup
+        parameter_value: "NO"
+      - parameter_key: NotebookInstanceName
+        parameter_value: QuickStartNotebook
+      - parameter_key: NotebookInstanceType
+        parameter_value: ml.t2.medium
+      - parameter_key: ProjectID
+        parameter_value: QuickStart007
+      - parameter_key: ProjectName
+        parameter_value: SM170920
+      - parameter_key: QSS3BucketName
+        parameter_value: aws-quickstart
+      - parameter_key: QSS3BucketRegion
+        parameter_value: us-east-1
+      - parameter_key: QSS3KeyPrefix
+        parameter_value: quickstart-sagemaker-guardrail/
+      - parameter_key: RootAccess
+        parameter_value: Enabled
+      - parameter_key: S3CodePusher
+        parameter_value: "NO"
+      - parameter_key: SageMakerLaunch
+        parameter_value: "YES"
+      - parameter_key: Subnet1CidrBlock
+        parameter_value: 10.0.1.0/24
+      - parameter_key: Subnet2CidrBlock
+        parameter_value: 10.0.2.0/24
+      - parameter_key: VPCCIDR
+        parameter_value: 10.0.0.0/16
+      - parameter_key: VolumeSizeInGB
+        parameter_value: "5"
+    deploy_method: stack_set
+    deployment_targets:
+      organizational_units:
+        - Workloads
+    regions:
+      - us-east-1
