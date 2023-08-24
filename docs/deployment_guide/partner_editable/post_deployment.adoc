@@ -1,3 +1,8 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+=== Optionally deploy as a Service Catalog product
+After the base infrastructure is configured by the CloudFormation template, data scientists and other users can assume the IAM role (SCEndUserrole) or group that was provided in the CloudFormation output when launching the Service Catalog and then launch SageMaker.
+
+NOTE: Be sure to specify the same environment name that is provided in the CloudFormation template.

@@ -1,10 +1,15 @@
 This guide covers the information you need to deploy the {partner-product-name} Partner Solution in the AWS Cloud.
 
-// Fill in the info in <angle brackets> for use on the landing page only: 
-This Amazon Web Services (AWS) Partner Solution deploys [<product name>](<partner's marketing product page>) in the AWS Cloud so that <purpose>. This solution is for <target users> who want to <do what> so that <why>. For more information, refer to the [<product name> documentation](<URL>).
+This deployment is for users who want to use the capabilities of SageMaker with guardrails enabled for added security.
 
-// Deploying this solution does not guarantee an organization’s compliance with any laws, certifications, policies, or other regulations. [Uncomment this statement only for solutions that relate to compliance. We'll add the corresponding reference part to the landing page and get legal approval before publishing.]
+This deployment uses security guardrails on the SageMaker environment so that customers can build, train, and deploy machine learning (ML) models in a more secure environment. It uses enhanced security by using AWS PrivateLink, Amazon CloudWatch, AWS Identity and Access Management (IAM), AWS Key Management Service (AWS KMS), and other native services on AWS. 
 
-// For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
+{partner-product-short-name} provides the following features:
 
-// For information about using this Partner Solution for migrations, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/migration/index.html[Migration Guide^].
+* A private network for performing secure API calls to other AWS services and restricting internet access for downloading packages. 
+* Restricted SageMaker access to Amazon Elastic Container Registry (Amazon ECR).
+* Mandatory tagging for implementing resource policies and compliance when creating users and resources.
+* S3 bucket policies that restrict access to specific VPC endpoints.
+* Encryption of ML model artifacts and other system artifacts that are either in transit or at rest. Requests to the SageMaker API and console are made over a Secure Sockets Layer (SSL) connection.
+* Disabled root access to the SageMaker notebook instance at the time of launch.
+* Restricted IAM roles and policies for SageMaker execution and notebook access based on resource tags and project ID. Users can only open, start, and stop their own SageMaker notebooks. 

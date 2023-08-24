@@ -11,18 +11,21 @@ image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A highly available architecture that spans two Availability Zones.*
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
-* In the public subnets:
-** Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*
-* In the private subnets:
-** <item>.
-** <item>.
-// Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+* AWS Lambda function (SageMakerBuild) for validating the VPC Domain Name System (DNS) and provisioning SageMaker resources.
+* AWS Service Catalog for triggering the SageMakerBuild function and passing parameters for creating resources.
+* AWS Identity and Access Management (IAM) roles, including: 
+** User role for accessing and launching the Service Catalog.
+** Service Catalog launch constraint role for providing permission to provision resources. 
+** SageMaker execution role for providing limited access to the SageMaker notebook as determined by policies.
+* In the private resource subnet:
+** Amazon SageMaker for running ML models and workflow.
+** Amazon Elastic File System (Amazon EFS) for sharing common modules to SageMaker notebooks.
+* In the private Elastic Network Interface (ENI) subnet, interface endpoints through which SageMaker communicates with the following AWS services:
+** Amazon CloudWatch for real-time monitoring of the SageMaker environment. 
+** Amazon Elastic Container Registry (Amazon ECR) with ECR Policy for storing the latest ML model images for future deployments.
+** AWS Security Token Service (AWS STS) for providing access to an IAM role to perform operations on other AWS services.
+* Amazon Simple Storage Service (Amazon S3) gateway endpoint to access the S3 bucket for storing and retrieving ML data and bucket policy for restricting bucket access.
+* A dedicated S3 bucket used as a data store for training models and SageMaker model artifacts.
+* AWS PrivateLink, Amazon CloudWatch, AWS IAM, AWS Key Management Service (AWS KMS), and other native services on AWS to provide enhanced security.
 
 [.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
